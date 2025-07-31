@@ -22,6 +22,13 @@ async function request<T>(endpoint: string, options: RequestInit = {}): Promise<
     },
   };
 
+  console.log('Making request to:', `${API_BASE}${endpoint}`);
+  console.log('Request config:', { 
+    method: config.method,
+    headers: config.headers,
+    body: config.body 
+  });
+
   try {
     const response = await fetch(`${API_BASE}${endpoint}`, config);
     
@@ -57,14 +64,57 @@ export const api = {
   // Authentication
   async login(credentials: LoginCredentials): Promise<{ token: string; user: User }> {
     console.log('Attempting login with:', { username: credentials.username });
+    console.log('Request body:', JSON.stringify(credentials));
     
-    const response = await request<{ token: string; user: User }>('/auth/login', {
-      method: 'POST',
-      body: JSON.stringify(credentials),
-    });
-    
-    console.log('Login successful:', { userId: response.user?.id, role: response.user?.role });
-    return response;
+    // Try multiple request formats to debug the API
+    const formats = [
+      {
+        name: 'JSON',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(credentials)
+      },
+      {
+        name: 'Form URL Encoded',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams(credentials).toString()
+      },
+      {
+        name: 'Form Data',
+        headers: {},
+        body: (() => {
+          const formData = new FormData();
+          formData.append('username', credentials.username);
+          formData.append('password', credentials.password);
+          return formData;
+        })()
+      }
+    ];
+
+    for (const format of formats) {
+      try {
+        console.log(`Trying ${format.name} format...`);
+        const response = await fetch(`${API_BASE}/auth/login`, {
+          method: 'POST',
+          headers: format.headers,
+          body: format.body,
+        });
+
+        const responseText = await response.text();
+        console.log(`${format.name} - Status:`, response.status);
+        console.log(`${format.name} - Response:`, responseText);
+
+        if (response.ok) {
+          const data = JSON.parse(responseText);
+          console.log('Login successful with', format.name, ':', { userId: data.user?.id, role: data.user?.role });
+          return data;
+        }
+      } catch (error) {
+        console.error(`${format.name} failed:`, error);
+      }
+    }
+
+    // If all formats fail, throw the last error
+    throw new ApiError(422, 'Login failed with all request formats');
   },
 
   async getMe(): Promise<User> {
