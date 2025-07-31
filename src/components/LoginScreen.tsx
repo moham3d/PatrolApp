@@ -8,7 +8,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useAuth } from '../hooks/use-auth';
 
 export function LoginScreen() {
-  const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const { login, isLoading, error } = useAuth();
@@ -16,7 +16,7 @@ export function LoginScreen() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await login(email, password);
+      await login(username, password);
     } catch (error) {
       // Error handled by auth context
     }
@@ -46,13 +46,13 @@ export function LoginScreen() {
             )}
             
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="username">Username</Label>
               <Input
-                id="email"
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="Enter your email"
+                id="username"
+                type="text"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                placeholder="Enter your username"
                 required
                 disabled={isLoading}
               />
@@ -91,7 +91,7 @@ export function LoginScreen() {
             <Button 
               type="submit" 
               className="w-full h-11 text-base font-medium"
-              disabled={isLoading || !email || !password}
+              disabled={isLoading || !username || !password}
             >
               {isLoading ? 'Signing In...' : 'Sign In'}
             </Button>

@@ -6,7 +6,7 @@ import { api } from '../lib/api';
 interface AuthContextType {
   user: User | null;
   token: string | null;
-  login: (email: string, password: string) => Promise<void>;
+  login: (username: string, password: string) => Promise<void>;
   logout: () => void;
   isLoading: boolean;
   error: string | null;
@@ -51,12 +51,12 @@ export function AuthProvider({ children }: AuthProviderProps) {
     initAuth();
   }, []);
 
-  const login = async (email: string, password: string) => {
+  const login = async (username: string, password: string) => {
     setIsLoading(true);
     setError(null);
     
     try {
-      const response = await api.login({ email, password });
+      const response = await api.login({ username, password });
       
       localStorage.setItem('auth_token', response.token);
       setToken(response.token);
