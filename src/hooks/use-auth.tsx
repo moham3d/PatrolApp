@@ -2,6 +2,7 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 import { jwtDecode } from 'jwt-decode';
 import { User } from '../lib/types';
 import { api } from '../lib/api';
+import { useKV } from '@github/spark/hooks';
 
 interface AuthContextType {
   user: User | null;
@@ -20,28 +21,25 @@ interface AuthProviderProps {
 
 export function AuthProvider({ children }: AuthProviderProps) {
   const [user, setUser] = useState<User | null>(null);
-  const [token, setToken] = useState<string | null>(null);
+  const [token, setToken] = useKV<string | null>("auth_token", null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const initAuth = async () => {
-      const storedToken = localStorage.getItem('auth_token');
-      
-      if (storedToken) {
+      if (token) {
         try {
           // Check if token is expired
-          const decoded: any = jwtDecode(storedToken);
+          const decoded: any = jwtDecode(token);
           if (decoded.exp * 1000 > Date.now()) {
-            setToken(storedToken);
             const userData = await api.getMe();
             setUser(userData);
           } else {
-            localStorage.removeItem('auth_token');
+            setToken(null);
           }
         } catch (error) {
           console.error('Auth initialization error:', error);
-          localStorage.removeItem('auth_token');
+          setToken(null);
         }
       }
       
@@ -49,19 +47,21 @@ export function AuthProvider({ children }: AuthProviderProps) {
     };
 
     initAuth();
-  }, []);
+  }, [token]);
 
   const login = async (username: string, password: string) => {
     setIsLoading(true);
     setError(null);
     
     try {
+      console.log('Attempting login for username:', username);
       const response = await api.login({ username, password });
       
-      localStorage.setItem('auth_token', response.token);
       setToken(response.token);
       setUser(response.user);
+      console.log('Login successful:', response.user);
     } catch (error) {
+      console.error('Login error:', error);
       const message = error instanceof Error ? error.message : 'Login failed';
       setError(message);
       throw error;
@@ -71,7 +71,6 @@ export function AuthProvider({ children }: AuthProviderProps) {
   };
 
   const logout = () => {
-    localStorage.removeItem('auth_token');
     setToken(null);
     setUser(null);
     setError(null);

@@ -10,7 +10,8 @@ class ApiError extends Error {
 }
 
 async function request<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
-  const token = localStorage.getItem('auth_token');
+  // Get token from Spark KV
+  const token = await spark.kv.get<string>('auth_token');
   
   const config: RequestInit = {
     ...options,
@@ -25,7 +26,22 @@ async function request<T>(endpoint: string, options: RequestInit = {}): Promise<
     const response = await fetch(`${API_BASE}${endpoint}`, config);
     
     if (!response.ok) {
-      throw new ApiError(response.status, `HTTP ${response.status}: ${response.statusText}`);
+      let errorMessage = `HTTP ${response.status}: ${response.statusText}`;
+      
+      try {
+        const errorData = await response.json();
+        if (errorData.detail) {
+          errorMessage = Array.isArray(errorData.detail) ? 
+            errorData.detail.map((err: any) => err.msg).join(', ') : 
+            errorData.detail;
+        } else if (errorData.message) {
+          errorMessage = errorData.message;
+        }
+      } catch {
+        // If we can't parse JSON, stick with the original error message
+      }
+      
+      throw new ApiError(response.status, errorMessage);
     }
     
     return await response.json();
@@ -40,15 +56,19 @@ async function request<T>(endpoint: string, options: RequestInit = {}): Promise<
 export const api = {
   // Authentication
   async login(credentials: LoginCredentials): Promise<{ token: string; user: User }> {
+    console.log('Attempting login with:', { username: credentials.username });
+    
     const response = await request<{ token: string; user: User }>('/auth/login', {
       method: 'POST',
       body: JSON.stringify(credentials),
     });
+    
+    console.log('Login successful:', { userId: response.user?.id, role: response.user?.role });
     return response;
   },
 
   async getMe(): Promise<User> {
-    return request<User>('/auth/login');
+    return request<User>('/auth/me');
   },
 
   // Shifts
