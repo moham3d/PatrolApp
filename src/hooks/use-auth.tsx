@@ -7,7 +7,7 @@ import { useKV } from '@github/spark/hooks';
 interface AuthContextType {
   user: User | null;
   token: string | null;
-  login: (username: string, password: string) => Promise<void>;
+  login: (credentials: { username: string; password: string }) => Promise<void>;
   logout: () => void;
   isLoading: boolean;
   error: string | null;
@@ -49,13 +49,13 @@ export function AuthProvider({ children }: AuthProviderProps) {
     initAuth();
   }, [token]);
 
-  const login = async (username: string, password: string) => {
+  const login = async ({ username, password }: { username: string; password: string }) => {
     setIsLoading(true);
     setError(null);
     
     try {
       console.log('Attempting login for username:', username);
-      const response = await apiService.login(username, password);
+      const response = await apiService.login({ username, password });
       
       // The API response structure is different - access_token instead of token
       setToken(response.access_token);
