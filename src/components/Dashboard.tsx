@@ -13,7 +13,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useAuth } from '../hooks/use-auth';
-import { api } from '../lib/api';
+import apiService from '../lib/api';
 import { Shift, SOSAlert } from '../lib/types';
 import { toast } from 'sonner';
 
@@ -33,7 +33,7 @@ export function Dashboard() {
 
   const loadCurrentShift = async () => {
     try {
-      const shift = await api.getCurrentShift();
+      const shift = await apiService.getCurrentShift();
       setCurrentShift(shift);
     } catch (error) {
       console.error('Failed to load current shift:', error);
@@ -44,7 +44,7 @@ export function Dashboard() {
 
   const loadSOSAlerts = async () => {
     try {
-      const alerts = await api.getActiveSOSAlerts();
+      const alerts = await apiService.getActiveSOSAlerts();
       setSOSAlerts(alerts);
     } catch (error) {
       console.error('Failed to load SOS alerts:', error);
@@ -71,7 +71,7 @@ export function Dashboard() {
         accuracy: position.coords.accuracy
       };
 
-      await api.triggerSOS(location);
+      await apiService.triggerSOS(location);
       toast.success('SOS alert sent successfully!');
       
       // Reload alerts if supervisor/admin
@@ -90,7 +90,7 @@ export function Dashboard() {
     if (!currentShift) return;
     
     try {
-      await api.endShift(currentShift.id);
+      await apiService.endShift(currentShift.id);
       setCurrentShift(null);
       toast.success('Shift ended successfully');
     } catch (error) {

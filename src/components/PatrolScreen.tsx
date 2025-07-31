@@ -9,7 +9,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useAuth } from '../hooks/use-auth';
-import { api } from '../lib/api';
+import apiService from '../lib/api';
 import { Checkpoint, Shift } from '../lib/types';
 import { toast } from 'sonner';
 
@@ -30,8 +30,8 @@ export function PatrolScreen() {
   const loadData = async () => {
     try {
       const [shift, checkpointsData] = await Promise.all([
-        api.getCurrentShift(),
-        api.getCheckpoints(user?.site_id)
+        apiService.getCurrentShift(),
+        apiService.getCheckpoints(user?.site_id)
       ]);
       
       setCurrentShift(shift);
@@ -52,7 +52,7 @@ export function PatrolScreen() {
 
     setIsStartingShift(true);
     try {
-      const shift = await api.startShift(user.site_id);
+      const shift = await apiService.startShift(user.site_id);
       setCurrentShift(shift);
       toast.success('Shift started successfully');
     } catch (error) {
@@ -71,7 +71,7 @@ export function PatrolScreen() {
 
     setIsLoggingCheckpoint(true);
     try {
-      await api.logCheckpoint(checkpointId, checkpointNotes);
+      await apiService.logCheckpoint(checkpointId, checkpointNotes);
       setCheckpointNotes('');
       setManualCheckpointId('');
       toast.success('Checkpoint logged successfully');

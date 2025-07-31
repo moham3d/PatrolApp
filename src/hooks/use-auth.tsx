@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { jwtDecode } from 'jwt-decode';
 import { User } from '../lib/types';
-import { api } from '../lib/api';
+import apiService from '../lib/api';
 import { useKV } from '@github/spark/hooks';
 
 interface AuthContextType {
@@ -32,7 +32,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
           // Check if token is expired
           const decoded: any = jwtDecode(token);
           if (decoded.exp * 1000 > Date.now()) {
-            const userData = await api.getMe();
+            const userData = await apiService.getCurrentUser();
             setUser(userData);
           } else {
             setToken(null);
@@ -55,14 +55,18 @@ export function AuthProvider({ children }: AuthProviderProps) {
     
     try {
       console.log('Attempting login for username:', username);
-      const response = await api.login({ username, password });
+      const response = await apiService.login(username, password);
       
-      setToken(response.token);
-      setUser(response.user);
-      console.log('Login successful:', response.user);
+      // The API response structure is different - access_token instead of token
+      setToken(response.access_token);
+      
+      // Get user info after successful login
+      const userData = await apiService.getCurrentUser();
+      setUser(userData);
+      console.log('Login successful:', userData);
     } catch (error) {
       console.error('Login error:', error);
-      const message = error instanceof Error ? error.message : 'Login failed';
+      const message = error?.response?.data?.detail || error?.message || 'Login failed';
       setError(message);
       throw error;
     } finally {

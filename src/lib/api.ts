@@ -1,237 +1,609 @@
-import { LoginCredentials, User, ApiResponse, Shift, Incident, Location, SOSAlert, Checkpoint } from './types';
+import axios from 'axios';
 
-const API_BASE = 'https://api.millio.space';
+// Dynamic API base URL detection
+const API_BASE_URL = window.location.hostname === 'localhost' 
+  ? 'http://localhost:8000' 
+  : 'https://api.millio.space';
 
-class ApiError extends Error {
-  constructor(public status: number, message: string) {
-    super(message);
-    this.name = 'ApiError';
-  }
-}
+class ApiService {
+  constructor() {
+    this.client = axios.create({
+      baseURL: API_BASE_URL,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
 
-async function request<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
-  // Get token from Spark KV
-  const token = await spark.kv.get<string>('auth_token');
-  
-  const config: RequestInit = {
-    ...options,
-    headers: {
-      'Content-Type': 'application/json',
-      ...(token && { Authorization: `Bearer ${token}` }),
-      ...options.headers,
-    },
-  };
-
-  console.log('Making request to:', `${API_BASE}${endpoint}`);
-  console.log('Request config:', { 
-    method: config.method,
-    headers: config.headers,
-    body: config.body 
-  });
-
-  try {
-    const response = await fetch(`${API_BASE}${endpoint}`, config);
-    
-    if (!response.ok) {
-      let errorMessage = `HTTP ${response.status}: ${response.statusText}`;
-      
-      try {
-        const errorData = await response.json();
-        if (errorData.detail) {
-          errorMessage = Array.isArray(errorData.detail) ? 
-            errorData.detail.map((err: any) => err.msg).join(', ') : 
-            errorData.detail;
-        } else if (errorData.message) {
-          errorMessage = errorData.message;
+    // Add request interceptor to include auth token from Spark KV
+    this.client.interceptors.request.use(
+      async (config) => {
+        const token = await spark.kv.get<string>('auth_token');
+        if (token) {
+          config.headers.Authorization = `Bearer ${token}`;
         }
-      } catch {
-        // If we can't parse JSON, stick with the original error message
+        return config;
+      },
+      (error) => {
+        return Promise.reject(error);
       }
-      
-      throw new ApiError(response.status, errorMessage);
-    }
-    
-    return await response.json();
-  } catch (error) {
-    if (error instanceof ApiError) {
-      throw error;
-    }
-    throw new ApiError(0, 'Network error occurred');
-  }
-}
+    );
 
-export const api = {
+    // Add response interceptor to handle auth errors
+    this.client.interceptors.response.use(
+      (response) => response,
+      async (error) => {
+        if (error.response?.status === 401) {
+          await spark.kv.delete('auth_token');
+          window.location.reload();
+        }
+        return Promise.reject(error);
+      }
+    );
+  }
+
   // Authentication
-  async login(credentials: LoginCredentials): Promise<{ token: string; user: User }> {
-    console.log('Attempting login with:', { username: credentials.username });
-    console.log('Request body:', JSON.stringify(credentials));
+  async login(username, password) {
+    const formData = new FormData();
+    formData.append('username', username);
+    formData.append('password', password);
     
-    // Try multiple request formats to debug the API
-    const formats = [
-      {
-        name: 'JSON',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(credentials)
+    const response = await this.client.post('/auth/login', formData, {
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
       },
-      {
-        name: 'Form URL Encoded',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: new URLSearchParams(credentials).toString()
-      },
-      {
-        name: 'Form Data',
-        headers: {},
-        body: (() => {
-          const formData = new FormData();
-          formData.append('username', credentials.username);
-          formData.append('password', credentials.password);
-          return formData;
-        })()
-      }
-    ];
-
-    for (const format of formats) {
-      try {
-        console.log(`Trying ${format.name} format...`);
-        const response = await fetch(`${API_BASE}/auth/login`, {
-          method: 'POST',
-          headers: format.headers,
-          body: format.body,
-        });
-
-        const responseText = await response.text();
-        console.log(`${format.name} - Status:`, response.status);
-        console.log(`${format.name} - Response:`, responseText);
-
-        if (response.ok) {
-          const data = JSON.parse(responseText);
-          console.log('Login successful with', format.name, ':', { userId: data.user?.id, role: data.user?.role });
-          return data;
-        }
-      } catch (error) {
-        console.error(`${format.name} failed:`, error);
-      }
+    });
+    
+    if (response.data.access_token) {
+      await spark.kv.set('auth_token', response.data.access_token);
     }
+    
+    return response.data;
+  }
 
-    // If all formats fail, throw the last error
-    throw new ApiError(422, 'Login failed with all request formats');
-  },
+  async getCurrentUser() {
+    const response = await this.client.get('/auth/me');
+    return response.data;
+  }
 
-  async getMe(): Promise<User> {
-    return request<User>('/auth/me');
-  },
+  async logout() {
+    await spark.kv.delete('auth_token');
+    window.location.reload();
+  }
 
-  // Shifts
-  async getCurrentShift(): Promise<Shift | null> {
-    try {
-      return await request<Shift>('/patrol/shifts/current');
-    } catch (error) {
-      if (error instanceof ApiError && error.status === 404) {
-        return null;
-      }
-      throw error;
-    }
-  },
+  // Users
+  async getUsers(skip = 0, limit = 100) {
+    const response = await this.client.get(`/users/?skip=${skip}&limit=${limit}`);
+    return response.data;
+  }
 
-  async startShift(siteId: string): Promise<Shift> {
-    return request<Shift>('/patrol/shifts', {
-      method: 'POST',
-      body: JSON.stringify({ site_id: siteId }),
-    });
-  },
+  async createUser(userData) {
+    const response = await this.client.post('/users/', userData);
+    return response.data;
+  }
 
-  async endShift(shiftId: string): Promise<Shift> {
-    return request<Shift>(`/patrol/shifts/${shiftId}/end`, {
-      method: 'POST',
-    });
-  },
+  async getUser(userId) {
+    const response = await this.client.get(`/users/${userId}`);
+    return response.data;
+  }
 
-  async logCheckpoint(checkpointId: string, notes?: string): Promise<void> {
-    return request('/patrol/shifts/logs', {
-      method: 'POST',
-      body: JSON.stringify({ 
-        checkpoint_id: checkpointId, 
-        notes,
-        timestamp: new Date().toISOString()
-      }),
-    });
-  },
+  async updateUser(userId, userData) {
+    const response = await this.client.put(`/users/${userId}`, userData);
+    return response.data;
+  }
 
-  // Checkpoints
-  async getCheckpoints(siteId?: string): Promise<Checkpoint[]> {
-    const query = siteId ? `?site_id=${siteId}` : '';
-    return request<Checkpoint[]>(`/patrol/checkpoints/${query}`);
-  },
+  async deleteUser(userId) {
+    const response = await this.client.delete(`/users/${userId}`);
+    return response.data;
+  }
 
-  // GPS & Emergency
-  async sendLocation(location: Location): Promise<void> {
-    return request('/gps/location', {
-      method: 'POST',
-      body: JSON.stringify(location),
-    });
-  },
+  // Roles
+  async getRoles(skip = 0, limit = 100) {
+    const response = await this.client.get(`/roles/?skip=${skip}&limit=${limit}`);
+    return response.data;
+  }
 
-  async triggerSOS(location: Location): Promise<SOSAlert> {
-    return request<SOSAlert>('/gps/sos', {
-      method: 'POST',
-      body: JSON.stringify(location),
-    });
-  },
+  async createRole(roleData) {
+    const response = await this.client.post('/roles/', roleData);
+    return response.data;
+  }
 
-  async getActiveSOSAlerts(): Promise<SOSAlert[]> {
-    return request<SOSAlert[]>('/gps/alerts/active');
-  },
+  async getRole(roleId) {
+    const response = await this.client.get(`/roles/${roleId}`);
+    return response.data;
+  }
+
+  async updateRole(roleId, roleData) {
+    const response = await this.client.put(`/roles/${roleId}`, roleData);
+    return response.data;
+  }
+
+  async deleteRole(roleId) {
+    const response = await this.client.delete(`/roles/${roleId}`);
+    return response.data;
+  }
+
+  async getPermissions() {
+    const response = await this.client.get('/permissions/');
+    return response.data;
+  }
+
+  // Sites
+  async getSites() {
+    const response = await this.client.get('/sites/');
+    return response.data;
+  }
+
+  async createSite(siteData) {
+    const response = await this.client.post('/sites/', siteData);
+    return response.data;
+  }
+
+  async getSite(siteId) {
+    const response = await this.client.get(`/sites/${siteId}`);
+    return response.data;
+  }
+
+  async updateSite(siteId, siteData) {
+    const response = await this.client.put(`/sites/${siteId}`, siteData);
+    return response.data;
+  }
+
+  async deleteSite(siteId) {
+    const response = await this.client.delete(`/sites/${siteId}`);
+    return response.data;
+  }
+
+  // Locations
+  async getLocations(siteId = null) {
+    const url = siteId ? `/sites/locations/` : '/sites/locations/';
+    const response = await this.client.get(url);
+    return response.data;
+  }
+
+  async createLocation(locationData) {
+    const { site_id, ...locationPayload } = locationData;
+    const response = await this.client.post(`/sites/${site_id}/locations/`, locationPayload);
+    return response.data;
+  }
+
+  async getLocation(locationId) {
+    const response = await this.client.get(`/sites/locations/${locationId}`);
+    return response.data;
+  }
+
+  async updateLocation(locationId, locationData) {
+    const response = await this.client.put(`/sites/locations/${locationId}`, locationData);
+    return response.data;
+  }
+
+  async deleteLocation(locationId) {
+    const response = await this.client.delete(`/sites/locations/${locationId}`);
+    return response.data;
+  }
+
+  // Areas
+  async getAreas() {
+    const response = await this.client.get('/sites/areas/');
+    return response.data;
+  }
+
+  async createArea(locationId, areaData) {
+    const response = await this.client.post(`/sites/locations/${locationId}/areas/`, areaData);
+    return response.data;
+  }
+
+  async getArea(areaId) {
+    const response = await this.client.get(`/sites/areas/${areaId}`);
+    return response.data;
+  }
+
+  async updateArea(areaId, areaData) {
+    const response = await this.client.put(`/sites/areas/${areaId}`, areaData);
+    return response.data;
+  }
+
+  async deleteArea(areaId) {
+    const response = await this.client.delete(`/sites/areas/${areaId}`);
+    return response.data;
+  }
+
+  // Site user assignments
+  async getSiteUsers(siteId) {
+    const response = await this.client.get(`/sites/${siteId}/users`);
+    return response.data;
+  }
+
+  async assignUserToSite(siteId, userId) {
+    const response = await this.client.post(`/sites/${siteId}/users/${userId}`);
+    return response.data;
+  }
+
+  async unassignUserFromSite(siteId, userId) {
+    const response = await this.client.delete(`/sites/${siteId}/users/${userId}`);
+    return response.data;
+  }
+
+  async getAvailableUsersForSite(siteId) {
+    const response = await this.client.get(`/sites/${siteId}/available-users`);
+    return response.data;
+  }
 
   // Incidents
-  async getIncidents(filters?: { site_id?: string; status?: string }): Promise<Incident[]> {
-    const params = new URLSearchParams();
-    if (filters?.site_id) params.append('site_id', filters.site_id);
-    if (filters?.status) params.append('status', filters.status);
-    
-    const query = params.toString() ? `?${params.toString()}` : '';
-    return request<Incident[]>(`/patrol/incidents${query}`);
-  },
+  async getIncidents(params = {}) {
+    const queryString = new URLSearchParams(params).toString();
+    const response = await this.client.get(`/incidents/?${queryString}`);
+    return response.data;
+  }
 
-  async createIncident(incident: Omit<Incident, 'id' | 'created_at'>): Promise<Incident> {
-    return request<Incident>('/patrol/incidents', {
-      method: 'POST',
-      body: JSON.stringify(incident),
-    });
-  },
+  async createIncident(incidentData) {
+    const response = await this.client.post('/incidents/', incidentData);
+    return response.data;
+  }
 
-  async updateIncident(id: string, updates: Partial<Incident>): Promise<Incident> {
-    return request<Incident>(`/incidents/${id}`, {
-      method: 'PUT',
-      body: JSON.stringify(updates),
-    });
-  },
+  async getIncident(incidentId) {
+    const response = await this.client.get(`/incidents/${incidentId}`);
+    return response.data;
+  }
+
+  async updateIncident(incidentId, incidentData) {
+    const response = await this.client.put(`/incidents/${incidentId}`, incidentData);
+    return response.data;
+  }
+
+  async deleteIncident(incidentId) {
+    const response = await this.client.delete(`/incidents/${incidentId}`);
+    return response.data;
+  }
+
+  // Patrol Incidents
+  async getPatrolIncidents() {
+    const response = await this.client.get('/patrol/incidents/');
+    return response.data;
+  }
+
+  async createPatrolIncident(incidentData) {
+    const response = await this.client.post('/patrol/incidents/', incidentData);
+    return response.data;
+  }
+
+  async getPatrolIncident(incidentId) {
+    const response = await this.client.get(`/patrol/incidents/${incidentId}`);
+    return response.data;
+  }
+
+  async updatePatrolIncident(incidentId, incidentData) {
+    const response = await this.client.put(`/patrol/incidents/${incidentId}`, incidentData);
+    return response.data;
+  }
+
+  async deletePatrolIncident(incidentId) {
+    const response = await this.client.delete(`/patrol/incidents/${incidentId}`);
+    return response.data;
+  }
+
+  // Patrol
+  async getPatrols(params = {}) {
+    const queryString = new URLSearchParams(params).toString();
+    const response = await this.client.get(`/patrol/${queryString ? '?' + queryString : ''}`);
+    return response.data;
+  }
+
+  async createPatrol(patrolData) {
+    const response = await this.client.post('/patrol/', patrolData);
+    return response.data;
+  }
+
+  // Patrol Checkpoints
+  async getCheckpoints(siteId = null) {
+    const queryString = siteId ? `?site_id=${siteId}` : '';
+    const response = await this.client.get(`/patrol/checkpoints/${queryString}`);
+    return response.data;
+  }
+
+  async createCheckpoint(checkpointData) {
+    const response = await this.client.post('/patrol/checkpoints/', checkpointData);
+    return response.data;
+  }
+
+  async getCheckpoint(checkpointId) {
+    const response = await this.client.get(`/patrol/checkpoints/${checkpointId}`);
+    return response.data;
+  }
+
+  async updateCheckpoint(checkpointId, checkpointData) {
+    const response = await this.client.put(`/patrol/checkpoints/${checkpointId}`, checkpointData);
+    return response.data;
+  }
+
+  async deleteCheckpoint(checkpointId) {
+    const response = await this.client.delete(`/patrol/checkpoints/${checkpointId}`);
+    return response.data;
+  }
+
+  // Patrol Shift Logs
+  async getShiftLogs() {
+    const response = await this.client.get('/patrol/shifts/logs/');
+    return response.data;
+  }
+
+  async createShiftLog(shiftLogData) {
+    const response = await this.client.post('/patrol/shifts/logs/', shiftLogData);
+    return response.data;
+  }
+
+  async getShiftLog(logId) {
+    const response = await this.client.get(`/patrol/shifts/logs/${logId}`);
+    return response.data;
+  }
+
+  async updateShiftLog(logId, logData) {
+    const response = await this.client.put(`/patrol/shifts/logs/${logId}`, logData);
+    return response.data;
+  }
+
+  async deleteShiftLog(logId) {
+    const response = await this.client.delete(`/patrol/shifts/logs/${logId}`);
+    return response.data;
+  }
+
+  // GPS
+  async recordLocation(locationData) {
+    const response = await this.client.post('/gps/location', locationData);
+    return response.data;
+  }
+
+  async getCurrentLocations(params = {}) {
+    const queryString = new URLSearchParams(params).toString();
+    const response = await this.client.get(`/gps/location/current${queryString ? '?' + queryString : ''}`);
+    return response.data;
+  }
+
+  async getLocationHistory(guardId, params = {}) {
+    const queryString = new URLSearchParams(params).toString();
+    const response = await this.client.get(`/gps/location/history/${guardId}${queryString ? '?' + queryString : ''}`);
+    return response.data;
+  }
+
+  async triggerSosAlert({ latitude, longitude, message }) {
+    const params = new URLSearchParams({ latitude, longitude, message });
+    const response = await this.client.post(`/gps/sos?${params.toString()}`);
+    return response.data;
+  }
+
+  async getActiveAlerts(params = {}) {
+    const queryString = new URLSearchParams(params).toString();
+    const response = await this.client.get(`/gps/alerts/active${queryString ? '?' + queryString : ''}`);
+    return response.data;
+  }
+
+  async acknowledgeAlert(alertId) {
+    const response = await this.client.put(`/gps/alerts/${alertId}/acknowledge`);
+    return response.data;
+  }
 
   // Messages
-  async getMessages(): Promise<any[]> {
-    return request<any[]>('/messages/');
-  },
+  async getMessages() {
+    const response = await this.client.get('/messages/');
+    return response.data;
+  }
+
+  async sendMessage(messageData) {
+    const response = await this.client.post('/messages/', messageData);
+    return response.data;
+  }
+
+  async getMessage(messageId) {
+    const response = await this.client.get(`/messages/${messageId}`);
+    return response.data;
+  }
+
+  async markMessageAsRead(messageId) {
+    const response = await this.client.put(`/messages/${messageId}/read`);
+    return response.data;
+  }
+
+  async deleteMessage(messageId) {
+    const response = await this.client.delete(`/messages/${messageId}`);
+    return response.data;
+  }
+
+  async getSentMessages(params = {}) {
+    const queryString = new URLSearchParams(params).toString();
+    const response = await this.client.get(`/messages/sent/${queryString ? '?' + queryString : ''}`);
+    return response.data;
+  }
+
+  async getUnreadMessages() {
+    const response = await this.client.get('/messages/unread/');
+    return response.data;
+  }
+
+  async getSosMessages(params = {}) {
+    const queryString = new URLSearchParams(params).toString();
+    const response = await this.client.get(`/messages/sos/${queryString ? '?' + queryString : ''}`);
+    return response.data;
+  }
 
   // Tasks
-  async getTasks(): Promise<any[]> {
-    return request<any[]>('/tasks/');
-  },
+  async getTasks() {
+    const response = await this.client.get('/tasks/');
+    return response.data;
+  }
 
-  // Supervisor features
-  async assignUserToSite(siteId: string, userId: string): Promise<void> {
-    return request(`/sites/${siteId}/users/${userId}`, {
-      method: 'POST',
+  async createTask(taskData) {
+    const response = await this.client.post('/tasks/', taskData);
+    return response.data;
+  }
+
+  async getTask(taskId) {
+    const response = await this.client.get(`/tasks/${taskId}`);
+    return response.data;
+  }
+
+  async updateTask(taskId, taskData) {
+    const response = await this.client.put(`/tasks/${taskId}`, taskData);
+    return response.data;
+  }
+
+  async deleteTask(taskId) {
+    const response = await this.client.delete(`/tasks/${taskId}`);
+    return response.data;
+  }
+
+  // Reports
+  async getReportsSummary() {
+    const response = await this.client.get('/reports/');
+    return response.data;
+  }
+
+  async createReport(reportData) {
+    const response = await this.client.post('/reports/', reportData);
+    return response.data;
+  }
+
+  async getIncidentReports(params = {}) {
+    const queryString = new URLSearchParams(params).toString();
+    const response = await this.client.get(`/reports/incidents/?${queryString}`);
+    return response.data;
+  }
+
+  // Analytics
+  async getAnalyticsSummary() {
+    const response = await this.client.get('/analytics/summary');
+    return response.data;
+  }
+
+  async getAnalyticsOverview() {
+    const response = await this.client.get('/analytics/');
+    return response.data;
+  }
+
+  async getIncidentCountBySite() {
+    const response = await this.client.get('/analytics/incidents/by-site');
+    return response.data;
+  }
+
+  async getIncidentCount() {
+    const response = await this.client.get('/analytics/incidents/count');
+    return response.data;
+  }
+
+  async getUserCount() {
+    const response = await this.client.get('/analytics/users/count');
+    return response.data;
+  }
+
+  // Notifications
+  async getNotifications() {
+    const response = await this.client.get('/notifications/');
+    return response.data;
+  }
+
+  async createNotification(notificationData) {
+    const response = await this.client.post('/notifications/', notificationData);
+    return response.data;
+  }
+
+  async markNotificationAsRead(notificationId) {
+    const response = await this.client.put(`/notifications/${notificationId}/read`);
+    return response.data;
+  }
+
+  async deleteNotification(notificationId) {
+    const response = await this.client.delete(`/notifications/${notificationId}`);
+    return response.data;
+  }
+
+  // Visitors
+  async getVisitors() {
+    const response = await this.client.get('/visitors/');
+    return response.data;
+  }
+
+  async createVisitor(visitorData) {
+    const response = await this.client.post('/visitors/', visitorData);
+    return response.data;
+  }
+
+  async getVisitor(visitorId) {
+    const response = await this.client.get(`/visitors/${visitorId}`);
+    return response.data;
+  }
+
+  async updateVisitor(visitorId, visitorData) {
+    const response = await this.client.put(`/visitors/${visitorId}`, visitorData);
+    return response.data;
+  }
+
+  async deleteVisitor(visitorId) {
+    const response = await this.client.delete(`/visitors/${visitorId}`);
+    return response.data;
+  }
+
+  // Root & Health
+  async root() {
+    const response = await this.client.get('/');
+    return response.data;
+  }
+
+  async healthCheck() {
+    const response = await this.client.get('/health');
+    return response.data;
+  }
+
+  // Additional convenience methods for UI compatibility
+  async getCurrentShift() {
+    try {
+      // This may not exist in the backend API, so we'll try patrol shifts first
+      const response = await this.client.get('/patrol/shifts/current');
+      return response.data;
+    } catch (error) {
+      if (error?.response?.status === 404) {
+        return null; // No active shift
+      }
+      throw error;
+    }
+  }
+
+  async getActiveSOSAlerts() {
+    return this.getActiveAlerts();
+  }
+
+  async triggerSOS(location) {
+    return this.triggerSosAlert({
+      latitude: location.latitude,
+      longitude: location.longitude,
+      message: location.message || 'Emergency SOS Alert'
     });
-  },
+  }
 
-  async getLiveLocations(): Promise<any[]> {
-    return request<any[]>('/gps/location/current');
-  },
+  async endShift(shiftId) {
+    try {
+      const response = await this.client.post(`/patrol/shifts/${shiftId}/end`);
+      return response.data;
+    } catch (error) {
+      console.error('End shift failed:', error);
+      throw error;
+    }
+  }
 
-  async getAnalyticsSummary(): Promise<any> {
-    return request('/analytics/summary');
-  },
+  async startShift(siteId) {
+    try {
+      const response = await this.client.post('/patrol/shifts', { site_id: siteId });
+      return response.data;
+    } catch (error) {
+      console.error('Start shift failed:', error);
+      throw error;
+    }
+  }
 
-  async getIncidentAnalytics(): Promise<any> {
-    return request('/analytics/incidents/by-site');
-  },
-};
+  async logCheckpoint(checkpointId, notes) {
+    return this.createShiftLog({
+      checkpoint_id: checkpointId,
+      notes: notes,
+      timestamp: new Date().toISOString()
+    });
+  }
+}
+
+export default new ApiService();

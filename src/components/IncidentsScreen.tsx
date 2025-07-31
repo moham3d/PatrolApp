@@ -10,7 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useAuth } from '../hooks/use-auth';
-import { api } from '../lib/api';
+import apiService from '../lib/api';
 import { Incident } from '../lib/types';
 import { toast } from 'sonner';
 
@@ -42,7 +42,7 @@ export function IncidentsScreen() {
       if (statusFilter !== 'all') filters.status = statusFilter;
       if (user?.site_id) filters.site_id = user.site_id;
       
-      const data = await api.getIncidents(filters);
+      const data = await apiService.getIncidents(filters);
       let filteredData = data;
       
       if (severityFilter !== 'all') {
@@ -60,7 +60,7 @@ export function IncidentsScreen() {
 
   const handleCreateIncident = async () => {
     try {
-      await api.createIncident(newIncident);
+      await apiService.createIncident(newIncident);
       setNewIncident({
         title: '',
         description: '',
@@ -80,7 +80,7 @@ export function IncidentsScreen() {
 
   const handleUpdateIncidentStatus = async (incidentId: string, newStatus: string) => {
     try {
-      await api.updateIncident(incidentId, { status: newStatus as any });
+      await apiService.updateIncident(incidentId, { status: newStatus as any });
       loadIncidents();
       toast.success('Incident status updated');
     } catch (error) {

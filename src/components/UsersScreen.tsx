@@ -8,7 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { useAuth } from '../hooks/use-auth';
-import { api } from '../lib/api';
+import apiService from '../lib/api';
 import { toast } from 'sonner';
 
 interface UserData {
@@ -90,7 +90,7 @@ export function UsersScreen() {
 
     setIsAssigning(true);
     try {
-      await api.assignUserToSite(selectedSiteId, selectedUserId);
+      await apiService.assignUserToSite(selectedSiteId, selectedUserId);
       
       // Update local state
       setUsers(prev => prev.map(u => 

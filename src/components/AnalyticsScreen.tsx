@@ -3,7 +3,7 @@ import { ChartBar, TrendUp, Shield, Warning, Users, MapPin } from '@phosphor-ico
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useAuth } from '../hooks/use-auth';
-import { api } from '../lib/api';
+import apiService from '../lib/api';
 
 interface AnalyticsData {
   totalIncidents: number;
@@ -41,7 +41,7 @@ export function AnalyticsScreen() {
 
   const loadAnalytics = async () => {
     try {
-      // In a real app, this would call api.getAnalyticsSummary()
+      // In a real app, this would call apiService.getAnalyticsSummary()
       // For demo purposes, we'll use mock data
       const mockData: AnalyticsData = {
         totalIncidents: 23,
