@@ -18,7 +18,7 @@ export function LoginScreen() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await login(username, password);
+      await login({ username, password }); // Pass as JSON object
     } catch (error) {
       // Error handled by auth context
     }
