@@ -48,7 +48,7 @@ export const api = {
   },
 
   async getMe(): Promise<User> {
-    return request<User>('/auth/me');
+    return request<User>('/auth/login');
   },
 
   // Shifts
