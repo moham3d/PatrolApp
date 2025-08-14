@@ -28,15 +28,45 @@ class AdminNavigation {
       selectedIcon: Icon(Icons.place),
       label: Text('Checkpoints'),
     ),
+  ];
+
+  static const List<String> routes = [
+    '/users',
+    '/sites',
+    '/patrols',
+    '/checkpoints',
+  ];
+
+  static const List<String> titles = [
+    'User Management',
+    'Site Management',
+    'Patrol Management',
+    'Checkpoint Management',
+  ];
+}
+
+/// Operations Manager navigation - similar to admin but focused on operations
+class OperationsManagerNavigation {
+  static const List<NavigationRailDestination> destinations = [
     NavigationRailDestination(
-      icon: Icon(Icons.settings_outlined),
-      selectedIcon: Icon(Icons.settings),
-      label: Text('Settings'),
+      icon: Icon(Icons.people_outline),
+      selectedIcon: Icon(Icons.people),
+      label: Text('Users'),
     ),
     NavigationRailDestination(
-      icon: Icon(Icons.analytics_outlined),
-      selectedIcon: Icon(Icons.analytics),
-      label: Text('Analytics'),
+      icon: Icon(Icons.location_on_outlined),
+      selectedIcon: Icon(Icons.location_on),
+      label: Text('Sites'),
+    ),
+    NavigationRailDestination(
+      icon: Icon(Icons.route_outlined),
+      selectedIcon: Icon(Icons.route),
+      label: Text('Patrols'),
+    ),
+    NavigationRailDestination(
+      icon: Icon(Icons.place_outlined),
+      selectedIcon: Icon(Icons.place),
+      label: Text('Checkpoints'),
     ),
   ];
 
@@ -45,8 +75,6 @@ class AdminNavigation {
     '/sites',
     '/patrols',
     '/checkpoints',
-    '/settings',
-    '/analytics',
   ];
 
   static const List<String> titles = [
@@ -54,8 +82,46 @@ class AdminNavigation {
     'Site Management',
     'Patrol Management',
     'Checkpoint Management',
-    'System Settings',
-    'Analytics & Reports',
+  ];
+}
+
+/// Site Manager navigation - manages assigned sites
+class SiteManagerNavigation {
+  static const List<NavigationRailDestination> destinations = [
+    NavigationRailDestination(
+      icon: Icon(Icons.people_outline),
+      selectedIcon: Icon(Icons.people),
+      label: Text('Users'),
+    ),
+    NavigationRailDestination(
+      icon: Icon(Icons.location_on_outlined),
+      selectedIcon: Icon(Icons.location_on),
+      label: Text('Sites'),
+    ),
+    NavigationRailDestination(
+      icon: Icon(Icons.route_outlined),
+      selectedIcon: Icon(Icons.route),
+      label: Text('Patrols'),
+    ),
+    NavigationRailDestination(
+      icon: Icon(Icons.place_outlined),
+      selectedIcon: Icon(Icons.place),
+      label: Text('Checkpoints'),
+    ),
+  ];
+
+  static const List<String> routes = [
+    '/users',
+    '/sites',
+    '/patrols',
+    '/checkpoints',
+  ];
+
+  static const List<String> titles = [
+    'Team Management',
+    'My Sites',
+    'Site Patrols',
+    'Site Checkpoints',
   ];
 }
 
@@ -77,29 +143,22 @@ class SupervisorNavigation {
       selectedIcon: Icon(Icons.place),
       label: Text('Checkpoints'),
     ),
-    NavigationRailDestination(
-      icon: Icon(Icons.analytics_outlined),
-      selectedIcon: Icon(Icons.analytics),
-      label: Text('Reports'),
-    ),
   ];
 
   static const List<String> routes = [
     '/sites',
     '/patrols',
     '/checkpoints',
-    '/reports',
   ];
 
   static const List<String> titles = [
-    'Site Management',
-    'Patrol Management',
+    'Assigned Sites',
+    'Patrol Supervision',
     'Checkpoint Management',
-    'Reports',
   ];
 }
 
-/// Guard-specific navigation destinations and features
+/// Guard-specific navigation destinations and features  
 class GuardNavigation {
   static const List<NavigationRailDestination> destinations = [
     NavigationRailDestination(
@@ -121,14 +180,14 @@ class GuardNavigation {
 
   static const List<String> routes = [
     '/sites',
-    '/my-patrols',
+    '/patrols',
     '/checkpoints',
   ];
 
   static const List<String> titles = [
-    'Sites',
+    'Assigned Sites',
     'My Patrols',
-    'Checkpoints',
+    'Patrol Checkpoints',
   ];
 }
 
@@ -153,19 +212,44 @@ class RoleInterface {
       );
     }
 
+    // Admin has highest priority
     if (user.isAdmin) {
       return const RoleInterface(
         destinations: AdminNavigation.destinations,
         routes: AdminNavigation.routes,
         titles: AdminNavigation.titles,
       );
-    } else if (user.isSupervisor) {
+    }
+    
+    // Operations Manager has second highest priority
+    if (user.isOperationsManager) {
+      return const RoleInterface(
+        destinations: OperationsManagerNavigation.destinations,
+        routes: OperationsManagerNavigation.routes,
+        titles: OperationsManagerNavigation.titles,
+      );
+    }
+    
+    // Site Manager has specialized interface
+    if (user.isSiteManager) {
+      return const RoleInterface(
+        destinations: SiteManagerNavigation.destinations,
+        routes: SiteManagerNavigation.routes,
+        titles: SiteManagerNavigation.titles,
+      );
+    }
+    
+    // Supervisor interface
+    if (user.isSupervisor) {
       return const RoleInterface(
         destinations: SupervisorNavigation.destinations,
         routes: SupervisorNavigation.routes,
         titles: SupervisorNavigation.titles,
       );
-    } else if (user.isGuard) {
+    }
+    
+    // Guard interface (handles both guard and mobile_guard)
+    if (user.isGuard || user.isMobileGuard) {
       return const RoleInterface(
         destinations: GuardNavigation.destinations,
         routes: GuardNavigation.routes,
@@ -173,6 +257,7 @@ class RoleInterface {
       );
     }
 
+    // Default empty interface for visitors or unknown roles
     return const RoleInterface(
       destinations: [],
       routes: [],
@@ -245,24 +330,36 @@ class RoleBasedQuickActions extends ConsumerWidget {
                     // TODO: Navigate to add site
                   },
                 ),
-                _buildQuickActionChip(
-                  context,
-                  icon: Icons.settings,
-                  label: 'Settings',
-                  onPressed: () {
-                    // TODO: Navigate to settings
-                  },
-                ),
               ],
               
-              // Supervisor quick actions
-              if (user.isSupervisor) ...[
+              // Operations Manager quick actions
+              if (user.isOperationsManager) ...[
+                _buildQuickActionChip(
+                  context,
+                  icon: Icons.person_add,
+                  label: 'Add User',
+                  onPressed: () {
+                    // TODO: Navigate to add user
+                  },
+                ),
                 _buildQuickActionChip(
                   context,
                   icon: Icons.add_location,
                   label: 'Add Site',
                   onPressed: () {
                     // TODO: Navigate to add site
+                  },
+                ),
+              ],
+              
+              // Site Manager quick actions
+              if (user.isSiteManager) ...[
+                _buildQuickActionChip(
+                  context,
+                  icon: Icons.person_add,
+                  label: 'Add Team Member',
+                  onPressed: () {
+                    // TODO: Navigate to add user to site
                   },
                 ),
                 _buildQuickActionChip(
@@ -273,18 +370,30 @@ class RoleBasedQuickActions extends ConsumerWidget {
                     // TODO: Navigate to schedule patrol
                   },
                 ),
+              ],
+              
+              // Supervisor quick actions
+              if (user.isSupervisor) ...[
                 _buildQuickActionChip(
                   context,
-                  icon: Icons.assessment,
-                  label: 'View Reports',
+                  icon: Icons.route,
+                  label: 'Schedule Patrol',
                   onPressed: () {
-                    // TODO: Navigate to reports
+                    // TODO: Navigate to schedule patrol
+                  },
+                ),
+                _buildQuickActionChip(
+                  context,
+                  icon: Icons.place,
+                  label: 'Manage Checkpoints',
+                  onPressed: () {
+                    // TODO: Navigate to checkpoints
                   },
                 ),
               ],
               
               // Guard quick actions
-              if (user.isGuard) ...[
+              if (user.isGuard || user.isMobileGuard) ...[
                 _buildQuickActionChip(
                   context,
                   icon: Icons.my_location,
@@ -402,22 +511,23 @@ class RoleBasedStatusIndicators extends ConsumerWidget {
 
   Color _getRoleColor(AuthUser user) {
     if (user.isAdmin) return Colors.red;
+    if (user.isOperationsManager) return Colors.deepOrange;
+    if (user.isSiteManager) return Colors.purple;
     if (user.isSupervisor) return Colors.orange;
-    if (user.isGuard) return Colors.blue;
+    if (user.isGuard || user.isMobileGuard) return Colors.blue;
     return Colors.grey;
   }
 
   IconData _getRoleIcon(AuthUser user) {
     if (user.isAdmin) return Icons.admin_panel_settings;
+    if (user.isOperationsManager) return Icons.business_center;
+    if (user.isSiteManager) return Icons.domain;
     if (user.isSupervisor) return Icons.supervisor_account;
-    if (user.isGuard) return Icons.security;
+    if (user.isGuard || user.isMobileGuard) return Icons.security;
     return Icons.person;
   }
 
   String _getRoleDisplayName(AuthUser user) {
-    if (user.isAdmin) return 'Admin';
-    if (user.isSupervisor) return 'Supervisor';
-    if (user.isGuard) return 'Guard';
-    return 'User';
+    return user.primaryRole;
   }
 }

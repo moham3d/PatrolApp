@@ -12,22 +12,29 @@ class RouteGuard {
     if (user == null) return false;
 
     switch (route) {
-      // Admin only routes
+      // User management - Admin, Operations Manager, Site Manager (site only), Supervisor (site only)
+      // Guards should NOT have access to user management per access matrix
       case '/users':
+        return user.isAdmin || user.isOperationsManager || user.isSiteManager || user.isSupervisor;
+      
+      // Site management - all roles can view (with restrictions), create limited to higher roles
+      case '/sites':
+        return user.isAdmin || user.isOperationsManager || user.isSiteManager || 
+               user.isSupervisor || user.isGuard || user.isMobileGuard;
+      
+      // Patrol management - Admin, Operations Manager, Site Manager, Supervisor can manage; Guards can view assigned
+      case '/patrols':
+        return user.isAdmin || user.isOperationsManager || user.isSiteManager || 
+               user.isSupervisor || user.isGuard || user.isMobileGuard;
+      
+      // Checkpoint management - similar to patrols
+      case '/checkpoints':
+        return user.isAdmin || user.isOperationsManager || user.isSiteManager || 
+               user.isSupervisor || user.isGuard || user.isMobileGuard;
+      
+      // System settings - Admin only
       case '/settings':
         return user.isAdmin;
-      
-      // Admin and Supervisor routes
-      case '/sites':
-      case '/patrols':
-      case '/checkpoints':
-      case '/analytics':
-      case '/reports':
-        return user.isAdmin || user.isSupervisor;
-      
-      // Guard specific routes
-      case '/my-patrols':
-        return user.isGuard;
       
       // Default: allow if user is logged in
       default:
@@ -39,9 +46,17 @@ class RouteGuard {
   static String getDefaultRoute(AuthUser? user) {
     if (user == null) return '/login';
     
-    if (user.isAdmin) return '/users';
+    // Admin and Operations Manager start with users
+    if (user.isAdmin || user.isOperationsManager) return '/users';
+    
+    // Site Manager starts with their sites
+    if (user.isSiteManager) return '/sites';
+    
+    // Supervisor starts with sites they supervise
     if (user.isSupervisor) return '/sites';
-    if (user.isGuard) return '/sites';
+    
+    // Guards start with their assigned sites
+    if (user.isGuard || user.isMobileGuard) return '/sites';
     
     return '/';
   }
@@ -175,6 +190,8 @@ class RoleDashboard extends ConsumerWidget {
             Expanded(
               child: RoleBasedWidget(
                 adminChild: _buildAdminDashboard(context),
+                operationsManagerChild: _buildOperationsManagerDashboard(context),
+                siteManagerChild: _buildSiteManagerDashboard(context),
                 supervisorChild: _buildSupervisorDashboard(context),
                 guardChild: _buildGuardDashboard(context),
                 defaultChild: _buildDefaultDashboard(context),
@@ -189,9 +206,13 @@ class RoleDashboard extends ConsumerWidget {
   String _getRoleWelcomeMessage(AuthUser user) {
     if (user.isAdmin) {
       return 'System Administrator - Full access to all features';
+    } else if (user.isOperationsManager) {
+      return 'Operations Manager - Oversee all operational activities';
+    } else if (user.isSiteManager) {
+      return 'Site Manager - Manage your assigned sites and teams';
     } else if (user.isSupervisor) {
-      return 'Supervisor - Manage sites, patrols, and view reports';
-    } else if (user.isGuard) {
+      return 'Supervisor - Supervise patrols and manage site operations';
+    } else if (user.isGuard || user.isMobileGuard) {
       return 'Security Guard - View assigned patrols and checkpoints';
     }
     return 'Welcome to PatrolShield';
@@ -206,14 +227,22 @@ class RoleDashboard extends ConsumerWidget {
       badgeColor = Colors.red;
       badgeIcon = Icons.admin_panel_settings;
       badgeText = 'Administrator';
+    } else if (user.isOperationsManager) {
+      badgeColor = Colors.deepOrange;
+      badgeIcon = Icons.business_center;
+      badgeText = 'Operations Manager';
+    } else if (user.isSiteManager) {
+      badgeColor = Colors.purple;
+      badgeIcon = Icons.domain;
+      badgeText = 'Site Manager';
     } else if (user.isSupervisor) {
       badgeColor = Colors.orange;
       badgeIcon = Icons.supervisor_account;
       badgeText = 'Supervisor';
-    } else if (user.isGuard) {
+    } else if (user.isGuard || user.isMobileGuard) {
       badgeColor = Colors.blue;
       badgeIcon = Icons.security;
-      badgeText = 'Guard';
+      badgeText = user.isMobileGuard ? 'Mobile Guard' : 'Guard';
     } else {
       badgeColor = Colors.grey;
       badgeIcon = Icons.person;
@@ -257,7 +286,7 @@ class RoleDashboard extends ConsumerWidget {
         const SizedBox(height: 16),
         Expanded(
           child: GridView.count(
-            crossAxisCount: 3,
+            crossAxisCount: 2,
             crossAxisSpacing: 16,
             mainAxisSpacing: 16,
             children: [
@@ -272,15 +301,126 @@ class RoleDashboard extends ConsumerWidget {
                 context,
                 icon: Icons.location_on,
                 title: 'Site Management',
-                subtitle: 'Configure sites and locations',
+                subtitle: 'Configure all sites and locations',
                 onTap: () => context.go('/sites'),
               ),
               _buildDashboardCard(
                 context,
-                icon: Icons.settings,
-                title: 'System Settings',
-                subtitle: 'Configure system preferences',
-                onTap: () => context.go('/settings'),
+                icon: Icons.route,
+                title: 'Patrol Management',
+                subtitle: 'Manage all patrol operations',
+                onTap: () => context.go('/patrols'),
+              ),
+              _buildDashboardCard(
+                context,
+                icon: Icons.place,
+                title: 'Checkpoint Management',
+                subtitle: 'Configure system checkpoints',
+                onTap: () => context.go('/checkpoints'),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildOperationsManagerDashboard(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Operations Dashboard',
+          style: Theme.of(context).textTheme.titleLarge?.copyWith(
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        const SizedBox(height: 16),
+        Expanded(
+          child: GridView.count(
+            crossAxisCount: 2,
+            crossAxisSpacing: 16,
+            mainAxisSpacing: 16,
+            children: [
+              _buildDashboardCard(
+                context,
+                icon: Icons.people,
+                title: 'User Management',
+                subtitle: 'Manage operational staff',
+                onTap: () => context.go('/users'),
+              ),
+              _buildDashboardCard(
+                context,
+                icon: Icons.location_on,
+                title: 'Site Operations',
+                subtitle: 'Oversee all site operations',
+                onTap: () => context.go('/sites'),
+              ),
+              _buildDashboardCard(
+                context,
+                icon: Icons.route,
+                title: 'Patrol Operations',
+                subtitle: 'Coordinate patrol activities',
+                onTap: () => context.go('/patrols'),
+              ),
+              _buildDashboardCard(
+                context,
+                icon: Icons.place,
+                title: 'Checkpoint Operations',
+                subtitle: 'Monitor checkpoint activities',
+                onTap: () => context.go('/checkpoints'),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildSiteManagerDashboard(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Site Management Dashboard',
+          style: Theme.of(context).textTheme.titleLarge?.copyWith(
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        const SizedBox(height: 16),
+        Expanded(
+          child: GridView.count(
+            crossAxisCount: 2,
+            crossAxisSpacing: 16,
+            mainAxisSpacing: 16,
+            children: [
+              _buildDashboardCard(
+                context,
+                icon: Icons.people,
+                title: 'Site Team',
+                subtitle: 'Manage your site staff',
+                onTap: () => context.go('/users'),
+              ),
+              _buildDashboardCard(
+                context,
+                icon: Icons.location_on,
+                title: 'My Sites',
+                subtitle: 'Manage assigned sites',
+                onTap: () => context.go('/sites'),
+              ),
+              _buildDashboardCard(
+                context,
+                icon: Icons.route,
+                title: 'Site Patrols',
+                subtitle: 'Schedule site patrols',
+                onTap: () => context.go('/patrols'),
+              ),
+              _buildDashboardCard(
+                context,
+                icon: Icons.place,
+                title: 'Site Checkpoints',
+                subtitle: 'Manage site checkpoints',
+                onTap: () => context.go('/checkpoints'),
               ),
             ],
           ),
@@ -308,17 +448,24 @@ class RoleDashboard extends ConsumerWidget {
             children: [
               _buildDashboardCard(
                 context,
+                icon: Icons.location_on,
+                title: 'Assigned Sites',
+                subtitle: 'View your assigned sites',
+                onTap: () => context.go('/sites'),
+              ),
+              _buildDashboardCard(
+                context,
                 icon: Icons.route,
-                title: 'Patrol Management',
-                subtitle: 'Schedule and assign patrols',
+                title: 'Patrol Supervision',
+                subtitle: 'Supervise patrol activities',
                 onTap: () => context.go('/patrols'),
               ),
               _buildDashboardCard(
                 context,
-                icon: Icons.analytics,
-                title: 'Reports & Analytics',
-                subtitle: 'View performance reports',
-                onTap: () => context.go('/reports'),
+                icon: Icons.place,
+                title: 'Checkpoint Management',
+                subtitle: 'Manage site checkpoints',
+                onTap: () => context.go('/checkpoints'),
               ),
             ],
           ),
@@ -346,16 +493,23 @@ class RoleDashboard extends ConsumerWidget {
             children: [
               _buildDashboardCard(
                 context,
-                icon: Icons.my_location,
+                icon: Icons.location_on,
+                title: 'Assigned Sites',
+                subtitle: 'View your assigned sites',
+                onTap: () => context.go('/sites'),
+              ),
+              _buildDashboardCard(
+                context,
+                icon: Icons.route,
                 title: 'My Patrols',
                 subtitle: 'View assigned patrol routes',
-                onTap: () => context.go('/my-patrols'),
+                onTap: () => context.go('/patrols'),
               ),
               _buildDashboardCard(
                 context,
                 icon: Icons.place,
                 title: 'Checkpoints',
-                subtitle: 'View checkpoint locations',
+                subtitle: 'View patrol checkpoints',
                 onTap: () => context.go('/checkpoints'),
               ),
             ],

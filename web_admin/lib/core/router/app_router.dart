@@ -58,32 +58,32 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           GoRoute(
             path: '/users',
             builder: (context, state) => const PermissionPage(
-              requiredRoles: ['admin'],
+              requiredRoles: ['admin', 'operations_manager', 'site_manager', 'supervisor'],
               child: UsersPage(),
             ),
           ),
           GoRoute(
             path: '/sites',
             builder: (context, state) => const PermissionPage(
-              requiredRoles: ['admin', 'supervisor', 'guard'],
+              requiredRoles: ['admin', 'operations_manager', 'site_manager', 'supervisor', 'guard', 'mobile_guard'],
               child: SitesPage(),
             ),
           ),
           GoRoute(
             path: '/patrols',
             builder: (context, state) => const PermissionPage(
-              requiredRoles: ['admin', 'supervisor'],
+              requiredRoles: ['admin', 'operations_manager', 'site_manager', 'supervisor', 'guard', 'mobile_guard'],
               child: PatrolsPage(),
             ),
           ),
           GoRoute(
             path: '/checkpoints',
             builder: (context, state) => const PermissionPage(
-              requiredRoles: ['admin', 'supervisor', 'guard'],
+              requiredRoles: ['admin', 'operations_manager', 'site_manager', 'supervisor', 'guard', 'mobile_guard'],
               child: CheckpointsPage(),
             ),
           ),
-          // Additional admin-only routes
+          // Additional admin-only routes (minimal scope - keeping for future expansion)
           GoRoute(
             path: '/settings',
             builder: (context, state) => const PermissionPage(
@@ -91,40 +91,6 @@ final appRouterProvider = Provider<GoRouter>((ref) {
               child: Scaffold(
                 body: Center(
                   child: Text('System Settings - Coming Soon'),
-                ),
-              ),
-            ),
-          ),
-          GoRoute(
-            path: '/analytics',
-            builder: (context, state) => const PermissionPage(
-              requiredRoles: ['admin', 'supervisor'],
-              child: Scaffold(
-                body: Center(
-                  child: Text('Analytics Dashboard - Coming Soon'),
-                ),
-              ),
-            ),
-          ),
-          GoRoute(
-            path: '/reports',
-            builder: (context, state) => const PermissionPage(
-              requiredRoles: ['admin', 'supervisor'],
-              child: Scaffold(
-                body: Center(
-                  child: Text('Reports - Coming Soon'),
-                ),
-              ),
-            ),
-          ),
-          // Guard-specific routes
-          GoRoute(
-            path: '/my-patrols',
-            builder: (context, state) => const PermissionPage(
-              requiredRoles: ['guard'],
-              child: Scaffold(
-                body: Center(
-                  child: Text('My Patrols - Coming Soon'),
                 ),
               ),
             ),

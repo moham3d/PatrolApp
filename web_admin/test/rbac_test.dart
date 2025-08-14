@@ -123,8 +123,28 @@ void main() {
         roles: ['admin'],
       );
 
-      const supervisorUser = AuthUser(
+      const operationsManagerUser = AuthUser(
         id: 2,
+        username: 'ops_manager',
+        email: 'ops@test.com',
+        firstName: 'Operations',
+        lastName: 'Manager',
+        isActive: true,
+        roles: ['operations_manager'],
+      );
+
+      const siteManagerUser = AuthUser(
+        id: 3,
+        username: 'site_manager',
+        email: 'site@test.com',
+        firstName: 'Site',
+        lastName: 'Manager',
+        isActive: true,
+        roles: ['site_manager'],
+      );
+
+      const supervisorUser = AuthUser(
+        id: 4,
         username: 'supervisor',
         email: 'supervisor@test.com',
         firstName: 'Supervisor',
@@ -134,7 +154,7 @@ void main() {
       );
 
       const guardUser = AuthUser(
-        id: 3,
+        id: 5,
         username: 'guard',
         email: 'guard@test.com',
         firstName: 'Guard',
@@ -143,29 +163,89 @@ void main() {
         roles: ['guard'],
       );
 
-      // Test admin access
+      // Test admin access (should have access to everything)
       expect(RouteGuard.canAccess('/users', adminUser), true);
       expect(RouteGuard.canAccess('/sites', adminUser), true);
+      expect(RouteGuard.canAccess('/patrols', adminUser), true);
+      expect(RouteGuard.canAccess('/checkpoints', adminUser), true);
       expect(RouteGuard.canAccess('/settings', adminUser), true);
 
+      // Test operations manager access
+      expect(RouteGuard.canAccess('/users', operationsManagerUser), true);
+      expect(RouteGuard.canAccess('/sites', operationsManagerUser), true);
+      expect(RouteGuard.canAccess('/patrols', operationsManagerUser), true);
+      expect(RouteGuard.canAccess('/checkpoints', operationsManagerUser), true);
+      expect(RouteGuard.canAccess('/settings', operationsManagerUser), false); // Only admin
+
+      // Test site manager access
+      expect(RouteGuard.canAccess('/users', siteManagerUser), true); // Can manage site users
+      expect(RouteGuard.canAccess('/sites', siteManagerUser), true);
+      expect(RouteGuard.canAccess('/patrols', siteManagerUser), true);
+      expect(RouteGuard.canAccess('/checkpoints', siteManagerUser), true);
+      expect(RouteGuard.canAccess('/settings', siteManagerUser), false);
+
       // Test supervisor access
-      expect(RouteGuard.canAccess('/users', supervisorUser), false);
+      expect(RouteGuard.canAccess('/users', supervisorUser), true); // Can view site users
       expect(RouteGuard.canAccess('/sites', supervisorUser), true);
       expect(RouteGuard.canAccess('/patrols', supervisorUser), true);
+      expect(RouteGuard.canAccess('/checkpoints', supervisorUser), true);
       expect(RouteGuard.canAccess('/settings', supervisorUser), false);
 
       // Test guard access
-      expect(RouteGuard.canAccess('/users', guardUser), false);
-      expect(RouteGuard.canAccess('/sites', guardUser), true);
-      expect(RouteGuard.canAccess('/my-patrols', guardUser), true);
+      expect(RouteGuard.canAccess('/users', guardUser), false); // Updated: guards can't access user management
+      expect(RouteGuard.canAccess('/sites', guardUser), true); // Can view assigned sites
+      expect(RouteGuard.canAccess('/patrols', guardUser), true); // Can view assigned patrols
+      expect(RouteGuard.canAccess('/checkpoints', guardUser), true); // Can view checkpoints
       expect(RouteGuard.canAccess('/settings', guardUser), false);
     });
 
-    test('Permissions constants are correctly defined', () {
-      expect(Permissions.userManagement, ['admin']);
-      expect(Permissions.userCreate, ['admin']);
-      expect(Permissions.siteView, ['admin', 'supervisor', 'guard']);
-      expect(Permissions.patrolManagement, ['admin', 'supervisor']);
+    test('Permissions constants are correctly defined for minimal scope', () {
+      expect(Permissions.userList, ['admin', 'operations_manager', 'site_manager', 'supervisor']);
+      expect(Permissions.userCreate, ['admin', 'operations_manager', 'site_manager']);
+      expect(Permissions.siteList, ['admin', 'operations_manager', 'site_manager', 'supervisor', 'guard', 'mobile_guard']);
+      expect(Permissions.siteCreate, ['admin', 'operations_manager']);
+      expect(Permissions.patrolList, ['admin', 'operations_manager', 'site_manager', 'supervisor', 'guard', 'mobile_guard']);
+      expect(Permissions.checkpointList, ['admin', 'operations_manager', 'site_manager', 'supervisor', 'guard', 'mobile_guard']);
+      expect(Permissions.systemSettings, ['admin']);
+    });
+
+    test('User role checking methods work correctly', () {
+      const adminUser = AuthUser(
+        id: 1,
+        username: 'admin',
+        email: 'admin@test.com',
+        firstName: 'Admin',
+        lastName: 'User',
+        isActive: true,
+        roles: ['admin'],
+      );
+
+      const multiRoleUser = AuthUser(
+        id: 2,
+        username: 'multi',
+        email: 'multi@test.com',
+        firstName: 'Multi',
+        lastName: 'Role',
+        isActive: true,
+        roles: ['site_manager', 'supervisor'],
+      );
+
+      // Test individual role checks
+      expect(adminUser.isAdmin, true);
+      expect(adminUser.isOperationsManager, false);
+      expect(adminUser.isSiteManager, false);
+      expect(adminUser.primaryRole, 'Admin');
+
+      expect(multiRoleUser.isSiteManager, true);
+      expect(multiRoleUser.isSupervisor, true);
+      expect(multiRoleUser.isAdmin, false);
+      expect(multiRoleUser.primaryRole, 'Site Manager'); // Should return highest priority role
+
+      // Test permission helper methods
+      expect(adminUser.canManageUsers, true);
+      expect(adminUser.canManageAllSites, true);
+      expect(multiRoleUser.canManageUsers, false); // Operations Manager required
+      expect(multiRoleUser.canManageAssignedSites, true);
     });
   });
 }
