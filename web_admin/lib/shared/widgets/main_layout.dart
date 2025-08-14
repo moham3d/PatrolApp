@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../features/auth/providers/auth_provider.dart';
+import 'rbac/role_interfaces.dart';
 
 class MainLayout extends ConsumerWidget {
   final Widget child;
@@ -16,39 +17,19 @@ class MainLayout extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final authState = ref.watch(authProvider);
     final currentLocation = GoRouterState.of(context).matchedLocation;
+    final roleInterface = RoleInterface.getForUser(authState.user);
     
     return Scaffold(
       body: Row(
         children: [
           // Navigation Rail
           NavigationRail(
-            selectedIndex: _getSelectedIndex(currentLocation),
+            selectedIndex: roleInterface.getSelectedIndex(currentLocation),
             onDestinationSelected: (index) {
-              _navigateToPage(context, index);
+              _navigateToPage(context, index, roleInterface);
             },
             extended: MediaQuery.of(context).size.width >= 1200,
-            destinations: const [
-              NavigationRailDestination(
-                icon: Icon(Icons.people_outline),
-                selectedIcon: Icon(Icons.people),
-                label: Text('Users'),
-              ),
-              NavigationRailDestination(
-                icon: Icon(Icons.location_on_outlined),
-                selectedIcon: Icon(Icons.location_on),
-                label: Text('Sites'),
-              ),
-              NavigationRailDestination(
-                icon: Icon(Icons.route_outlined),
-                selectedIcon: Icon(Icons.route),
-                label: Text('Patrols'),
-              ),
-              NavigationRailDestination(
-                icon: Icon(Icons.place_outlined),
-                selectedIcon: Icon(Icons.place),
-                label: Text('Checkpoints'),
-              ),
-            ],
+            destinations: roleInterface.destinations,
             trailing: Expanded(
               child: Align(
                 alignment: Alignment.bottomCenter,
@@ -123,7 +104,7 @@ class MainLayout extends ConsumerWidget {
                     child: Row(
                       children: [
                         Text(
-                          _getPageTitle(currentLocation),
+                          roleInterface.getTitle(currentLocation),
                           style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                             fontWeight: FontWeight.w600,
                           ),
@@ -131,40 +112,7 @@ class MainLayout extends ConsumerWidget {
                         const Spacer(),
                         
                         // Status Indicators
-                        Row(
-                          children: [
-                            // Connection Status
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 8,
-                                vertical: 4,
-                              ),
-                              decoration: BoxDecoration(
-                                color: Colors.green.withOpacity(0.1),
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Icon(
-                                    Icons.circle,
-                                    size: 8,
-                                    color: Colors.green,
-                                  ),
-                                  const SizedBox(width: 4),
-                                  Text(
-                                    'Online',
-                                    style: TextStyle(
-                                      color: Colors.green.shade700,
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
+                        const RoleBasedStatusIndicators(),
                       ],
                     ),
                   ),
@@ -180,50 +128,10 @@ class MainLayout extends ConsumerWidget {
     );
   }
 
-  int _getSelectedIndex(String location) {
-    switch (location) {
-      case '/users':
-        return 0;
-      case '/sites':
-        return 1;
-      case '/patrols':
-        return 2;
-      case '/checkpoints':
-        return 3;
-      default:
-        return 0;
-    }
-  }
-
-  String _getPageTitle(String location) {
-    switch (location) {
-      case '/users':
-        return 'User Management';
-      case '/sites':
-        return 'Site Management';
-      case '/patrols':
-        return 'Patrol Management';
-      case '/checkpoints':
-        return 'Checkpoint Management';
-      default:
-        return 'PatrolShield Admin';
-    }
-  }
-
-  void _navigateToPage(BuildContext context, int index) {
-    switch (index) {
-      case 0:
-        context.go('/users');
-        break;
-      case 1:
-        context.go('/sites');
-        break;
-      case 2:
-        context.go('/patrols');
-        break;
-      case 3:
-        context.go('/checkpoints');
-        break;
+  void _navigateToPage(BuildContext context, int index, RoleInterface roleInterface) {
+    final route = roleInterface.getRoute(index);
+    if (route != null) {
+      context.go(route);
     }
   }
 
