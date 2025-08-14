@@ -28,6 +28,11 @@ flutter run -d web-server --web-hostname 0.0.0.0 --web-port 3000
 flutter build web
 ```
 
+### 5b. Build Android APK
+```sh
+flutter build apk
+```
+
 ### 6. Serve Production Build
 You can serve the `build/web` directory with any static file server, e.g.:
 ```sh
