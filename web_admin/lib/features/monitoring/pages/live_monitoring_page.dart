@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_map/flutter_map.dart';
-import 'package:latlong2/latlong.dart';
 
 import '../../../shared/services/websocket_service.dart';
 import '../../../features/auth/providers/auth_provider.dart';
@@ -11,7 +9,6 @@ import '../widgets/guard_locations_panel.dart';
 import '../widgets/system_health_panel.dart';
 import '../widgets/system_health_dashboard.dart';
 import '../widgets/performance_metrics_widget.dart';
-import '../providers/monitoring_provider.dart';
 
 /// Live monitoring dashboard page with real-time updates
 class LiveMonitoringPage extends ConsumerStatefulWidget {
@@ -34,7 +31,7 @@ class _LiveMonitoringPageState extends ConsumerState<LiveMonitoringPage> {
       final authState = ref.read(authProvider);
       if (authState.isLoggedIn && authState.user != null) {
         final webSocketService = ref.read(webSocketServiceProvider);
-        final token = authState.token?.accessToken ?? '';
+        const token = ''; // TODO: Implement proper token handling
         webSocketService.connect(authState.user!.id, token);
       }
     });
@@ -43,9 +40,7 @@ class _LiveMonitoringPageState extends ConsumerState<LiveMonitoringPage> {
   @override
   Widget build(BuildContext context) {
     final webSocketState = ref.watch(webSocketStateProvider);
-    final livePatrols = ref.watch(livePatrolsProvider);
-    final guardLocations = ref.watch(guardLocationsProvider);
-    
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Live Monitoring Dashboard'),
@@ -102,7 +97,7 @@ class _LiveMonitoringPageState extends ConsumerState<LiveMonitoringPage> {
     return LayoutBuilder(
       builder: (context, constraints) {
         final isWideScreen = constraints.maxWidth > 1200;
-        
+
         if (isWideScreen) {
           // Wide screen: side-by-side layout
           return Row(
@@ -124,7 +119,8 @@ class _LiveMonitoringPageState extends ConsumerState<LiveMonitoringPage> {
                             children: [
                               Text(
                                 'Live Patrol Tracking',
-                                style: Theme.of(context).textTheme.headlineSmall,
+                                style:
+                                    Theme.of(context).textTheme.headlineSmall,
                               ),
                               const SizedBox(height: 16),
                               const Expanded(child: LivePatrolMap()),
@@ -145,7 +141,8 @@ class _LiveMonitoringPageState extends ConsumerState<LiveMonitoringPage> {
                             children: [
                               Text(
                                 'Live Alerts',
-                                style: Theme.of(context).textTheme.headlineSmall,
+                                style:
+                                    Theme.of(context).textTheme.headlineSmall,
                               ),
                               const SizedBox(height: 16),
                               const Expanded(child: LiveAlertsFeed()),
@@ -174,7 +171,8 @@ class _LiveMonitoringPageState extends ConsumerState<LiveMonitoringPage> {
                             children: [
                               Text(
                                 'Guard Locations',
-                                style: Theme.of(context).textTheme.headlineSmall,
+                                style:
+                                    Theme.of(context).textTheme.headlineSmall,
                               ),
                               const SizedBox(height: 16),
                               const Expanded(child: GuardLocationsPanel()),
@@ -195,7 +193,8 @@ class _LiveMonitoringPageState extends ConsumerState<LiveMonitoringPage> {
                             children: [
                               Text(
                                 'System Health Dashboard',
-                                style: Theme.of(context).textTheme.headlineSmall,
+                                style:
+                                    Theme.of(context).textTheme.headlineSmall,
                               ),
                               const SizedBox(height: 16),
                               const Expanded(child: SystemHealthDashboard()),
@@ -238,7 +237,8 @@ class _LiveMonitoringPageState extends ConsumerState<LiveMonitoringPage> {
                             children: [
                               Text(
                                 'Live Patrol Tracking',
-                                style: Theme.of(context).textTheme.headlineSmall,
+                                style:
+                                    Theme.of(context).textTheme.headlineSmall,
                               ),
                               const SizedBox(height: 16),
                               const Expanded(child: LivePatrolMap()),
@@ -255,7 +255,8 @@ class _LiveMonitoringPageState extends ConsumerState<LiveMonitoringPage> {
                             children: [
                               Text(
                                 'Live Alerts',
-                                style: Theme.of(context).textTheme.headlineSmall,
+                                style:
+                                    Theme.of(context).textTheme.headlineSmall,
                               ),
                               const SizedBox(height: 16),
                               const Expanded(child: LiveAlertsFeed()),
@@ -272,7 +273,8 @@ class _LiveMonitoringPageState extends ConsumerState<LiveMonitoringPage> {
                             children: [
                               Text(
                                 'Guard Locations',
-                                style: Theme.of(context).textTheme.headlineSmall,
+                                style:
+                                    Theme.of(context).textTheme.headlineSmall,
                               ),
                               const SizedBox(height: 16),
                               const Expanded(child: GuardLocationsPanel()),
@@ -289,7 +291,8 @@ class _LiveMonitoringPageState extends ConsumerState<LiveMonitoringPage> {
                             children: [
                               Text(
                                 'System Health',
-                                style: Theme.of(context).textTheme.headlineSmall,
+                                style:
+                                    Theme.of(context).textTheme.headlineSmall,
                               ),
                               const SizedBox(height: 16),
                               const Expanded(child: SystemHealthPanel()),
@@ -306,7 +309,8 @@ class _LiveMonitoringPageState extends ConsumerState<LiveMonitoringPage> {
                             children: [
                               Text(
                                 'System Dashboard',
-                                style: Theme.of(context).textTheme.headlineSmall,
+                                style:
+                                    Theme.of(context).textTheme.headlineSmall,
                               ),
                               const SizedBox(height: 16),
                               const Expanded(child: SystemHealthDashboard()),
@@ -323,7 +327,8 @@ class _LiveMonitoringPageState extends ConsumerState<LiveMonitoringPage> {
                             children: [
                               Text(
                                 'Performance Metrics',
-                                style: Theme.of(context).textTheme.headlineSmall,
+                                style:
+                                    Theme.of(context).textTheme.headlineSmall,
                               ),
                               const SizedBox(height: 16),
                               const Expanded(child: PerformanceMetricsWidget()),

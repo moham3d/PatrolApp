@@ -2,7 +2,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../shared/models/patrol.dart';
 import '../../../shared/services/patrol_service.dart';
-import '../../../core/utils/api_exceptions.dart';
 
 /// Patrols state notifier for managing patrol data
 class PatrolsNotifier extends StateNotifier<AsyncValue<List<Patrol>>> {

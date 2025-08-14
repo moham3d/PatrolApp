@@ -454,7 +454,7 @@ class _SystemHealthPanelState extends ConsumerState<SystemHealthPanel> {
       return 'Some metrics need attention. Consider reviewing system performance.';
     }
     
-    return issues.join('. ') + '. Please check system resources.';
+    return '${issues.join('. ')}. Please check system resources.';
   }
 
   void _showSystemLogs() {

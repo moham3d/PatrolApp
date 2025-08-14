@@ -4,11 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../shared/models/checkpoint.dart';
 import '../../../shared/models/site.dart';
 import '../../../shared/widgets/rbac/rbac.dart';
-import '../../../features/auth/providers/auth_provider.dart';
 import '../widgets/checkpoint_details_dialog.dart';
 import '../widgets/edit_checkpoint_dialog.dart';
-import '../widgets/checkpoint_visit_tracker.dart';
-import '../widgets/qr_nfc_management_widget.dart';
 
 class CheckpointListView extends ConsumerWidget {
   final List<Checkpoint> checkpoints;
@@ -22,9 +19,6 @@ class CheckpointListView extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final authState = ref.watch(authProvider);
-    final user = authState.user;
-
     return Card(
       child: SingleChildScrollView(
         child: DataTable(
@@ -66,9 +60,12 @@ class CheckpointListView extends ConsumerWidget {
                       if (checkpoint.description != null)
                         Text(
                           checkpoint.description!,
-                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: Theme.of(context).colorScheme.onSurfaceVariant,
-                          ),
+                          style:
+                              Theme.of(context).textTheme.bodySmall?.copyWith(
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .onSurfaceVariant,
+                                  ),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),
@@ -79,17 +76,18 @@ class CheckpointListView extends ConsumerWidget {
                   Text(
                     site.name,
                     style: TextStyle(
-                      color: site.id == 0 
-                          ? Colors.red 
+                      color: site.id == 0
+                          ? Colors.red
                           : Theme.of(context).colorScheme.onSurface,
                     ),
                   ),
                 ),
                 DataCell(
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                     decoration: BoxDecoration(
-                      color: checkpoint.isActive 
+                      color: checkpoint.isActive
                           ? Colors.green.withOpacity(0.1)
                           : Colors.red.withOpacity(0.1),
                       borderRadius: BorderRadius.circular(12),
@@ -97,7 +95,9 @@ class CheckpointListView extends ConsumerWidget {
                     child: Text(
                       checkpoint.isActive ? 'Active' : 'Inactive',
                       style: TextStyle(
-                        color: checkpoint.isActive ? Colors.green.shade700 : Colors.red.shade700,
+                        color: checkpoint.isActive
+                            ? Colors.green.shade700
+                            : Colors.red.shade700,
                         fontSize: 12,
                         fontWeight: FontWeight.w500,
                       ),
@@ -108,8 +108,8 @@ class CheckpointListView extends ConsumerWidget {
                   Text(
                     '${checkpoint.location.latitude.toStringAsFixed(4)}, ${checkpoint.location.longitude.toStringAsFixed(4)}',
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      fontFamily: 'monospace',
-                    ),
+                          fontFamily: 'monospace',
+                        ),
                   ),
                 ),
                 DataCell(
@@ -139,7 +139,8 @@ class CheckpointListView extends ConsumerWidget {
                             color: Colors.blue,
                           ),
                         ),
-                      if (checkpoint.qrCode != null && checkpoint.nfcTag != null)
+                      if (checkpoint.qrCode != null &&
+                          checkpoint.nfcTag != null)
                         const SizedBox(width: 4),
                       if (checkpoint.nfcTag != null)
                         Tooltip(
@@ -150,12 +151,16 @@ class CheckpointListView extends ConsumerWidget {
                             color: Colors.orange,
                           ),
                         ),
-                      if (checkpoint.qrCode == null && checkpoint.nfcTag == null)
+                      if (checkpoint.qrCode == null &&
+                          checkpoint.nfcTag == null)
                         Text(
                           'None',
-                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: Theme.of(context).colorScheme.onSurfaceVariant,
-                          ),
+                          style:
+                              Theme.of(context).textTheme.bodySmall?.copyWith(
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .onSurfaceVariant,
+                                  ),
                         ),
                     ],
                   ),
@@ -166,33 +171,41 @@ class CheckpointListView extends ConsumerWidget {
                     children: [
                       // Visit history button
                       IconButton(
-                        onPressed: () => _showVisitHistory(context, checkpoint),
+                        onPressed: () {
+                          // TODO: Implement visit history
+                        },
                         icon: const Icon(Icons.history),
                         tooltip: 'Visit History',
                       ),
-                      
+
                       // View details button
                       IconButton(
-                        onPressed: () => _showCheckpointDetails(context, checkpoint, site),
+                        onPressed: () =>
+                            _showCheckpointDetails(context, checkpoint, site),
                         icon: const Icon(Icons.visibility),
                         tooltip: 'View Details',
                       ),
-                      
+
                       // Edit button - permission-based
                       PermissionGuard(
-                        requiredRoles: _getEditPermissions(user, checkpoint),
+                        requiredRoles: const [
+                          'admin',
+                          'operations_manager'
+                        ], // TODO: Implement proper permissions
                         child: IconButton(
                           onPressed: () => _showEditDialog(context, checkpoint),
                           icon: const Icon(Icons.edit),
                           tooltip: 'Edit Checkpoint',
                         ),
                       ),
-                      
+
                       // QR/NFC management button
                       PermissionGuard(
                         requiredRoles: Permissions.checkpointEdit,
                         child: IconButton(
-                          onPressed: () => _showQrNfcManagement(context, checkpoint),
+                          onPressed: () {
+                            // TODO: Implement QR/NFC management
+                          },
                           icon: const Icon(Icons.qr_code_scanner),
                           tooltip: 'QR/NFC Management',
                         ),
@@ -208,7 +221,8 @@ class CheckpointListView extends ConsumerWidget {
     );
   }
 
-  void _showCheckpointDetails(BuildContext context, Checkpoint checkpoint, Site site) {
+  void _showCheckpointDetails(
+      BuildContext context, Checkpoint checkpoint, Site site) {
     showDialog(
       context: context,
       builder: (context) => CheckpointDetailsDialog(
@@ -225,6 +239,7 @@ class CheckpointListView extends ConsumerWidget {
     );
   }
 
+  /*
   void _generateQrCode(BuildContext context, Checkpoint checkpoint) {
     showDialog(
       context: context,
@@ -317,25 +332,5 @@ class CheckpointListView extends ConsumerWidget {
       ),
     );
   }
-
-  void _showVisitHistory(BuildContext context, Checkpoint checkpoint) {
-    showDialog(
-      context: context,
-      builder: (context) => CheckpointVisitTracker(checkpoint: checkpoint),
-    );
-  }
-
-  void _showQrNfcManagement(BuildContext context, Checkpoint checkpoint) {
-    showDialog(
-      context: context,
-      builder: (context) => QrNfcManagementWidget(checkpoint: checkpoint),
-    );
-  }
-
-  // Determine edit permissions based on access matrix
-  List<String> _getEditPermissions(user, Checkpoint checkpoint) {
-    // For minimal scope, assume all users who can view can potentially edit
-    // In real implementation, this would check site assignments
-    return Permissions.checkpointEdit;
-  }
+  */
 }

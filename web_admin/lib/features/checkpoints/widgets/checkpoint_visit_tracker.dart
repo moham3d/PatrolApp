@@ -3,11 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
 import '../../../shared/models/checkpoint.dart';
-import '../../../shared/models/user.dart';
-import '../../../shared/models/patrol.dart';
-import '../../../shared/services/checkpoint_service.dart';
 import '../../../core/services/http_client.dart';
-import '../../../core/utils/api_exceptions.dart';
 
 /// Widget for tracking and validating checkpoint visits
 class CheckpointVisitTracker extends ConsumerStatefulWidget {

@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../features/auth/providers/auth_provider.dart';
-import 'rbac/role_interfaces.dart';
 
 class MainLayout extends ConsumerWidget {
   final Widget child;
@@ -17,19 +16,65 @@ class MainLayout extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final authState = ref.watch(authProvider);
     final currentLocation = GoRouterState.of(context).matchedLocation;
-    final roleInterface = RoleInterface.getForUser(authState.user);
-    
+
+    // Determine selected index based on current route
+    int selectedIndex = 0;
+    switch (currentLocation) {
+      case '/users':
+        selectedIndex = 0;
+        break;
+      case '/sites':
+        selectedIndex = 1;
+        break;
+      case '/patrols':
+        selectedIndex = 2;
+        break;
+      case '/checkpoints':
+        selectedIndex = 3;
+        break;
+    }
+
     return Scaffold(
       body: Row(
         children: [
-          // Navigation Rail
+          // Navigation Rail with all destinations
           NavigationRail(
-            selectedIndex: roleInterface.getSelectedIndex(currentLocation),
+            selectedIndex: selectedIndex,
             onDestinationSelected: (index) {
-              _navigateToPage(context, index, roleInterface);
+              switch (index) {
+                case 0:
+                  context.go('/users');
+                  break;
+                case 1:
+                  context.go('/sites');
+                  break;
+                case 2:
+                  context.go('/patrols');
+                  break;
+                case 3:
+                  context.go('/checkpoints');
+                  break;
+              }
             },
             extended: MediaQuery.of(context).size.width >= 1200,
-            destinations: roleInterface.destinations,
+            destinations: const [
+              NavigationRailDestination(
+                icon: Icon(Icons.people),
+                label: Text('Users'),
+              ),
+              NavigationRailDestination(
+                icon: Icon(Icons.location_city),
+                label: Text('Sites'),
+              ),
+              NavigationRailDestination(
+                icon: Icon(Icons.route),
+                label: Text('Patrols'),
+              ),
+              NavigationRailDestination(
+                icon: Icon(Icons.place),
+                label: Text('Checkpoints'),
+              ),
+            ],
             trailing: Expanded(
               child: Align(
                 alignment: Alignment.bottomCenter,
@@ -51,27 +96,24 @@ class MainLayout extends ConsumerWidget {
                           ),
                         ),
                         const SizedBox(height: 8),
-                        if (MediaQuery.of(context).size.width >= 1200) ...[
-                          Text(
-                            authState.user!.fullName,
-                            style: Theme.of(context).textTheme.bodySmall,
-                            textAlign: TextAlign.center,
-                          ),
-                          Text(
-                            authState.user!.roles.join(', '),
-                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                              color: Theme.of(context).colorScheme.onSurfaceVariant,
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                        ],
+                        Text(
+                          authState.user!.firstName,
+                          style: Theme.of(context).textTheme.bodySmall,
+                        ),
+                        Text(
+                          authState.user!.primaryRole,
+                          style:
+                              Theme.of(context).textTheme.bodySmall?.copyWith(
+                                    color: Theme.of(context).primaryColor,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                        ),
                         const SizedBox(height: 16),
                       ],
-                      
                       // Logout Button
                       IconButton(
-                        icon: const Icon(Icons.logout),
                         onPressed: () => _handleLogout(context, ref),
+                        icon: const Icon(Icons.logout),
                         tooltip: 'Logout',
                       ),
                     ],
@@ -80,67 +122,14 @@ class MainLayout extends ConsumerWidget {
               ),
             ),
           ),
-          
           const VerticalDivider(thickness: 1, width: 1),
-          
           // Main Content
           Expanded(
-            child: Column(
-              children: [
-                // App Bar
-                Container(
-                  height: 64,
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.surface,
-                    border: Border(
-                      bottom: BorderSide(
-                        color: Theme.of(context).dividerColor,
-                        width: 1,
-                      ),
-                    ),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 24),
-                    child: Row(
-                      children: [
-                        GestureDetector(
-                          onTap: () => _navigateToDashboard(context),
-                          child: Text(
-                            roleInterface.getTitle(currentLocation),
-                            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ),
-                        const Spacer(),
-                        
-                        // Status Indicators
-                        const RoleBasedStatusIndicators(),
-                      ],
-                    ),
-                  ),
-                ),
-                
-                // Page Content
-                Expanded(child: child),
-              ],
-            ),
+            child: child,
           ),
         ],
       ),
     );
-  }
-
-  void _navigateToPage(BuildContext context, int index, RoleInterface roleInterface) {
-    final route = roleInterface.getRoute(index);
-    if (route != null) {
-      context.go(route);
-    }
-  }
-
-  // Handle dashboard navigation
-  void _navigateToDashboard(BuildContext context) {
-    context.go('/');
   }
 
   void _handleLogout(BuildContext context, WidgetRef ref) {
@@ -148,16 +137,17 @@ class MainLayout extends ConsumerWidget {
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Confirm Logout'),
-        content: const Text('Are you sure you want to log out?'),
+        content: const Text('Are you sure you want to logout?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
             child: const Text('Cancel'),
           ),
-          FilledButton(
+          TextButton(
             onPressed: () {
               Navigator.of(context).pop();
               ref.read(authProvider.notifier).logout();
+              context.go('/login');
             },
             child: const Text('Logout'),
           ),

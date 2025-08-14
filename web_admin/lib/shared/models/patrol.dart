@@ -12,7 +12,7 @@ class AssignedUser {
     required this.name,
   });
 
-  factory AssignedUser.fromJson(Map<String, dynamic> json) => 
+  factory AssignedUser.fromJson(Map<String, dynamic> json) =>
       _$AssignedUserFromJson(json);
   Map<String, dynamic> toJson() => _$AssignedUserToJson(this);
 }
@@ -27,7 +27,7 @@ class AssignedSite {
     required this.name,
   });
 
-  factory AssignedSite.fromJson(Map<String, dynamic> json) => 
+  factory AssignedSite.fromJson(Map<String, dynamic> json) =>
       _$AssignedSiteFromJson(json);
   Map<String, dynamic> toJson() => _$AssignedSiteToJson(this);
 }
@@ -48,6 +48,14 @@ class Patrol {
   final DateTime scheduledStart;
   @JsonKey(name: 'scheduled_end')
   final DateTime scheduledEnd;
+  @JsonKey(name: 'actual_start')
+  final DateTime? actualStart;
+  @JsonKey(name: 'actual_end')
+  final DateTime? actualEnd;
+  @JsonKey(name: 'checkpoints_completed')
+  final int checkpointsCompleted;
+  @JsonKey(name: 'checkpoints_total')
+  final int checkpointsTotal;
   @JsonKey(name: 'created_at')
   final DateTime createdAt;
 
@@ -62,11 +70,19 @@ class Patrol {
     this.site,
     required this.scheduledStart,
     required this.scheduledEnd,
+    this.actualStart,
+    this.actualEnd,
+    this.checkpointsCompleted = 0,
+    this.checkpointsTotal = 0,
     required this.createdAt,
   });
 
   factory Patrol.fromJson(Map<String, dynamic> json) => _$PatrolFromJson(json);
   Map<String, dynamic> toJson() => _$PatrolToJson(this);
+
+  // Helper getters for UI
+  String? get siteName => site?.name;
+  String? get assignedToName => assignedTo?.name;
 
   Patrol copyWith({
     int? id,
@@ -79,6 +95,10 @@ class Patrol {
     AssignedSite? site,
     DateTime? scheduledStart,
     DateTime? scheduledEnd,
+    DateTime? actualStart,
+    DateTime? actualEnd,
+    int? checkpointsCompleted,
+    int? checkpointsTotal,
     DateTime? createdAt,
   }) {
     return Patrol(
@@ -92,6 +112,10 @@ class Patrol {
       site: site ?? this.site,
       scheduledStart: scheduledStart ?? this.scheduledStart,
       scheduledEnd: scheduledEnd ?? this.scheduledEnd,
+      actualStart: actualStart ?? this.actualStart,
+      actualEnd: actualEnd ?? this.actualEnd,
+      checkpointsCompleted: checkpointsCompleted ?? this.checkpointsCompleted,
+      checkpointsTotal: checkpointsTotal ?? this.checkpointsTotal,
       createdAt: createdAt ?? this.createdAt,
     );
   }
@@ -124,7 +148,7 @@ class CreatePatrolRequest {
     required this.scheduledEnd,
   });
 
-  factory CreatePatrolRequest.fromJson(Map<String, dynamic> json) => 
+  factory CreatePatrolRequest.fromJson(Map<String, dynamic> json) =>
       _$CreatePatrolRequestFromJson(json);
   Map<String, dynamic> toJson() => _$CreatePatrolRequestToJson(this);
 }
@@ -158,7 +182,7 @@ class UpdatePatrolRequest {
     this.scheduledEnd,
   });
 
-  factory UpdatePatrolRequest.fromJson(Map<String, dynamic> json) => 
+  factory UpdatePatrolRequest.fromJson(Map<String, dynamic> json) =>
       _$UpdatePatrolRequestFromJson(json);
   Map<String, dynamic> toJson() => _$UpdatePatrolRequestToJson(this);
 }

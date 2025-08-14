@@ -3,12 +3,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 
-import '../../../shared/models/patrol.dart';
 import '../../../shared/models/site.dart';
 import '../../../shared/models/checkpoint.dart';
 import '../../../features/sites/providers/sites_provider.dart';
 import '../../../features/checkpoints/providers/checkpoints_provider.dart';
-import '../providers/patrols_provider.dart';
 
 /// Patrol route planner with interactive maps
 class PatrolRoutePlanner extends ConsumerStatefulWidget {
@@ -23,7 +21,7 @@ class _PatrolRoutePlannerState extends ConsumerState<PatrolRoutePlanner> {
   Site? _selectedSite;
   List<Checkpoint> _selectedCheckpoints = [];
   List<LatLng> _routePoints = [];
-  
+
   // Default map center (can be configured)
   static const LatLng _defaultCenter = LatLng(40.7128, -74.0060); // New York
   static const double _defaultZoom = 12.0;
@@ -57,30 +55,30 @@ class _PatrolRoutePlannerState extends ConsumerState<PatrolRoutePlanner> {
                     Text(
                       'Route Planner',
                       style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
+                            fontWeight: FontWeight.bold,
+                          ),
                     ),
                     const SizedBox(height: 16),
-                    
+
                     // Site selection
                     _buildSiteSelector(sitesState),
                     const SizedBox(height: 16),
-                    
+
                     // Checkpoint selection
                     if (_selectedSite != null) ...[
                       _buildCheckpointSelector(checkpointsState),
                       const SizedBox(height: 16),
                     ],
-                    
+
                     // Route options
                     if (_selectedCheckpoints.isNotEmpty) ...[
                       _buildRouteOptions(),
                       const SizedBox(height: 16),
-                      
+
                       // Route summary
                       _buildRouteSummary(),
                       const SizedBox(height: 16),
-                      
+
                       // Action buttons
                       _buildActionButtons(),
                     ],
@@ -89,9 +87,9 @@ class _PatrolRoutePlannerState extends ConsumerState<PatrolRoutePlanner> {
               ),
             ),
           ),
-          
+
           const SizedBox(width: 16),
-          
+
           // Right panel - Interactive map
           Expanded(
             child: Card(
@@ -113,8 +111,8 @@ class _PatrolRoutePlannerState extends ConsumerState<PatrolRoutePlanner> {
         Text(
           'Select Site',
           style: Theme.of(context).textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.w600,
-          ),
+                fontWeight: FontWeight.w600,
+              ),
         ),
         const SizedBox(height: 8),
         DropdownButtonFormField<Site>(
@@ -136,7 +134,7 @@ class _PatrolRoutePlannerState extends ConsumerState<PatrolRoutePlanner> {
               _selectedCheckpoints = [];
               _routePoints = [];
             });
-            
+
             if (site != null) {
               _loadCheckpointsForSite(site.id);
               _centerMapOnSite(site);
@@ -162,7 +160,8 @@ class _PatrolRoutePlannerState extends ConsumerState<PatrolRoutePlanner> {
               Icon(Icons.warning, color: Colors.orange),
               SizedBox(width: 8),
               Expanded(
-                child: Text('No checkpoints found for this site. Please add checkpoints first.'),
+                child: Text(
+                    'No checkpoints found for this site. Please add checkpoints first.'),
               ),
             ],
           ),
@@ -178,8 +177,8 @@ class _PatrolRoutePlannerState extends ConsumerState<PatrolRoutePlanner> {
             Text(
               'Select Checkpoints',
               style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.w600,
-              ),
+                    fontWeight: FontWeight.w600,
+                  ),
             ),
             const Spacer(),
             TextButton(
@@ -214,7 +213,7 @@ class _PatrolRoutePlannerState extends ConsumerState<PatrolRoutePlanner> {
             itemBuilder: (context, index) {
               final checkpoint = availableCheckpoints[index];
               final isSelected = _selectedCheckpoints.contains(checkpoint);
-              
+
               return CheckboxListTile(
                 title: Text(checkpoint.name),
                 subtitle: Text(checkpoint.description ?? 'No description'),
@@ -245,8 +244,8 @@ class _PatrolRoutePlannerState extends ConsumerState<PatrolRoutePlanner> {
         Text(
           'Route Options',
           style: Theme.of(context).textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.w600,
-          ),
+                fontWeight: FontWeight.w600,
+              ),
         ),
         const SizedBox(height: 8),
         Row(
@@ -288,13 +287,16 @@ class _PatrolRoutePlannerState extends ConsumerState<PatrolRoutePlanner> {
             Text(
               'Route Summary',
               style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                fontWeight: FontWeight.w600,
-              ),
+                    fontWeight: FontWeight.w600,
+                  ),
             ),
             const SizedBox(height: 12),
-            _buildSummaryRow(Icons.flag, 'Checkpoints', '${_selectedCheckpoints.length}'),
-            _buildSummaryRow(Icons.straighten, 'Distance', '${distance.toStringAsFixed(1)} km'),
-            _buildSummaryRow(Icons.schedule, 'Est. Time', '${estimatedTime.toStringAsFixed(0)} min'),
+            _buildSummaryRow(
+                Icons.flag, 'Checkpoints', '${_selectedCheckpoints.length}'),
+            _buildSummaryRow(Icons.straighten, 'Distance',
+                '${distance.toStringAsFixed(1)} km'),
+            _buildSummaryRow(Icons.schedule, 'Est. Time',
+                '${estimatedTime.toStringAsFixed(0)} min'),
           ],
         ),
       ),
@@ -316,8 +318,8 @@ class _PatrolRoutePlannerState extends ConsumerState<PatrolRoutePlanner> {
           Text(
             value,
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              fontWeight: FontWeight.w500,
-            ),
+                  fontWeight: FontWeight.w500,
+                ),
           ),
         ],
       ),
@@ -347,8 +349,9 @@ class _PatrolRoutePlannerState extends ConsumerState<PatrolRoutePlanner> {
     return FlutterMap(
       mapController: _mapController,
       options: MapOptions(
-        initialCenter: _selectedSite?.coordinates != null 
-            ? LatLng(_selectedSite!.coordinates!.latitude, _selectedSite!.coordinates!.longitude)
+        initialCenter: _selectedSite?.coordinates != null
+            ? LatLng(_selectedSite!.coordinates.latitude,
+                _selectedSite!.coordinates.longitude)
             : _defaultCenter,
         initialZoom: _selectedSite != null ? 15.0 : _defaultZoom,
         minZoom: 8.0,
@@ -360,13 +363,13 @@ class _PatrolRoutePlannerState extends ConsumerState<PatrolRoutePlanner> {
           urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
           userAgentPackageName: 'com.patrolshield.admin',
         ),
-        
+
         // Checkpoint markers
         if (_selectedSite != null)
           MarkerLayer(
             markers: _buildCheckpointMarkers(),
           ),
-        
+
         // Route polyline
         if (_routePoints.isNotEmpty)
           PolylineLayer(
@@ -392,7 +395,7 @@ class _PatrolRoutePlannerState extends ConsumerState<PatrolRoutePlanner> {
     return siteCheckpoints.map((checkpoint) {
       final isSelected = _selectedCheckpoints.contains(checkpoint);
       final markerIndex = _selectedCheckpoints.indexOf(checkpoint) + 1;
-      
+
       return Marker(
         point: LatLng(
           checkpoint.location.latitude,
@@ -442,12 +445,10 @@ class _PatrolRoutePlannerState extends ConsumerState<PatrolRoutePlanner> {
   }
 
   void _centerMapOnSite(Site site) {
-    if (site.coordinates != null) {
-      _mapController.move(
-        LatLng(site.coordinates!.latitude, site.coordinates!.longitude),
-        15.0,
-      );
-    }
+    _mapController.move(
+      LatLng(site.coordinates.latitude, site.coordinates.longitude),
+      15.0,
+    );
   }
 
   void _toggleCheckpointSelection(Checkpoint checkpoint) {
@@ -470,10 +471,11 @@ class _PatrolRoutePlannerState extends ConsumerState<PatrolRoutePlanner> {
     }
 
     // Simple route generation - connect checkpoints in order
-    final points = _selectedCheckpoints.map((checkpoint) => 
-        LatLng(checkpoint.location.latitude, checkpoint.location.longitude)
-    ).toList();
-    
+    final points = _selectedCheckpoints
+        .map((checkpoint) =>
+            LatLng(checkpoint.location.latitude, checkpoint.location.longitude))
+        .toList();
+
     setState(() {
       _routePoints = points;
     });
@@ -485,23 +487,23 @@ class _PatrolRoutePlannerState extends ConsumerState<PatrolRoutePlanner> {
     // Simple optimization: sort by proximity (nearest neighbor approach)
     final optimized = <Checkpoint>[];
     final remaining = List<Checkpoint>.from(_selectedCheckpoints);
-    
+
     // Start with first checkpoint
     optimized.add(remaining.removeAt(0));
-    
+
     while (remaining.isNotEmpty) {
       final current = optimized.last;
-      
+
       // Find nearest checkpoint
       remaining.sort((a, b) {
         final distA = _calculateDistance(current.location, a.location);
         final distB = _calculateDistance(current.location, b.location);
         return distA.compareTo(distB);
       });
-      
+
       optimized.add(remaining.removeAt(0));
     }
-    
+
     setState(() {
       _selectedCheckpoints = optimized;
       _generateRoute();
@@ -525,8 +527,14 @@ class _PatrolRoutePlannerState extends ConsumerState<PatrolRoutePlanner> {
     double totalDistance = 0.0;
     for (int i = 0; i < _routePoints.length - 1; i++) {
       totalDistance += _calculateDistance(
-        Location(_routePoints[i].latitude, _routePoints[i].longitude),
-        Location(_routePoints[i + 1].latitude, _routePoints[i + 1].longitude),
+        Location(
+          latitude: _routePoints[i].latitude,
+          longitude: _routePoints[i].longitude,
+        ),
+        Location(
+          latitude: _routePoints[i + 1].latitude,
+          longitude: _routePoints[i + 1].longitude,
+        ),
       );
     }
     return totalDistance;
@@ -536,21 +544,24 @@ class _PatrolRoutePlannerState extends ConsumerState<PatrolRoutePlanner> {
     // Estimate 3 km/h walking speed + 2 minutes per checkpoint
     final distance = _calculateRouteDistance();
     final walkingTime = (distance / 3.0) * 60; // minutes
-    final checkpointTime = _selectedCheckpoints.length * 2.0; // 2 minutes per checkpoint
+    final checkpointTime =
+        _selectedCheckpoints.length * 2.0; // 2 minutes per checkpoint
     return walkingTime + checkpointTime;
   }
 
   double _calculateDistance(Location point1, Location point2) {
     const Distance distance = Distance();
-    return distance.as(LengthUnit.Kilometer, 
-        LatLng(point1.latitude, point1.longitude), 
+    return distance.as(
+        LengthUnit.Kilometer,
+        LatLng(point1.latitude, point1.longitude),
         LatLng(point2.latitude, point2.longitude));
   }
 
   void _createPatrolFromRoute() {
     if (_selectedSite == null || _selectedCheckpoints.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please select a site and checkpoints first')),
+        const SnackBar(
+            content: Text('Please select a site and checkpoints first')),
       );
       return;
     }
@@ -559,7 +570,8 @@ class _PatrolRoutePlannerState extends ConsumerState<PatrolRoutePlanner> {
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Create Patrol'),
-        content: const Text('This will create a new patrol with the selected route. Continue?'),
+        content: const Text(
+            'This will create a new patrol with the selected route. Continue?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
@@ -580,7 +592,8 @@ class _PatrolRoutePlannerState extends ConsumerState<PatrolRoutePlanner> {
   void _showCreatePatrolDialog() {
     // TODO: Show create patrol dialog with pre-filled route information
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Create patrol dialog functionality coming soon')),
+      const SnackBar(
+          content: Text('Create patrol dialog functionality coming soon')),
     );
   }
 
@@ -597,12 +610,4 @@ class _PatrolRoutePlannerState extends ConsumerState<PatrolRoutePlanner> {
       const SnackBar(content: Text('Route template functionality coming soon')),
     );
   }
-}
-
-// Helper class for location coordinates
-class Location {
-  final double latitude;
-  final double longitude;
-
-  const Location(this.latitude, this.longitude);
 }

@@ -20,7 +20,6 @@ class PatrolCalendarWidget extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final patrolsAsync = ref.watch(patrolsProvider);
     final selectedDayPatrols = ref.watch(patrolsByDateProvider(selectedDay));
 
     return Padding(
@@ -39,16 +38,18 @@ class PatrolCalendarWidget extends ConsumerWidget {
                     Text(
                       'Patrol Schedule',
                       style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
+                            fontWeight: FontWeight.bold,
+                          ),
                     ),
                     const SizedBox(height: 16),
                     Expanded(
                       child: TableCalendar<Patrol>(
-                        firstDay: DateTime.now().subtract(const Duration(days: 365)),
+                        firstDay:
+                            DateTime.now().subtract(const Duration(days: 365)),
                         lastDay: DateTime.now().add(const Duration(days: 365)),
                         focusedDay: focusedDay,
-                        selectedDayPredicate: (day) => isSameDay(selectedDay, day),
+                        selectedDayPredicate: (day) =>
+                            isSameDay(selectedDay, day),
                         eventLoader: (day) => _getPatrolsForDay(ref, day),
                         calendarFormat: CalendarFormat.month,
                         startingDayOfWeek: StartingDayOfWeek.monday,
@@ -68,7 +69,8 @@ class PatrolCalendarWidget extends ConsumerWidget {
                             shape: BoxShape.circle,
                           ),
                           todayDecoration: BoxDecoration(
-                            color: Theme.of(context).primaryColor.withOpacity(0.6),
+                            color:
+                                Theme.of(context).primaryColor.withOpacity(0.6),
                             shape: BoxShape.circle,
                           ),
                         ),
@@ -76,9 +78,11 @@ class PatrolCalendarWidget extends ConsumerWidget {
                         onPageChanged: (focusedDay) {
                           // Load patrols for the new month if needed
                           ref.read(patrolsProvider.notifier).loadPatrols(
-                            dateFrom: DateTime(focusedDay.year, focusedDay.month, 1),
-                            dateTo: DateTime(focusedDay.year, focusedDay.month + 1, 0),
-                          );
+                                dateFrom: DateTime(
+                                    focusedDay.year, focusedDay.month, 1),
+                                dateTo: DateTime(
+                                    focusedDay.year, focusedDay.month + 1, 0),
+                              );
                         },
                         calendarBuilders: CalendarBuilders(
                           markerBuilder: (context, date, patrols) {
@@ -93,7 +97,7 @@ class PatrolCalendarWidget extends ConsumerWidget {
             ),
           ),
           const SizedBox(width: 16),
-          
+
           // Selected day details
           Expanded(
             flex: 1,
@@ -112,14 +116,15 @@ class PatrolCalendarWidget extends ConsumerWidget {
                         const SizedBox(width: 8),
                         Text(
                           _formatSelectedDay(selectedDay),
-                          style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.bold,
-                          ),
+                          style:
+                              Theme.of(context).textTheme.titleMedium?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                  ),
                         ),
                       ],
                     ),
                     const SizedBox(height: 16),
-                    
+
                     // Patrol count summary
                     Container(
                       padding: const EdgeInsets.all(12),
@@ -145,7 +150,7 @@ class PatrolCalendarWidget extends ConsumerWidget {
                       ),
                     ),
                     const SizedBox(height: 16),
-                    
+
                     // Patrol list for selected day
                     Expanded(
                       child: selectedDayPatrols.isEmpty
@@ -169,18 +174,9 @@ class PatrolCalendarWidget extends ConsumerWidget {
   Widget _buildMarkers(BuildContext context, List<Patrol> patrols) {
     if (patrols.isEmpty) return const SizedBox.shrink();
 
-    final colors = [
-      Colors.red,
-      Colors.blue,
-      Colors.green,
-    ];
-
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: patrols.take(3).map((patrol) {
-        final index = patrols.indexOf(patrol);
-        final color = colors[index % colors.length];
-        
         return Container(
           margin: const EdgeInsets.only(top: 5, right: 1),
           width: 6,
@@ -229,7 +225,7 @@ class PatrolCalendarWidget extends ConsumerWidget {
 
   Widget _buildPatrolCard(BuildContext context, Patrol patrol) {
     final statusColor = _getPatrolStatusColor(patrol.status);
-    
+
     return Card(
       margin: const EdgeInsets.only(bottom: 8),
       child: Padding(
@@ -259,7 +255,6 @@ class PatrolCalendarWidget extends ConsumerWidget {
               ],
             ),
             const SizedBox(height: 8),
-            
             Row(
               children: [
                 Icon(
@@ -277,7 +272,6 @@ class PatrolCalendarWidget extends ConsumerWidget {
                 ),
               ],
             ),
-            
             if (patrol.assignedTo != null) ...[
               const SizedBox(height: 4),
               Row(
@@ -298,7 +292,6 @@ class PatrolCalendarWidget extends ConsumerWidget {
                 ],
               ),
             ],
-            
             if (patrol.site != null) ...[
               const SizedBox(height: 4),
               Row(
@@ -319,7 +312,6 @@ class PatrolCalendarWidget extends ConsumerWidget {
                 ],
               ),
             ],
-            
             const SizedBox(height: 8),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),

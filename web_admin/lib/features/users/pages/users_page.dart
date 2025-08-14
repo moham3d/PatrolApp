@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../providers/users_provider.dart';
 import '../widgets/user_list_widget.dart';
 import '../widgets/create_user_dialog.dart';
 import '../../../shared/widgets/rbac/permission_widgets.dart';

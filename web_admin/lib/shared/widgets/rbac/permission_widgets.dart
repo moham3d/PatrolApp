@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../features/auth/providers/auth_provider.dart';
-import '../../shared/models/auth.dart';
+import '../../../features/auth/providers/auth_provider.dart';
+import '../../models/auth.dart';
 
 /// A widget that conditionally renders its child based on user permissions
 class PermissionGuard extends ConsumerWidget {
@@ -77,7 +77,8 @@ class PermissionButton extends ConsumerWidget {
   }
 
   bool _hasPermission(AuthUser user) {
-    return requiredRoles.isEmpty || requiredRoles.any((role) => user.hasRole(role));
+    return requiredRoles.isEmpty ||
+        requiredRoles.any((role) => user.hasRole(role));
   }
 }
 
@@ -185,7 +186,8 @@ class RoleBasedWidget extends ConsumerWidget {
 
 /// A mixin for widgets that need to check permissions
 mixin PermissionCheckMixin {
-  bool hasPermission(AuthUser? user, List<String> requiredRoles, {bool requireAll = false}) {
+  bool hasPermission(AuthUser? user, List<String> requiredRoles,
+      {bool requireAll = false}) {
     if (user == null) return false;
     if (requiredRoles.isEmpty) return true;
 
@@ -204,33 +206,132 @@ mixin PermissionCheckMixin {
 /// Permission constants for the application based on access matrix
 class Permissions {
   // User management permissions (based on access matrix)
-  static const List<String> userList = ['admin', 'operations_manager', 'site_manager', 'supervisor']; // with site restrictions for site_manager/supervisor
-  static const List<String> userCreate = ['admin', 'operations_manager', 'site_manager'];
-  static const List<String> userView = ['admin', 'operations_manager', 'site_manager', 'supervisor', 'guard', 'mobile_guard']; // with restrictions
-  static const List<String> userEdit = ['admin', 'operations_manager', 'site_manager', 'guard', 'mobile_guard']; // with restrictions  
+  static const List<String> userList = [
+    'admin',
+    'operations_manager',
+    'site_manager',
+    'supervisor'
+  ]; // with site restrictions for site_manager/supervisor
+  static const List<String> userCreate = [
+    'admin',
+    'operations_manager',
+    'site_manager'
+  ];
+  static const List<String> userView = [
+    'admin',
+    'operations_manager',
+    'site_manager',
+    'supervisor',
+    'guard',
+    'mobile_guard'
+  ]; // with restrictions
+  static const List<String> userEdit = [
+    'admin',
+    'operations_manager',
+    'site_manager',
+    'guard',
+    'mobile_guard'
+  ]; // with restrictions
   static const List<String> userDelete = ['admin', 'operations_manager'];
-  static const List<String> userStatusUpdate = ['admin', 'operations_manager', 'site_manager'];
+  static const List<String> userStatusUpdate = [
+    'admin',
+    'operations_manager',
+    'site_manager'
+  ];
 
   // Site management permissions
-  static const List<String> siteList = ['admin', 'operations_manager', 'site_manager', 'supervisor', 'guard', 'mobile_guard']; // with assignment restrictions
+  static const List<String> siteList = [
+    'admin',
+    'operations_manager',
+    'site_manager',
+    'supervisor',
+    'guard',
+    'mobile_guard'
+  ]; // with assignment restrictions
   static const List<String> siteCreate = ['admin', 'operations_manager'];
-  static const List<String> siteView = ['admin', 'operations_manager', 'site_manager', 'supervisor', 'guard', 'mobile_guard']; // with assignment restrictions
-  static const List<String> siteEdit = ['admin', 'operations_manager', 'site_manager']; // with management restrictions for site_manager
-  static const List<String> siteDelete = ['admin']; // only admin can delete sites
+  static const List<String> siteView = [
+    'admin',
+    'operations_manager',
+    'site_manager',
+    'supervisor',
+    'guard',
+    'mobile_guard'
+  ]; // with assignment restrictions
+  static const List<String> siteEdit = [
+    'admin',
+    'operations_manager',
+    'site_manager'
+  ]; // with management restrictions for site_manager
+  static const List<String> siteDelete = [
+    'admin'
+  ]; // only admin can delete sites
 
-  // Patrol/Task management permissions  
-  static const List<String> patrolList = ['admin', 'operations_manager', 'site_manager', 'supervisor', 'guard', 'mobile_guard']; // with assignment restrictions
-  static const List<String> patrolCreate = ['admin', 'operations_manager', 'site_manager', 'supervisor'];
-  static const List<String> patrolView = ['admin', 'operations_manager', 'site_manager', 'supervisor', 'guard', 'mobile_guard']; // with assignment restrictions
-  static const List<String> patrolEdit = ['admin', 'operations_manager', 'site_manager', 'supervisor', 'guard', 'mobile_guard']; // with assignment restrictions
+  // Patrol/Task management permissions
+  static const List<String> patrolList = [
+    'admin',
+    'operations_manager',
+    'site_manager',
+    'supervisor',
+    'guard',
+    'mobile_guard'
+  ]; // with assignment restrictions
+  static const List<String> patrolCreate = [
+    'admin',
+    'operations_manager',
+    'site_manager',
+    'supervisor'
+  ];
+  static const List<String> patrolView = [
+    'admin',
+    'operations_manager',
+    'site_manager',
+    'supervisor',
+    'guard',
+    'mobile_guard'
+  ]; // with assignment restrictions
+  static const List<String> patrolEdit = [
+    'admin',
+    'operations_manager',
+    'site_manager',
+    'supervisor',
+    'guard',
+    'mobile_guard'
+  ]; // with assignment restrictions
   static const List<String> patrolDelete = ['admin', 'operations_manager'];
-  static const List<String> patrolAssign = ['admin', 'operations_manager', 'site_manager', 'supervisor'];
+  static const List<String> patrolAssign = [
+    'admin',
+    'operations_manager',
+    'site_manager',
+    'supervisor'
+  ];
 
   // Checkpoint management permissions
-  static const List<String> checkpointList = ['admin', 'operations_manager', 'site_manager', 'supervisor', 'guard', 'mobile_guard']; // with site restrictions
-  static const List<String> checkpointCreate = ['admin', 'operations_manager', 'site_manager'];
-  static const List<String> checkpointView = ['admin', 'operations_manager', 'site_manager', 'supervisor', 'guard', 'mobile_guard']; // with site restrictions
-  static const List<String> checkpointEdit = ['admin', 'operations_manager', 'site_manager'];
+  static const List<String> checkpointList = [
+    'admin',
+    'operations_manager',
+    'site_manager',
+    'supervisor',
+    'guard',
+    'mobile_guard'
+  ]; // with site restrictions
+  static const List<String> checkpointCreate = [
+    'admin',
+    'operations_manager',
+    'site_manager'
+  ];
+  static const List<String> checkpointView = [
+    'admin',
+    'operations_manager',
+    'site_manager',
+    'supervisor',
+    'guard',
+    'mobile_guard'
+  ]; // with site restrictions
+  static const List<String> checkpointEdit = [
+    'admin',
+    'operations_manager',
+    'site_manager'
+  ];
   static const List<String> checkpointDelete = ['admin', 'operations_manager'];
 
   // System-wide permissions (minimal scope - only what's needed)

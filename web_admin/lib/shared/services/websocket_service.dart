@@ -5,8 +5,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
 import '../../core/config/app_config.dart';
-import '../../core/utils/api_exceptions.dart';
-import '../models/auth.dart';
 
 /// WebSocket message types based on API documentation
 enum WebSocketMessageType {

@@ -25,7 +25,7 @@ class _PatrolFormDialogState extends ConsumerState<PatrolFormDialog> {
   final _formKey = GlobalKey<FormState>();
   final _titleController = TextEditingController();
   final _descriptionController = TextEditingController();
-  
+
   Site? _selectedSite;
   User? _selectedAssignee;
   DateTime? _scheduledStart;
@@ -33,7 +33,7 @@ class _PatrolFormDialogState extends ConsumerState<PatrolFormDialog> {
   List<Checkpoint> _selectedCheckpoints = [];
   String _priority = 'normal';
   String _taskType = 'patrol';
-  
+
   bool _isLoading = false;
 
   @override
@@ -53,9 +53,9 @@ class _PatrolFormDialogState extends ConsumerState<PatrolFormDialog> {
       _descriptionController.text = patrol.description ?? '';
       _scheduledStart = patrol.scheduledStart;
       _scheduledEnd = patrol.scheduledEnd;
-      _priority = patrol.priority ?? 'normal';
-      _taskType = patrol.taskType ?? 'patrol';
-      
+      _priority = patrol.priority;
+      _taskType = patrol.taskType;
+
       // Note: Site, assignee, and checkpoints would need to be loaded separately
       // in a real implementation based on the patrol data
     }
@@ -100,11 +100,13 @@ class _PatrolFormDialogState extends ConsumerState<PatrolFormDialog> {
                   const SizedBox(width: 12),
                   Expanded(
                     child: Text(
-                      widget.patrol == null ? 'Schedule New Patrol' : 'Edit Patrol',
+                      widget.patrol == null
+                          ? 'Schedule New Patrol'
+                          : 'Edit Patrol',
                       style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                      ),
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
                     ),
                   ),
                   IconButton(
@@ -114,7 +116,7 @@ class _PatrolFormDialogState extends ConsumerState<PatrolFormDialog> {
                 ],
               ),
             ),
-            
+
             // Form content
             Expanded(
               child: Padding(
@@ -128,15 +130,15 @@ class _PatrolFormDialogState extends ConsumerState<PatrolFormDialog> {
                         // Basic information
                         _buildBasicInfoSection(),
                         const SizedBox(height: 24),
-                        
+
                         // Scheduling
                         _buildSchedulingSection(),
                         const SizedBox(height: 24),
-                        
+
                         // Assignment
                         _buildAssignmentSection(sitesState, usersState),
                         const SizedBox(height: 24),
-                        
+
                         // Checkpoints
                         if (_selectedSite != null)
                           _buildCheckpointsSection(checkpointsState),
@@ -146,14 +148,12 @@ class _PatrolFormDialogState extends ConsumerState<PatrolFormDialog> {
                 ),
               ),
             ),
-            
+
             // Actions
             Container(
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                border: Border(
-                  top: BorderSide(color: Colors.grey[300]!),
-                ),
+                border: Border(top: BorderSide(color: Colors.grey[300]!)),
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.end,
@@ -171,7 +171,11 @@ class _PatrolFormDialogState extends ConsumerState<PatrolFormDialog> {
                             height: 16,
                             child: CircularProgressIndicator(strokeWidth: 2),
                           )
-                        : Text(widget.patrol == null ? 'Create Patrol' : 'Update Patrol'),
+                        : Text(
+                            widget.patrol == null
+                                ? 'Create Patrol'
+                                : 'Update Patrol',
+                          ),
                   ),
                 ],
               ),
@@ -188,12 +192,12 @@ class _PatrolFormDialogState extends ConsumerState<PatrolFormDialog> {
       children: [
         Text(
           'Basic Information',
-          style: Theme.of(context).textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.w600,
-          ),
+          style: Theme.of(
+            context,
+          ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
         ),
         const SizedBox(height: 16),
-        
+
         // Title
         TextFormField(
           controller: _titleController,
@@ -211,7 +215,7 @@ class _PatrolFormDialogState extends ConsumerState<PatrolFormDialog> {
           },
         ),
         const SizedBox(height: 16),
-        
+
         // Description
         TextFormField(
           controller: _descriptionController,
@@ -224,7 +228,7 @@ class _PatrolFormDialogState extends ConsumerState<PatrolFormDialog> {
           ),
         ),
         const SizedBox(height: 16),
-        
+
         // Priority and Type
         Row(
           children: [
@@ -238,7 +242,10 @@ class _PatrolFormDialogState extends ConsumerState<PatrolFormDialog> {
                 ),
                 items: const [
                   DropdownMenuItem(value: 'low', child: Text('Low Priority')),
-                  DropdownMenuItem(value: 'normal', child: Text('Normal Priority')),
+                  DropdownMenuItem(
+                    value: 'normal',
+                    child: Text('Normal Priority'),
+                  ),
                   DropdownMenuItem(value: 'high', child: Text('High Priority')),
                   DropdownMenuItem(value: 'urgent', child: Text('Urgent')),
                 ],
@@ -259,10 +266,22 @@ class _PatrolFormDialogState extends ConsumerState<PatrolFormDialog> {
                   prefixIcon: Icon(Icons.category),
                 ),
                 items: const [
-                  DropdownMenuItem(value: 'patrol', child: Text('Regular Patrol')),
-                  DropdownMenuItem(value: 'inspection', child: Text('Inspection')),
-                  DropdownMenuItem(value: 'maintenance', child: Text('Maintenance Check')),
-                  DropdownMenuItem(value: 'emergency', child: Text('Emergency Response')),
+                  DropdownMenuItem(
+                    value: 'patrol',
+                    child: Text('Regular Patrol'),
+                  ),
+                  DropdownMenuItem(
+                    value: 'inspection',
+                    child: Text('Inspection'),
+                  ),
+                  DropdownMenuItem(
+                    value: 'maintenance',
+                    child: Text('Maintenance Check'),
+                  ),
+                  DropdownMenuItem(
+                    value: 'emergency',
+                    child: Text('Emergency Response'),
+                  ),
                 ],
                 onChanged: (value) {
                   setState(() {
@@ -283,12 +302,11 @@ class _PatrolFormDialogState extends ConsumerState<PatrolFormDialog> {
       children: [
         Text(
           'Scheduling',
-          style: Theme.of(context).textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.w600,
-          ),
+          style: Theme.of(
+            context,
+          ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
         ),
         const SizedBox(height: 16),
-        
         Row(
           children: [
             Expanded(
@@ -338,11 +356,11 @@ class _PatrolFormDialogState extends ConsumerState<PatrolFormDialog> {
           prefixIcon: const Icon(Icons.schedule),
         ),
         child: Text(
-          value != null 
+          value != null
               ? DateFormat('MMM dd, yyyy HH:mm').format(value)
               : 'Select date and time',
           style: TextStyle(
-            color: value != null 
+            color: value != null
                 ? Theme.of(context).textTheme.bodyLarge?.color
                 : Theme.of(context).hintColor,
           ),
@@ -357,12 +375,11 @@ class _PatrolFormDialogState extends ConsumerState<PatrolFormDialog> {
       children: [
         Text(
           'Assignment',
-          style: Theme.of(context).textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.w600,
-          ),
+          style: Theme.of(
+            context,
+          ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
         ),
         const SizedBox(height: 16),
-        
         Row(
           children: [
             Expanded(
@@ -390,9 +407,11 @@ class _PatrolFormDialogState extends ConsumerState<PatrolFormDialog> {
                     _selectedSite = site;
                     _selectedCheckpoints = [];
                   });
-                  
+
                   if (site != null) {
-                    ref.read(checkpointsProvider.notifier).setFilters(siteId: site.id);
+                    ref
+                        .read(checkpointsProvider.notifier)
+                        .setFilters(siteId: site.id);
                   }
                 },
               ),
@@ -407,7 +426,13 @@ class _PatrolFormDialogState extends ConsumerState<PatrolFormDialog> {
                   prefixIcon: Icon(Icons.person),
                 ),
                 items: usersState.users
-                    .where((user) => ['guard', 'supervisor', 'site_manager'].any((role) => user.roles.contains(role)))
+                    .where(
+                  (user) => [
+                    'guard',
+                    'supervisor',
+                    'site_manager',
+                  ].any((role) => user.roles.contains(role)),
+                )
                     .map((user) {
                   return DropdownMenuItem<User>(
                     value: user,
@@ -439,9 +464,9 @@ class _PatrolFormDialogState extends ConsumerState<PatrolFormDialog> {
           children: [
             Text(
               'Checkpoints',
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.w600,
-              ),
+              style: Theme.of(
+                context,
+              ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
             ),
             const Spacer(),
             if (availableCheckpoints.isNotEmpty) ...[
@@ -465,7 +490,6 @@ class _PatrolFormDialogState extends ConsumerState<PatrolFormDialog> {
           ],
         ),
         const SizedBox(height: 16),
-        
         if (availableCheckpoints.isEmpty)
           Card(
             color: Colors.orange[50],
@@ -476,7 +500,9 @@ class _PatrolFormDialogState extends ConsumerState<PatrolFormDialog> {
                   Icon(Icons.warning, color: Colors.orange),
                   SizedBox(width: 8),
                   Expanded(
-                    child: Text('No checkpoints available for this site. The patrol will be a general patrol without specific checkpoints.'),
+                    child: Text(
+                      'No checkpoints available for this site. The patrol will be a general patrol without specific checkpoints.',
+                    ),
                   ),
                 ],
               ),
@@ -494,7 +520,7 @@ class _PatrolFormDialogState extends ConsumerState<PatrolFormDialog> {
               itemBuilder: (context, index) {
                 final checkpoint = availableCheckpoints[index];
                 final isSelected = _selectedCheckpoints.contains(checkpoint);
-                
+
                 return CheckboxListTile(
                   title: Text(checkpoint.name),
                   subtitle: Text(checkpoint.description ?? 'No description'),
@@ -574,26 +600,28 @@ class _PatrolFormDialogState extends ConsumerState<PatrolFormDialog> {
     try {
       final request = CreatePatrolRequest(
         title: _titleController.text.trim(),
-        description: _descriptionController.text.trim().isEmpty 
-            ? null 
+        description: _descriptionController.text.trim().isEmpty
+            ? null
             : _descriptionController.text.trim(),
         siteId: _selectedSite!.id,
-        assignedTo: _selectedAssignee?.id,
+        assignedToId: _selectedAssignee?.id,
         scheduledStart: _scheduledStart!,
         scheduledEnd: _scheduledEnd!,
         priority: _priority,
         taskType: _taskType,
-        checkpointIds: _selectedCheckpoints.map((c) => c.id).toList(),
       );
 
       bool success;
       if (widget.patrol == null) {
-        success = await ref.read(patrolsProvider.notifier).createPatrol(request);
+        success =
+            await ref.read(patrolsProvider.notifier).createPatrol(request);
       } else {
         // TODO: Implement update patrol
         success = false;
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Edit patrol functionality coming soon')),
+          const SnackBar(
+            content: Text('Edit patrol functionality coming soon'),
+          ),
         );
       }
 
@@ -601,9 +629,11 @@ class _PatrolFormDialogState extends ConsumerState<PatrolFormDialog> {
         Navigator.of(context).pop();
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(widget.patrol == null 
-                ? 'Patrol created successfully' 
-                : 'Patrol updated successfully'),
+            content: Text(
+              widget.patrol == null
+                  ? 'Patrol created successfully'
+                  : 'Patrol updated successfully',
+            ),
             backgroundColor: Colors.green,
           ),
         );

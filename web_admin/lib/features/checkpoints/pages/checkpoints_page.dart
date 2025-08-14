@@ -8,7 +8,6 @@ import '../widgets/route_optimization_widget.dart';
 import '../../../shared/widgets/rbac/rbac.dart';
 import '../../../features/auth/providers/auth_provider.dart';
 import '../../../features/sites/providers/sites_provider.dart';
-import '../../../shared/models/site.dart';
 
 class CheckpointsPage extends ConsumerStatefulWidget {
   const CheckpointsPage({super.key});

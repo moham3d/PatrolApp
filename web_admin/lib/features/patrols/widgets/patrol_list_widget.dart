@@ -21,7 +21,6 @@ class PatrolListWidget extends ConsumerStatefulWidget {
 
 class _PatrolListWidgetState extends ConsumerState<PatrolListWidget> {
   String? _statusFilter;
-  String? _assigneeFilter;
   final TextEditingController _searchController = TextEditingController();
 
   @override
@@ -42,7 +41,7 @@ class _PatrolListWidgetState extends ConsumerState<PatrolListWidget> {
           // Header with filters
           _buildHeader(context),
           const SizedBox(height: 16),
-          
+
           // Data table
           Expanded(
             child: patrolsAsync.when(
@@ -66,7 +65,8 @@ class _PatrolListWidgetState extends ConsumerState<PatrolListWidget> {
                     Text(error.toString()),
                     const SizedBox(height: 16),
                     ElevatedButton(
-                      onPressed: () => ref.read(patrolsProvider.notifier).loadPatrols(),
+                      onPressed: () =>
+                          ref.read(patrolsProvider.notifier).loadPatrols(),
                       child: const Text('Retry'),
                     ),
                   ],
@@ -85,11 +85,11 @@ class _PatrolListWidgetState extends ConsumerState<PatrolListWidget> {
         Text(
           'Patrol Reports',
           style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-            fontWeight: FontWeight.bold,
-          ),
+                fontWeight: FontWeight.bold,
+              ),
         ),
         const Spacer(),
-        
+
         // Search field
         SizedBox(
           width: 250,
@@ -104,7 +104,7 @@ class _PatrolListWidgetState extends ConsumerState<PatrolListWidget> {
           ),
         ),
         const SizedBox(width: 16),
-        
+
         // Status filter
         SizedBox(
           width: 150,
@@ -130,7 +130,7 @@ class _PatrolListWidgetState extends ConsumerState<PatrolListWidget> {
           ),
         ),
         const SizedBox(width: 16),
-        
+
         // Export button
         PermissionGuard(
           requiredRoles: Permissions.patrolView,
@@ -174,7 +174,9 @@ class _PatrolListWidgetState extends ConsumerState<PatrolListWidget> {
             DataColumn(label: Text('Progress')),
             DataColumn(label: Text('Actions')),
           ],
-          rows: filteredPatrols.map((patrol) => _buildPatrolRow(context, patrol)).toList(),
+          rows: filteredPatrols
+              .map((patrol) => _buildPatrolRow(context, patrol))
+              .toList(),
         ),
       ),
     );
@@ -256,7 +258,7 @@ class _PatrolListWidgetState extends ConsumerState<PatrolListWidget> {
   Widget _buildStatusChip(String status) {
     Color color;
     IconData icon;
-    
+
     switch (status.toLowerCase()) {
       case 'assigned':
         color = Colors.orange;
@@ -299,7 +301,7 @@ class _PatrolListWidgetState extends ConsumerState<PatrolListWidget> {
     }
 
     final progress = patrol.checkpointsCompleted / patrol.checkpointsTotal;
-    
+
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
@@ -325,24 +327,25 @@ class _PatrolListWidgetState extends ConsumerState<PatrolListWidget> {
       if (_statusFilter != null && patrol.status != _statusFilter) {
         return false;
       }
-      
+
       // Search filter
       final searchTerm = _searchController.text.toLowerCase();
       if (searchTerm.isNotEmpty) {
         return patrol.title.toLowerCase().contains(searchTerm) ||
-               (patrol.description?.toLowerCase().contains(searchTerm) ?? false) ||
-               (patrol.siteName?.toLowerCase().contains(searchTerm) ?? false) ||
-               (patrol.assignedToName?.toLowerCase().contains(searchTerm) ?? false);
+            (patrol.description?.toLowerCase().contains(searchTerm) ?? false) ||
+            (patrol.siteName?.toLowerCase().contains(searchTerm) ?? false) ||
+            (patrol.assignedToName?.toLowerCase().contains(searchTerm) ??
+                false);
       }
-      
+
       return true;
     }).toList();
   }
 
   void _filterPatrols() {
     ref.read(patrolsProvider.notifier).loadPatrols(
-      status: _statusFilter,
-    );
+          status: _statusFilter,
+        );
   }
 
   void _viewPatrolDetails(BuildContext context, Patrol patrol) {
@@ -358,17 +361,27 @@ class _PatrolListWidgetState extends ConsumerState<PatrolListWidget> {
             children: [
               _buildDetailRow('ID', '#${patrol.id}'),
               _buildDetailRow('Site', patrol.siteName ?? 'N/A'),
-              _buildDetailRow('Assigned To', patrol.assignedToName ?? 'Unassigned'),
+              _buildDetailRow(
+                  'Assigned To', patrol.assignedToName ?? 'Unassigned'),
               _buildDetailRow('Status', patrol.status.toUpperCase()),
-              _buildDetailRow('Scheduled Start', DateFormat('MMM dd, yyyy HH:mm').format(patrol.scheduledStart)),
-              _buildDetailRow('Scheduled End', DateFormat('MMM dd, yyyy HH:mm').format(patrol.scheduledEnd)),
-              _buildDetailRow('Checkpoints', '${patrol.checkpointsCompleted}/${patrol.checkpointsTotal}'),
+              _buildDetailRow(
+                  'Scheduled Start',
+                  DateFormat('MMM dd, yyyy HH:mm')
+                      .format(patrol.scheduledStart)),
+              _buildDetailRow('Scheduled End',
+                  DateFormat('MMM dd, yyyy HH:mm').format(patrol.scheduledEnd)),
+              _buildDetailRow('Checkpoints',
+                  '${patrol.checkpointsCompleted}/${patrol.checkpointsTotal}'),
               if (patrol.description?.isNotEmpty == true)
                 _buildDetailRow('Description', patrol.description!),
               if (patrol.actualStart != null)
-                _buildDetailRow('Actual Start', DateFormat('MMM dd, yyyy HH:mm').format(patrol.actualStart!)),
+                _buildDetailRow(
+                    'Actual Start',
+                    DateFormat('MMM dd, yyyy HH:mm')
+                        .format(patrol.actualStart!)),
               if (patrol.actualEnd != null)
-                _buildDetailRow('Actual End', DateFormat('MMM dd, yyyy HH:mm').format(patrol.actualEnd!)),
+                _buildDetailRow('Actual End',
+                    DateFormat('MMM dd, yyyy HH:mm').format(patrol.actualEnd!)),
             ],
           ),
         ),

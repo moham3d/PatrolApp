@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/services.dart';
 
 import '../../../shared/models/checkpoint.dart';
-import '../../../shared/services/checkpoint_service.dart';
 
 /// Widget for managing QR codes and NFC tags for checkpoints
 class QrNfcManagementWidget extends ConsumerStatefulWidget {

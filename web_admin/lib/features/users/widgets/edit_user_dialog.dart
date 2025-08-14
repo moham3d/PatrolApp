@@ -82,8 +82,8 @@ class _EditUserDialogState extends ConsumerState<EditUserDialog> {
         phone: _phoneController.text.trim() != (widget.user.phone ?? '')
             ? (_phoneController.text.trim().isNotEmpty ? _phoneController.text.trim() : null)
             : null,
-        roleIds: !_selectedRoles.difference(Set<String>.from(widget.user.roles)).isEmpty ||
-                !Set<String>.from(widget.user.roles).difference(_selectedRoles).isEmpty
+        roleIds: _selectedRoles.difference(Set<String>.from(widget.user.roles)).isNotEmpty ||
+                Set<String>.from(widget.user.roles).difference(_selectedRoles).isNotEmpty
             ? _selectedRoles.map((role) => _getRoleId(role)).toList()
             : null,
         isActive: _isActive != widget.user.isActive ? _isActive : null,

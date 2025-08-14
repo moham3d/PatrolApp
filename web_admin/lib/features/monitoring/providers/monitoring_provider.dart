@@ -1,10 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../shared/services/websocket_service.dart';
-import '../../../shared/services/auth_service.dart';
-import '../../../shared/services/patrol_service.dart';
-import '../../../shared/services/user_service.dart';
-import '../../../shared/models/patrol.dart';
 import '../../../shared/models/user.dart';
 import '../../../core/services/http_client.dart';
 

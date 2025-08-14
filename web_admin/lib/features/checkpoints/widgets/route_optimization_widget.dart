@@ -14,10 +14,12 @@ class RouteOptimizationWidget extends ConsumerStatefulWidget {
   const RouteOptimizationWidget({super.key});
 
   @override
-  ConsumerState<RouteOptimizationWidget> createState() => _RouteOptimizationWidgetState();
+  ConsumerState<RouteOptimizationWidget> createState() =>
+      _RouteOptimizationWidgetState();
 }
 
-class _RouteOptimizationWidgetState extends ConsumerState<RouteOptimizationWidget> {
+class _RouteOptimizationWidgetState
+    extends ConsumerState<RouteOptimizationWidget> {
   final MapController _mapController = MapController();
   Site? _selectedSite;
   List<Checkpoint> _selectedCheckpoints = [];
@@ -25,7 +27,7 @@ class _RouteOptimizationWidgetState extends ConsumerState<RouteOptimizationWidge
   RouteAnalysis? _routeAnalysis;
   String _optimizationMethod = 'nearest_neighbor';
   bool _isOptimizing = false;
-  
+
   // Default map center
   static const LatLng _defaultCenter = LatLng(40.7128, -74.0060);
 
@@ -43,7 +45,7 @@ class _RouteOptimizationWidgetState extends ConsumerState<RouteOptimizationWidge
     final checkpointsState = ref.watch(checkpointsProvider);
 
     return Dialog(
-      child: Container(
+      child: SizedBox(
         width: 1000,
         height: 700,
         child: Column(
@@ -66,9 +68,9 @@ class _RouteOptimizationWidgetState extends ConsumerState<RouteOptimizationWidge
                     child: Text(
                       'Route Optimization',
                       style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                      ),
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
                     ),
                   ),
                   IconButton(
@@ -78,7 +80,7 @@ class _RouteOptimizationWidgetState extends ConsumerState<RouteOptimizationWidge
                 ],
               ),
             ),
-            
+
             // Content
             Expanded(
               child: Row(
@@ -100,19 +102,19 @@ class _RouteOptimizationWidgetState extends ConsumerState<RouteOptimizationWidge
                             // Site selection
                             _buildSiteSelector(sitesState),
                             const SizedBox(height: 16),
-                            
+
                             // Checkpoint selection
                             if (_selectedSite != null) ...[
                               _buildCheckpointSelector(checkpointsState),
                               const SizedBox(height: 16),
                             ],
-                            
+
                             // Optimization controls
                             if (_selectedCheckpoints.length >= 2) ...[
                               _buildOptimizationControls(),
                               const SizedBox(height: 16),
                             ],
-                            
+
                             // Route analysis
                             if (_routeAnalysis != null) ...[
                               _buildRouteAnalysis(),
@@ -122,7 +124,7 @@ class _RouteOptimizationWidgetState extends ConsumerState<RouteOptimizationWidge
                       ),
                     ),
                   ),
-                  
+
                   // Right panel - Map
                   Expanded(
                     child: _buildMap(),
@@ -143,8 +145,8 @@ class _RouteOptimizationWidgetState extends ConsumerState<RouteOptimizationWidge
         Text(
           'Select Site',
           style: Theme.of(context).textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.w600,
-          ),
+                fontWeight: FontWeight.w600,
+              ),
         ),
         const SizedBox(height: 8),
         DropdownButtonFormField<Site>(
@@ -166,7 +168,7 @@ class _RouteOptimizationWidgetState extends ConsumerState<RouteOptimizationWidge
               _optimizedRoute = [];
               _routeAnalysis = null;
             });
-            
+
             if (site != null) {
               _loadCheckpointsForSite(site.id);
               _centerMapOnSite(site);
@@ -190,8 +192,8 @@ class _RouteOptimizationWidgetState extends ConsumerState<RouteOptimizationWidge
             Text(
               'Checkpoints',
               style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.w600,
-              ),
+                    fontWeight: FontWeight.w600,
+                  ),
             ),
             const Spacer(),
             TextButton(
@@ -229,8 +231,9 @@ class _RouteOptimizationWidgetState extends ConsumerState<RouteOptimizationWidge
                   itemCount: availableCheckpoints.length,
                   itemBuilder: (context, index) {
                     final checkpoint = availableCheckpoints[index];
-                    final isSelected = _selectedCheckpoints.contains(checkpoint);
-                    
+                    final isSelected =
+                        _selectedCheckpoints.contains(checkpoint);
+
                     return CheckboxListTile(
                       dense: true,
                       title: Text(checkpoint.name),
@@ -266,11 +269,11 @@ class _RouteOptimizationWidgetState extends ConsumerState<RouteOptimizationWidge
         Text(
           'Optimization',
           style: Theme.of(context).textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.w600,
-          ),
+                fontWeight: FontWeight.w600,
+              ),
         ),
         const SizedBox(height: 12),
-        
+
         // Optimization method
         DropdownButtonFormField<String>(
           value: _optimizationMethod,
@@ -299,7 +302,7 @@ class _RouteOptimizationWidgetState extends ConsumerState<RouteOptimizationWidge
           },
         ),
         const SizedBox(height: 16),
-        
+
         // Optimize button
         SizedBox(
           width: double.infinity,
@@ -315,7 +318,7 @@ class _RouteOptimizationWidgetState extends ConsumerState<RouteOptimizationWidge
             label: Text(_isOptimizing ? 'Optimizing...' : 'Optimize Route'),
           ),
         ),
-        
+
         if (_optimizedRoute.isNotEmpty) ...[
           const SizedBox(height: 12),
           Row(
@@ -353,17 +356,19 @@ class _RouteOptimizationWidgetState extends ConsumerState<RouteOptimizationWidge
             Text(
               'Route Analysis',
               style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.w600,
-                color: Colors.green[700],
-              ),
+                    fontWeight: FontWeight.w600,
+                    color: Colors.green[700],
+                  ),
             ),
             const SizedBox(height: 12),
-            
-            _buildAnalysisRow('Total Distance', '${_routeAnalysis!.totalDistance.toStringAsFixed(2)} km'),
-            _buildAnalysisRow('Estimated Time', '${_routeAnalysis!.estimatedTime.toStringAsFixed(0)} min'),
-            _buildAnalysisRow('Efficiency Score', '${(_routeAnalysis!.efficiencyScore * 100).toStringAsFixed(1)}%'),
-            _buildAnalysisRow('Checkpoints', '${_routeAnalysis!.checkpointCount}'),
-            
+            _buildAnalysisRow('Total Distance',
+                '${_routeAnalysis!.totalDistance.toStringAsFixed(2)} km'),
+            _buildAnalysisRow('Estimated Time',
+                '${_routeAnalysis!.estimatedTime.toStringAsFixed(0)} min'),
+            _buildAnalysisRow('Efficiency Score',
+                '${(_routeAnalysis!.efficiencyScore * 100).toStringAsFixed(1)}%'),
+            _buildAnalysisRow(
+                'Checkpoints', '${_routeAnalysis!.checkpointCount}'),
             if (_routeAnalysis!.improvementPercentage > 0) ...[
               const SizedBox(height: 8),
               Container(
@@ -407,8 +412,8 @@ class _RouteOptimizationWidgetState extends ConsumerState<RouteOptimizationWidge
           Text(
             value,
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
-              fontWeight: FontWeight.w600,
-            ),
+                  fontWeight: FontWeight.w600,
+                ),
           ),
         ],
       ),
@@ -419,8 +424,9 @@ class _RouteOptimizationWidgetState extends ConsumerState<RouteOptimizationWidge
     return FlutterMap(
       mapController: _mapController,
       options: MapOptions(
-        initialCenter: _selectedSite?.coordinates != null 
-            ? LatLng(_selectedSite!.coordinates!.latitude, _selectedSite!.coordinates!.longitude)
+        initialCenter: _selectedSite?.coordinates != null
+            ? LatLng(_selectedSite!.coordinates.latitude,
+                _selectedSite!.coordinates.longitude)
             : _defaultCenter,
         initialZoom: _selectedSite != null ? 16.0 : 12.0,
         minZoom: 8.0,
@@ -432,17 +438,19 @@ class _RouteOptimizationWidgetState extends ConsumerState<RouteOptimizationWidge
           urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
           userAgentPackageName: 'com.patrolshield.admin',
         ),
-        
+
         // Route lines
         if (_optimizedRoute.isNotEmpty)
           PolylineLayer(
-            polylines: _optimizedRoute.map((segment) => Polyline(
-              points: [segment.from, segment.to],
-              strokeWidth: 3.0,
-              color: _getSegmentColor(segment),
-            )).toList(),
+            polylines: _optimizedRoute
+                .map((segment) => Polyline(
+                      points: [segment.from, segment.to],
+                      strokeWidth: 3.0,
+                      color: _getSegmentColor(segment),
+                    ))
+                .toList(),
           ),
-        
+
         // Checkpoint markers
         if (_selectedSite != null)
           MarkerLayer(
@@ -461,7 +469,7 @@ class _RouteOptimizationWidgetState extends ConsumerState<RouteOptimizationWidge
     return siteCheckpoints.map((checkpoint) {
       final isSelected = _selectedCheckpoints.contains(checkpoint);
       final routeIndex = _getCheckpointRouteIndex(checkpoint);
-      
+
       return Marker(
         point: LatLng(
           checkpoint.location.latitude,
@@ -514,9 +522,9 @@ class _RouteOptimizationWidgetState extends ConsumerState<RouteOptimizationWidge
     for (int i = 0; i < _optimizedRoute.length; i++) {
       final segment = _optimizedRoute[i];
       if ((segment.from.latitude == checkpoint.location.latitude &&
-           segment.from.longitude == checkpoint.location.longitude) ||
+              segment.from.longitude == checkpoint.location.longitude) ||
           (segment.to.latitude == checkpoint.location.latitude &&
-           segment.to.longitude == checkpoint.location.longitude)) {
+              segment.to.longitude == checkpoint.location.longitude)) {
         return i;
       }
     }
@@ -528,12 +536,10 @@ class _RouteOptimizationWidgetState extends ConsumerState<RouteOptimizationWidge
   }
 
   void _centerMapOnSite(Site site) {
-    if (site.coordinates != null) {
-      _mapController.move(
-        LatLng(site.coordinates!.latitude, site.coordinates!.longitude),
-        16.0,
-      );
-    }
+    _mapController.move(
+      LatLng(site.coordinates.latitude, site.coordinates.longitude),
+      16.0,
+    );
   }
 
   Future<void> _optimizeRoute() async {
@@ -546,10 +552,10 @@ class _RouteOptimizationWidgetState extends ConsumerState<RouteOptimizationWidge
     try {
       // Simulate optimization process
       await Future.delayed(const Duration(seconds: 2));
-      
+
       final optimizedRoute = _performRouteOptimization();
       final analysis = _analyzeRoute(optimizedRoute);
-      
+
       setState(() {
         _optimizedRoute = optimizedRoute;
         _routeAnalysis = analysis;
@@ -568,7 +574,7 @@ class _RouteOptimizationWidgetState extends ConsumerState<RouteOptimizationWidge
       setState(() {
         _isOptimizing = false;
       });
-      
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -595,11 +601,11 @@ class _RouteOptimizationWidgetState extends ConsumerState<RouteOptimizationWidge
 
   List<RouteSegment> _nearestNeighborOptimization() {
     if (_selectedCheckpoints.isEmpty) return [];
-    
+
     final route = <RouteSegment>[];
     final remaining = List<Checkpoint>.from(_selectedCheckpoints);
     Checkpoint current = remaining.removeAt(0);
-    
+
     while (remaining.isNotEmpty) {
       // Find nearest checkpoint
       remaining.sort((a, b) {
@@ -607,10 +613,10 @@ class _RouteOptimizationWidgetState extends ConsumerState<RouteOptimizationWidge
         final distB = _calculateDistance(current.location, b.location);
         return distA.compareTo(distB);
       });
-      
+
       final next = remaining.removeAt(0);
       final distance = _calculateDistance(current.location, next.location);
-      
+
       route.add(RouteSegment(
         from: LatLng(current.location.latitude, current.location.longitude),
         to: LatLng(next.location.latitude, next.location.longitude),
@@ -619,10 +625,10 @@ class _RouteOptimizationWidgetState extends ConsumerState<RouteOptimizationWidge
         fromCheckpoint: current,
         toCheckpoint: next,
       ));
-      
+
       current = next;
     }
-    
+
     return route;
   }
 
@@ -646,29 +652,33 @@ class _RouteOptimizationWidgetState extends ConsumerState<RouteOptimizationWidge
         improvementPercentage: 0,
       );
     }
-    
-    final totalDistance = route.fold<double>(0, (sum, segment) => sum + segment.distance);
-    final estimatedTime = (totalDistance / 3.0) * 60 + (_selectedCheckpoints.length * 3); // 3 km/h + 3 min per checkpoint
-    final efficiencyScore = route.fold<double>(0, (sum, segment) => sum + segment.efficiency) / route.length;
-    
+
+    final totalDistance =
+        route.fold<double>(0, (sum, segment) => sum + segment.distance);
+    final estimatedTime = (totalDistance / 3.0) * 60 +
+        (_selectedCheckpoints.length * 3); // 3 km/h + 3 min per checkpoint
+    final efficiencyScore =
+        route.fold<double>(0, (sum, segment) => sum + segment.efficiency) /
+            route.length;
+
     // Calculate improvement (simplified)
     final originalDistance = _calculateOriginalRouteDistance();
-    final improvementPercentage = originalDistance > 0 
+    final improvementPercentage = originalDistance > 0
         ? ((originalDistance - totalDistance) / originalDistance) * 100
         : 0;
-    
+
     return RouteAnalysis(
       totalDistance: totalDistance,
       estimatedTime: estimatedTime,
       efficiencyScore: efficiencyScore,
       checkpointCount: _selectedCheckpoints.length,
-      improvementPercentage: math.max(0, improvementPercentage),
+      improvementPercentage: math.max(0.0, improvementPercentage.toDouble()),
     );
   }
 
   double _calculateOriginalRouteDistance() {
     if (_selectedCheckpoints.length < 2) return 0;
-    
+
     double total = 0;
     for (int i = 0; i < _selectedCheckpoints.length - 1; i++) {
       total += _calculateDistance(
@@ -681,8 +691,9 @@ class _RouteOptimizationWidgetState extends ConsumerState<RouteOptimizationWidge
 
   double _calculateDistance(Location point1, Location point2) {
     const Distance distance = Distance();
-    return distance.as(LengthUnit.Kilometer, 
-        LatLng(point1.latitude, point1.longitude), 
+    return distance.as(
+        LengthUnit.Kilometer,
+        LatLng(point1.latitude, point1.longitude),
         LatLng(point2.latitude, point2.longitude));
   }
 
@@ -735,12 +746,4 @@ class RouteAnalysis {
     required this.checkpointCount,
     required this.improvementPercentage,
   });
-}
-
-/// Location class helper
-class Location {
-  final double latitude;
-  final double longitude;
-
-  const Location(this.latitude, this.longitude);
 }

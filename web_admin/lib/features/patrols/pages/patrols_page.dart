@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:table_calendar/table_calendar.dart';
 
 import '../providers/patrols_provider.dart';
 import '../widgets/patrol_calendar_widget.dart';
@@ -21,7 +20,7 @@ class _PatrolsPageState extends ConsumerState<PatrolsPage>
   late TabController _tabController;
   DateTime _selectedDay = DateTime.now();
   DateTime _focusedDay = DateTime.now();
-  
+
   @override
   void initState() {
     super.initState();
@@ -38,15 +37,13 @@ class _PatrolsPageState extends ConsumerState<PatrolsPage>
   }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final patrolsAsync = ref.watch(patrolsProvider);
-    
+  Widget build(BuildContext context) {
     return Scaffold(
       body: Column(
         children: [
           // Header with title and actions
           _buildHeader(context),
-          
+
           // Tab bar
           TabBar(
             controller: _tabController,
@@ -57,7 +54,7 @@ class _PatrolsPageState extends ConsumerState<PatrolsPage>
               Tab(icon: Icon(Icons.map), text: 'Route Planner'),
             ],
           ),
-          
+
           // Tab content
           Expanded(
             child: TabBarView(
@@ -74,15 +71,13 @@ class _PatrolsPageState extends ConsumerState<PatrolsPage>
                     });
                   },
                 ),
-                
+
                 // List view
-                PatrolListWidget(
-                  selectedDay: _selectedDay,
-                ),
-                
+                PatrolListWidget(selectedDay: _selectedDay),
+
                 // Status dashboard
                 const PatrolStatusWidget(),
-                
+
                 // Route planner
                 const PatrolRoutePlanner(),
               ],
@@ -109,14 +104,14 @@ class _PatrolsPageState extends ConsumerState<PatrolsPage>
               Text(
                 'Patrol Management',
                 style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
+                      fontWeight: FontWeight.bold,
+                    ),
               ),
               Text(
                 'Schedule, monitor, and manage security patrols',
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: Theme.of(context).colorScheme.onSurfaceVariant,
-                ),
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    ),
               ),
             ],
           ),
@@ -124,7 +119,8 @@ class _PatrolsPageState extends ConsumerState<PatrolsPage>
           Row(
             children: [
               IconButton(
-                onPressed: () => ref.read(patrolsProvider.notifier).loadPatrols(),
+                onPressed: () =>
+                    ref.read(patrolsProvider.notifier).loadPatrols(),
                 icon: const Icon(Icons.refresh),
                 tooltip: 'Refresh',
               ),
@@ -144,9 +140,7 @@ class _PatrolsPageState extends ConsumerState<PatrolsPage>
   void _showCreatePatrolDialog(BuildContext context) {
     showDialog(
       context: context,
-      builder: (context) => PatrolFormDialog(
-        initialDate: _selectedDay,
-      ),
+      builder: (context) => const PatrolFormDialog(),
     );
   }
 }

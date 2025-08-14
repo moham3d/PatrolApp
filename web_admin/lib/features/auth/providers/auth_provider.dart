@@ -1,5 +1,4 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:state_notifier/state_notifier.dart';
 
 import '../../../shared/models/auth.dart';
 import '../../../shared/services/auth_service.dart';
@@ -39,7 +38,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
 
   Future<void> _checkAuthStatus() async {
     state = state.copyWith(isLoading: true);
-    
+
     try {
       final isLoggedIn = await _authService.isLoggedIn();
       if (isLoggedIn) {
@@ -55,7 +54,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
 
   Future<bool> login(String username, String password) async {
     state = state.copyWith(isLoading: true, error: null);
-    
+
     try {
       await _authService.login(username, password);
       final user = await _authService.getCurrentUser();

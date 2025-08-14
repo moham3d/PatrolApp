@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../shared/models/checkpoint.dart';
-import '../../../shared/models/site.dart';
 import '../providers/checkpoints_provider.dart';
 import '../../../features/sites/providers/sites_provider.dart';
 

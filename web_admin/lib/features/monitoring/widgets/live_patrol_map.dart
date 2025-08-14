@@ -15,7 +15,7 @@ class LivePatrolMap extends ConsumerStatefulWidget {
 
 class _LivePatrolMapState extends ConsumerState<LivePatrolMap> {
   final MapController _mapController = MapController();
-  
+
   // Default center point (can be configured based on organization's primary location)
   static const LatLng _defaultCenter = LatLng(40.7128, -74.0060); // New York
   static const double _defaultZoom = 12.0;
@@ -34,7 +34,7 @@ class _LivePatrolMapState extends ConsumerState<LivePatrolMap> {
   Widget build(BuildContext context) {
     final livePatrols = ref.watch(livePatrolsProvider);
     final guardLocations = ref.watch(guardLocationsProvider);
-    
+
     return Stack(
       children: [
         FlutterMap(
@@ -54,26 +54,26 @@ class _LivePatrolMapState extends ConsumerState<LivePatrolMap> {
               urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
               userAgentPackageName: 'com.patrolshield.admin',
               maxNativeZoom: 19,
-              tileUpdateTransformer: _zoomFilterTransformer,
+              // tileUpdateTransformer: _zoomFilterTransformer, // TODO: Fix type issue
             ),
-            
+
             // Patrol markers
             MarkerLayer(
               markers: _buildPatrolMarkers(livePatrols),
             ),
-            
+
             // Guard location markers
             MarkerLayer(
               markers: _buildGuardMarkers(guardLocations),
             ),
-            
+
             // Patrol routes (if available)
             PolylineLayer(
               polylines: _buildPatrolRoutes(livePatrols),
             ),
           ],
         ),
-        
+
         // Map controls overlay
         Positioned(
           top: 16,
@@ -100,7 +100,7 @@ class _LivePatrolMapState extends ConsumerState<LivePatrolMap> {
             ],
           ),
         ),
-        
+
         // Legend
         Positioned(
           bottom: 16,
@@ -116,7 +116,7 @@ class _LivePatrolMapState extends ConsumerState<LivePatrolMap> {
     return patrols.map((patrol) {
       Color markerColor;
       IconData markerIcon;
-      
+
       switch (patrol.status.toLowerCase()) {
         case 'active':
         case 'in_progress':
@@ -174,7 +174,7 @@ class _LivePatrolMapState extends ConsumerState<LivePatrolMap> {
   List<Marker> _buildGuardMarkers(List<LiveGuardLocation> guards) {
     return guards.map((guard) {
       Color markerColor;
-      
+
       switch (guard.status.toLowerCase()) {
         case 'online':
         case 'active':
@@ -230,7 +230,8 @@ class _LivePatrolMapState extends ConsumerState<LivePatrolMap> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _detailRow('Status', patrol.status.toUpperCase()),
-            _detailRow('Location', '${patrol.latitude.toStringAsFixed(6)}, ${patrol.longitude.toStringAsFixed(6)}'),
+            _detailRow('Location',
+                '${patrol.latitude.toStringAsFixed(6)}, ${patrol.longitude.toStringAsFixed(6)}'),
             _detailRow('Last Update', _formatDateTime(patrol.lastUpdate)),
             if (patrol.assignedGuard != null)
               _detailRow('Guard', patrol.assignedGuard!.fullName),
@@ -270,7 +271,8 @@ class _LivePatrolMapState extends ConsumerState<LivePatrolMap> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _detailRow('Status', guard.status.toUpperCase()),
-            _detailRow('Location', '${guard.latitude.toStringAsFixed(6)}, ${guard.longitude.toStringAsFixed(6)}'),
+            _detailRow('Location',
+                '${guard.latitude.toStringAsFixed(6)}, ${guard.longitude.toStringAsFixed(6)}'),
             _detailRow('Last Update', _formatDateTime(guard.lastUpdate)),
             if (guard.currentPatrolId != null)
               _detailRow('Current Patrol', 'Patrol #${guard.currentPatrolId}'),
@@ -308,7 +310,7 @@ class _LivePatrolMapState extends ConsumerState<LivePatrolMap> {
   String _formatDateTime(DateTime dateTime) {
     final now = DateTime.now();
     final difference = now.difference(dateTime);
-    
+
     if (difference.inMinutes < 1) {
       return 'Just now';
     } else if (difference.inMinutes < 60) {
@@ -408,15 +410,16 @@ class _LivePatrolMapState extends ConsumerState<LivePatrolMap> {
   void _centerOnPatrols() {
     final patrols = ref.read(livePatrolsProvider);
     final guards = ref.read(guardLocationsProvider);
-    
+
     final allPoints = <LatLng>[
       ...patrols.map((p) => LatLng(p.latitude, p.longitude)),
       ...guards.map((g) => LatLng(g.latitude, g.longitude)),
     ];
-    
+
     if (allPoints.isNotEmpty) {
       final bounds = LatLngBounds.fromPoints(allPoints);
-      _mapController.fitCamera(CameraFit.bounds(bounds: bounds, padding: const EdgeInsets.all(50)));
+      _mapController.fitCamera(
+          CameraFit.bounds(bounds: bounds, padding: const EdgeInsets.all(50)));
     }
   }
 
@@ -435,12 +438,15 @@ class _LivePatrolMapState extends ConsumerState<LivePatrolMap> {
   void _handleEmergencyResponse(LivePatrolLocation patrol) {
     // Placeholder for emergency response functionality
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Emergency response initiated for ${patrol.patrolName}')),
+      SnackBar(
+          content:
+              Text('Emergency response initiated for ${patrol.patrolName}')),
     );
   }
 
   /// Tile update transformer to improve performance
-  TileUpdateTransformer _zoomFilterTransformer = (tileUpdate, source) {
+  /*
+  final TileUpdateTransformer _zoomFilterTransformer = (tileUpdate, source) {
     final shouldFilter = tileUpdate.loadingTime != null &&
         tileUpdate.loadingTime! > const Duration(milliseconds: 500);
     
@@ -454,4 +460,5 @@ class _LivePatrolMapState extends ConsumerState<LivePatrolMap> {
     
     return tileUpdate;
   };
+  */
 }

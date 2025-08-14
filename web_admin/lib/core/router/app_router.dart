@@ -1,45 +1,41 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../features/auth/providers/auth_provider.dart';
 import '../../features/auth/pages/login_page.dart';
 import '../../shared/widgets/main_layout.dart';
-import '../../shared/widgets/rbac/route_guards.dart';
 import '../../features/users/pages/users_page.dart';
 import '../../features/sites/pages/sites_page.dart';
 import '../../features/patrols/pages/patrols_page.dart';
 import '../../features/checkpoints/pages/checkpoints_page.dart';
-import '../../features/monitoring/pages/live_monitoring_page.dart';
+
+class AuthChangeNotifier extends ChangeNotifier {
+  final Ref ref;
+  AuthChangeNotifier(this.ref) {
+    ref.listen(authProvider, (previous, next) {
+      notifyListeners();
+    });
+  }
+}
 
 final appRouterProvider = Provider<GoRouter>((ref) {
-  final authState = ref.watch(authProvider);
-  
   return GoRouter(
-    initialLocation: authState.isLoggedIn 
-        ? RouteGuard.getDefaultRoute(authState.user)
-        : '/login',
+    initialLocation: '/login',
+    refreshListenable: AuthChangeNotifier(ref),
     redirect: (context, state) {
+      final authState = ref.read(authProvider);
       final isLoggedIn = authState.isLoggedIn;
       final isLoggingIn = state.matchedLocation == '/login';
-      final user = authState.user;
 
       // If not logged in and not on login page, redirect to login
       if (!isLoggedIn && !isLoggingIn) {
         return '/login';
       }
 
-      // If logged in and on login page, redirect to appropriate dashboard
+      // If logged in and on login page, redirect to dashboard
       if (isLoggedIn && isLoggingIn) {
-        return RouteGuard.getDefaultRoute(user);
-      }
-
-      // Check if user has permission to access the current route
-      if (isLoggedIn && user != null) {
-        final canAccess = RouteGuard.canAccess(state.matchedLocation, user);
-        if (!canAccess) {
-          return RouteGuard.getDefaultRoute(user);
-        }
+        return '/users';
       }
 
       return null;
@@ -49,59 +45,24 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: '/login',
         builder: (context, state) => const LoginPage(),
       ),
-      GoRoute(
-        path: '/',
-        builder: (context, state) => const RoleDashboard(),
-      ),
       ShellRoute(
         builder: (context, state, child) => MainLayout(child: child),
         routes: [
           GoRoute(
-            path: '/monitoring',
-            builder: (context, state) => const PermissionPage(
-              requiredRoles: ['admin', 'operations_manager'],
-              child: LiveMonitoringPage(),
-            ),
-          ),
-          GoRoute(
             path: '/users',
-            builder: (context, state) => const PermissionPage(
-              requiredRoles: ['admin', 'operations_manager', 'site_manager', 'supervisor'],
-              child: UsersPage(),
-            ),
+            builder: (context, state) => const UsersPage(),
           ),
           GoRoute(
             path: '/sites',
-            builder: (context, state) => const PermissionPage(
-              requiredRoles: ['admin', 'operations_manager', 'site_manager', 'supervisor', 'guard', 'mobile_guard'],
-              child: SitesPage(),
-            ),
+            builder: (context, state) => const SitesPage(),
           ),
           GoRoute(
             path: '/patrols',
-            builder: (context, state) => const PermissionPage(
-              requiredRoles: ['admin', 'operations_manager', 'site_manager', 'supervisor', 'guard', 'mobile_guard'],
-              child: PatrolsPage(),
-            ),
+            builder: (context, state) => const PatrolsPage(),
           ),
           GoRoute(
             path: '/checkpoints',
-            builder: (context, state) => const PermissionPage(
-              requiredRoles: ['admin', 'operations_manager', 'site_manager', 'supervisor', 'guard', 'mobile_guard'],
-              child: CheckpointsPage(),
-            ),
-          ),
-          // Additional admin-only routes (minimal scope - keeping for future expansion)
-          GoRoute(
-            path: '/settings',
-            builder: (context, state) => const PermissionPage(
-              requiredRoles: ['admin'],
-              child: Scaffold(
-                body: Center(
-                  child: Text('System Settings - Coming Soon'),
-                ),
-              ),
-            ),
+            builder: (context, state) => const CheckpointsPage(),
           ),
         ],
       ),

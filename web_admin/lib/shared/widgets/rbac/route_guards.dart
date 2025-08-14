@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../features/auth/providers/auth_provider.dart';
-import '../../shared/models/auth.dart';
+import '../../../features/auth/providers/auth_provider.dart';
+import '../../models/auth.dart';
 import 'permission_widgets.dart';
 
 /// A route guard that checks user permissions before allowing access to routes
@@ -15,31 +15,46 @@ class RouteGuard {
       // Live monitoring - Admin and Operations Manager only
       case '/monitoring':
         return user.isAdmin || user.isOperationsManager;
-        
+
       // User management - Admin, Operations Manager, Site Manager (site only), Supervisor (site only)
       // Guards should NOT have access to user management per access matrix
       case '/users':
-        return user.isAdmin || user.isOperationsManager || user.isSiteManager || user.isSupervisor;
-      
+        return user.isAdmin ||
+            user.isOperationsManager ||
+            user.isSiteManager ||
+            user.isSupervisor;
+
       // Site management - all roles can view (with restrictions), create limited to higher roles
       case '/sites':
-        return user.isAdmin || user.isOperationsManager || user.isSiteManager || 
-               user.isSupervisor || user.isGuard || user.isMobileGuard;
-      
+        return user.isAdmin ||
+            user.isOperationsManager ||
+            user.isSiteManager ||
+            user.isSupervisor ||
+            user.isGuard ||
+            user.isMobileGuard;
+
       // Patrol management - Admin, Operations Manager, Site Manager, Supervisor can manage; Guards can view assigned
       case '/patrols':
-        return user.isAdmin || user.isOperationsManager || user.isSiteManager || 
-               user.isSupervisor || user.isGuard || user.isMobileGuard;
-      
+        return user.isAdmin ||
+            user.isOperationsManager ||
+            user.isSiteManager ||
+            user.isSupervisor ||
+            user.isGuard ||
+            user.isMobileGuard;
+
       // Checkpoint management - similar to patrols
       case '/checkpoints':
-        return user.isAdmin || user.isOperationsManager || user.isSiteManager || 
-               user.isSupervisor || user.isGuard || user.isMobileGuard;
-      
+        return user.isAdmin ||
+            user.isOperationsManager ||
+            user.isSiteManager ||
+            user.isSupervisor ||
+            user.isGuard ||
+            user.isMobileGuard;
+
       // System settings - Admin only
       case '/settings':
         return user.isAdmin;
-      
+
       // Default: allow if user is logged in
       default:
         return true;
@@ -49,19 +64,19 @@ class RouteGuard {
   /// Get default route for user role
   static String getDefaultRoute(AuthUser? user) {
     if (user == null) return '/login';
-    
+
     // Admin and Operations Manager start with live monitoring
     if (user.isAdmin || user.isOperationsManager) return '/monitoring';
-    
+
     // Site Manager starts with their sites
     if (user.isSiteManager) return '/sites';
-    
+
     // Supervisor starts with sites they supervise
     if (user.isSupervisor) return '/sites';
-    
+
     // Guards start with their assigned sites
     if (user.isGuard || user.isMobileGuard) return '/sites';
-    
+
     return '/';
   }
 
@@ -99,7 +114,7 @@ class PermissionPage extends ConsumerWidget {
       );
     }
 
-    final hasPermission = requiredRoles.isEmpty || 
+    final hasPermission = requiredRoles.isEmpty ||
         requiredRoles.any((role) => user.hasRole(role));
 
     if (!hasPermission) {
@@ -172,15 +187,17 @@ class RoleDashboard extends ConsumerWidget {
                   children: [
                     Text(
                       'Welcome back, ${user.firstName}!',
-                      style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
+                      style:
+                          Theme.of(context).textTheme.headlineMedium?.copyWith(
+                                fontWeight: FontWeight.bold,
+                              ),
                     ),
                     Text(
                       _getRoleWelcomeMessage(user),
                       style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                        color: Theme.of(context).colorScheme.onSurfaceVariant,
-                      ),
+                            color:
+                                Theme.of(context).colorScheme.onSurfaceVariant,
+                          ),
                     ),
                   ],
                 ),
@@ -189,12 +206,13 @@ class RoleDashboard extends ConsumerWidget {
               ],
             ),
             const SizedBox(height: 32),
-            
+
             // Role-specific content
             Expanded(
               child: RoleBasedWidget(
                 adminChild: _buildAdminDashboard(context),
-                operationsManagerChild: _buildOperationsManagerDashboard(context),
+                operationsManagerChild:
+                    _buildOperationsManagerDashboard(context),
                 siteManagerChild: _buildSiteManagerDashboard(context),
                 supervisorChild: _buildSupervisorDashboard(context),
                 guardChild: _buildGuardDashboard(context),
@@ -284,8 +302,8 @@ class RoleDashboard extends ConsumerWidget {
         Text(
           'Admin Dashboard',
           style: Theme.of(context).textTheme.titleLarge?.copyWith(
-            fontWeight: FontWeight.bold,
-          ),
+                fontWeight: FontWeight.bold,
+              ),
         ),
         const SizedBox(height: 16),
         Expanded(
@@ -343,8 +361,8 @@ class RoleDashboard extends ConsumerWidget {
         Text(
           'Operations Dashboard',
           style: Theme.of(context).textTheme.titleLarge?.copyWith(
-            fontWeight: FontWeight.bold,
-          ),
+                fontWeight: FontWeight.bold,
+              ),
         ),
         const SizedBox(height: 16),
         Expanded(
@@ -402,8 +420,8 @@ class RoleDashboard extends ConsumerWidget {
         Text(
           'Site Management Dashboard',
           style: Theme.of(context).textTheme.titleLarge?.copyWith(
-            fontWeight: FontWeight.bold,
-          ),
+                fontWeight: FontWeight.bold,
+              ),
         ),
         const SizedBox(height: 16),
         Expanded(
@@ -454,8 +472,8 @@ class RoleDashboard extends ConsumerWidget {
         Text(
           'Supervisor Dashboard',
           style: Theme.of(context).textTheme.titleLarge?.copyWith(
-            fontWeight: FontWeight.bold,
-          ),
+                fontWeight: FontWeight.bold,
+              ),
         ),
         const SizedBox(height: 16),
         Expanded(
@@ -499,8 +517,8 @@ class RoleDashboard extends ConsumerWidget {
         Text(
           'Guard Dashboard',
           style: Theme.of(context).textTheme.titleLarge?.copyWith(
-            fontWeight: FontWeight.bold,
-          ),
+                fontWeight: FontWeight.bold,
+              ),
         ),
         const SizedBox(height: 16),
         Expanded(
@@ -587,16 +605,16 @@ class RoleDashboard extends ConsumerWidget {
               Text(
                 title,
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
+                      fontWeight: FontWeight.bold,
+                    ),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 4),
               Text(
                 subtitle,
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: Theme.of(context).colorScheme.onSurfaceVariant,
-                ),
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    ),
                 textAlign: TextAlign.center,
               ),
             ],

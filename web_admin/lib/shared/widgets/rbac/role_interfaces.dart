@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../features/auth/providers/auth_provider.dart';
-import '../../shared/models/auth.dart';
-import 'permission_widgets.dart';
+import '../../../features/auth/providers/auth_provider.dart';
+import '../../models/auth.dart';
 
 /// Admin-specific navigation destinations and features
 class AdminNavigation {
@@ -172,7 +171,7 @@ class SupervisorNavigation {
   ];
 }
 
-/// Guard-specific navigation destinations and features  
+/// Guard-specific navigation destinations and features
 class GuardNavigation {
   static const List<NavigationRailDestination> destinations = [
     NavigationRailDestination(
@@ -234,7 +233,7 @@ class RoleInterface {
         titles: AdminNavigation.titles,
       );
     }
-    
+
     // Operations Manager has second highest priority
     if (user.isOperationsManager) {
       return const RoleInterface(
@@ -243,7 +242,7 @@ class RoleInterface {
         titles: OperationsManagerNavigation.titles,
       );
     }
-    
+
     // Site Manager has specialized interface
     if (user.isSiteManager) {
       return const RoleInterface(
@@ -252,7 +251,7 @@ class RoleInterface {
         titles: SiteManagerNavigation.titles,
       );
     }
-    
+
     // Supervisor interface
     if (user.isSupervisor) {
       return const RoleInterface(
@@ -261,7 +260,7 @@ class RoleInterface {
         titles: SupervisorNavigation.titles,
       );
     }
-    
+
     // Guard interface (handles both guard and mobile_guard)
     if (user.isGuard || user.isMobileGuard) {
       return const RoleInterface(
@@ -318,8 +317,8 @@ class RoleBasedQuickActions extends ConsumerWidget {
           Text(
             'Quick Actions',
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.bold,
-            ),
+                  fontWeight: FontWeight.bold,
+                ),
           ),
           const SizedBox(height: 12),
           Wrap(
@@ -345,7 +344,7 @@ class RoleBasedQuickActions extends ConsumerWidget {
                   },
                 ),
               ],
-              
+
               // Operations Manager quick actions
               if (user.isOperationsManager) ...[
                 _buildQuickActionChip(
@@ -365,7 +364,7 @@ class RoleBasedQuickActions extends ConsumerWidget {
                   },
                 ),
               ],
-              
+
               // Site Manager quick actions
               if (user.isSiteManager) ...[
                 _buildQuickActionChip(
@@ -385,7 +384,7 @@ class RoleBasedQuickActions extends ConsumerWidget {
                   },
                 ),
               ],
-              
+
               // Supervisor quick actions
               if (user.isSupervisor) ...[
                 _buildQuickActionChip(
@@ -405,7 +404,7 @@ class RoleBasedQuickActions extends ConsumerWidget {
                   },
                 ),
               ],
-              
+
               // Guard quick actions
               if (user.isGuard || user.isMobileGuard) ...[
                 _buildQuickActionChip(
@@ -491,7 +490,7 @@ class RoleBasedStatusIndicators extends ConsumerWidget {
           ),
         ),
         const SizedBox(width: 8),
-        
+
         // Connection status (kept from original)
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),

@@ -14,7 +14,7 @@ class AuthToken {
     required this.tokenType,
   });
 
-  factory AuthToken.fromJson(Map<String, dynamic> json) => 
+  factory AuthToken.fromJson(Map<String, dynamic> json) =>
       _$AuthTokenFromJson(json);
   Map<String, dynamic> toJson() => _$AuthTokenToJson(this);
 }
@@ -29,7 +29,7 @@ class LoginRequest {
     required this.password,
   });
 
-  factory LoginRequest.fromJson(Map<String, dynamic> json) => 
+  factory LoginRequest.fromJson(Map<String, dynamic> json) =>
       _$LoginRequestFromJson(json);
   Map<String, dynamic> toJson() => _$LoginRequestToJson(this);
 }
@@ -39,10 +39,8 @@ class AuthUser {
   final int id;
   final String username;
   final String email;
-  @JsonKey(name: 'first_name')
-  final String firstName;
-  @JsonKey(name: 'last_name')
-  final String lastName;
+  @JsonKey(name: 'full_name')
+  final String fullName;
   @JsonKey(name: 'is_active')
   final bool isActive;
   final List<String> roles;
@@ -51,20 +49,29 @@ class AuthUser {
     required this.id,
     required this.username,
     required this.email,
-    required this.firstName,
-    required this.lastName,
+    required this.fullName,
     required this.isActive,
     required this.roles,
   });
 
-  factory AuthUser.fromJson(Map<String, dynamic> json) => 
+  factory AuthUser.fromJson(Map<String, dynamic> json) =>
       _$AuthUserFromJson(json);
   Map<String, dynamic> toJson() => _$AuthUserToJson(this);
 
-  String get fullName => '$firstName $lastName';
-  
+  // Extract first name from full name
+  String get firstName {
+    final parts = fullName.split(' ');
+    return parts.isNotEmpty ? parts.first : fullName;
+  }
+
+  // Extract last name from full name
+  String get lastName {
+    final parts = fullName.split(' ');
+    return parts.length > 1 ? parts.sublist(1).join(' ') : '';
+  }
+
   bool hasRole(String role) => roles.contains(role);
-  
+
   // Core role checks based on access matrix
   bool get isAdmin => roles.contains('admin');
   bool get isOperationsManager => roles.contains('operations_manager');
@@ -73,16 +80,19 @@ class AuthUser {
   bool get isGuard => roles.contains('guard');
   bool get isMobileGuard => roles.contains('mobile_guard');
   bool get isVisitor => roles.contains('visitor');
-  
+
   // Helper methods for permission checking
   bool get canManageUsers => isAdmin || isOperationsManager;
   bool get canManageAllSites => isAdmin || isOperationsManager;
   bool get canManageAssignedSites => isSiteManager || isSupervisor;
-  bool get canViewAssignedSites => isSiteManager || isSupervisor || isGuard || isMobileGuard;
-  bool get canManagePatrols => isAdmin || isOperationsManager || isSiteManager || isSupervisor;
+  bool get canViewAssignedSites =>
+      isSiteManager || isSupervisor || isGuard || isMobileGuard;
+  bool get canManagePatrols =>
+      isAdmin || isOperationsManager || isSiteManager || isSupervisor;
   bool get canViewAssignedPatrols => isGuard || isMobileGuard;
-  bool get canManageCheckpoints => isAdmin || isOperationsManager || isSiteManager || isSupervisor;
-  
+  bool get canManageCheckpoints =>
+      isAdmin || isOperationsManager || isSiteManager || isSupervisor;
+
   // Get highest role for UI display
   String get primaryRole {
     if (isAdmin) return 'Admin';
