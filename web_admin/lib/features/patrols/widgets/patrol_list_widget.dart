@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import '../../../shared/models/patrol.dart';
 import '../../../shared/widgets/rbac/rbac.dart';
 import '../providers/patrols_provider.dart';
+import 'patrol_form_dialog.dart';
 
 /// Patrol list widget with data tables and filtering
 class PatrolListWidget extends ConsumerStatefulWidget {
@@ -248,6 +249,15 @@ class _PatrolListWidgetState extends ConsumerState<PatrolListWidget> {
                     tooltip: 'Start Patrol',
                   ),
                 ),
+              if (patrol.status == 'active')
+                PermissionGuard(
+                  requiredRoles: Permissions.patrolEdit,
+                  child: IconButton(
+                    onPressed: () => _completePatrol(patrol),
+                    icon: const Icon(Icons.stop),
+                    tooltip: 'Complete Patrol',
+                  ),
+                ),
             ],
           ),
         ),
@@ -415,15 +425,56 @@ class _PatrolListWidgetState extends ConsumerState<PatrolListWidget> {
   }
 
   void _editPatrol(BuildContext context, Patrol patrol) {
-    // TODO: Implement edit patrol dialog
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Edit patrol functionality coming soon')),
+    showDialog(
+      context: context,
+      builder: (context) => PatrolFormDialog(patrol: patrol),
     );
   }
 
-  void _startPatrol(Patrol patrol) {
-    // TODO: Implement start patrol functionality
-    ref.read(patrolsProvider.notifier).startPatrol(patrol.id);
+  void _startPatrol(Patrol patrol) async {
+    try {
+      final success = await ref.read(patrolsProvider.notifier).startPatrol(patrol.id);
+      if (success && mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Patrol "${patrol.title}" started successfully'),
+            backgroundColor: Colors.green,
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to start patrol: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+  }
+
+  void _completePatrol(Patrol patrol) async {
+    try {
+      final success = await ref.read(patrolsProvider.notifier).completePatrol(patrol.id);
+      if (success && mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Patrol "${patrol.title}" completed successfully'),
+            backgroundColor: Colors.green,
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to complete patrol: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
   }
 
   void _exportPatrols() {
