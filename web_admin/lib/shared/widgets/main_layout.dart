@@ -103,10 +103,13 @@ class MainLayout extends ConsumerWidget {
                     padding: const EdgeInsets.symmetric(horizontal: 24),
                     child: Row(
                       children: [
-                        Text(
-                          roleInterface.getTitle(currentLocation),
-                          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                            fontWeight: FontWeight.w600,
+                        GestureDetector(
+                          onTap: () => _navigateToDashboard(context),
+                          child: Text(
+                            roleInterface.getTitle(currentLocation),
+                            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                              fontWeight: FontWeight.w600,
+                            ),
                           ),
                         ),
                         const Spacer(),
@@ -133,6 +136,11 @@ class MainLayout extends ConsumerWidget {
     if (route != null) {
       context.go(route);
     }
+  }
+
+  // Handle dashboard navigation
+  void _navigateToDashboard(BuildContext context) {
+    context.go('/');
   }
 
   void _handleLogout(BuildContext context, WidgetRef ref) {
