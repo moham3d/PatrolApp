@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../shared/models/site.dart';
+import '../../../shared/widgets/map/interactive_map_picker.dart';
 import '../providers/sites_provider.dart';
 
 class EditSiteDialog extends ConsumerStatefulWidget {
@@ -106,6 +107,74 @@ class _EditSiteDialogState extends ConsumerState<EditSiteDialog> {
         });
       }
     }
+  }
+
+  void _openMapPicker() {
+    showDialog(
+      context: context,
+      builder: (context) => Dialog(
+        child: Container(
+          width: 800,
+          height: 600,
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Text(
+                    'Select Location',
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const Spacer(),
+                  IconButton(
+                    onPressed: () => Navigator.of(context).pop(),
+                    icon: const Icon(Icons.close),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              
+              // Interactive map picker
+              Expanded(
+                child: InteractiveMapPicker(
+                  initialLatitude: _latitudeController.text.isNotEmpty 
+                      ? double.tryParse(_latitudeController.text) 
+                      : null,
+                  initialLongitude: _longitudeController.text.isNotEmpty 
+                      ? double.tryParse(_longitudeController.text) 
+                      : null,
+                  onLocationSelected: (latitude, longitude) {
+                    setState(() {
+                      _latitudeController.text = latitude.toStringAsFixed(6);
+                      _longitudeController.text = longitude.toStringAsFixed(6);
+                    });
+                  },
+                ),
+              ),
+              const SizedBox(height: 16),
+              
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  TextButton(
+                    onPressed: () => Navigator.of(context).pop(),
+                    child: const Text('Cancel'),
+                  ),
+                  const SizedBox(width: 8),
+                  FilledButton(
+                    onPressed: () => Navigator.of(context).pop(),
+                    child: const Text('Use Selected Location'),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 
   @override
@@ -249,6 +318,18 @@ class _EditSiteDialogState extends ConsumerState<EditSiteDialog> {
                         return null;
                       },
                     ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+
+              // Map picker button
+              Row(
+                children: [
+                  TextButton.icon(
+                    onPressed: _openMapPicker,
+                    icon: const Icon(Icons.map),
+                    label: const Text('Pick from Map'),
                   ),
                 ],
               ),

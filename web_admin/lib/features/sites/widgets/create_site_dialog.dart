@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../shared/models/site.dart';
+import '../../../shared/widgets/map/interactive_map_picker.dart';
 import '../providers/sites_provider.dart';
 
 class CreateSiteDialog extends ConsumerStatefulWidget {
@@ -94,8 +95,8 @@ class _CreateSiteDialogState extends ConsumerState<CreateSiteDialog> {
       context: context,
       builder: (context) => Dialog(
         child: Container(
-          width: 600,
-          height: 500,
+          width: 800,
+          height: 600,
           padding: const EdgeInsets.all(16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -117,71 +118,21 @@ class _CreateSiteDialogState extends ConsumerState<CreateSiteDialog> {
               ),
               const SizedBox(height: 16),
               
-              // Coordinate input while map is not integrated
-              Row(
-                children: [
-                  Expanded(
-                    child: TextField(
-                      controller: _latitudeController,
-                      decoration: const InputDecoration(
-                        labelText: 'Latitude',
-                        border: OutlineInputBorder(),
-                      ),
-                      keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                    ),
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: TextField(
-                      controller: _longitudeController,
-                      decoration: const InputDecoration(
-                        labelText: 'Longitude',
-                        border: OutlineInputBorder(),
-                      ),
-                      keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 16),
-              
+              // Interactive map picker
               Expanded(
-                child: Container(
-                  decoration: BoxDecoration(
-                    border: Border.all(color: Colors.grey.shade300),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.map,
-                          size: 48,
-                          color: Theme.of(context).colorScheme.onSurfaceVariant,
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          'Interactive Map',
-                          style: Theme.of(context).textTheme.titleMedium,
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          'Click to select coordinates',
-                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: Theme.of(context).colorScheme.onSurfaceVariant,
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          'Flutter Map integration coming soon',
-                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: Theme.of(context).colorScheme.onSurfaceVariant,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
+                child: InteractiveMapPicker(
+                  initialLatitude: _latitudeController.text.isNotEmpty 
+                      ? double.tryParse(_latitudeController.text) 
+                      : null,
+                  initialLongitude: _longitudeController.text.isNotEmpty 
+                      ? double.tryParse(_longitudeController.text) 
+                      : null,
+                  onLocationSelected: (latitude, longitude) {
+                    setState(() {
+                      _latitudeController.text = latitude.toStringAsFixed(6);
+                      _longitudeController.text = longitude.toStringAsFixed(6);
+                    });
+                  },
                 ),
               ),
               const SizedBox(height: 16),
@@ -196,7 +147,7 @@ class _CreateSiteDialogState extends ConsumerState<CreateSiteDialog> {
                   const SizedBox(width: 8),
                   FilledButton(
                     onPressed: () => Navigator.of(context).pop(),
-                    child: const Text('Use Coordinates'),
+                    child: const Text('Use Selected Location'),
                   ),
                 ],
               ),

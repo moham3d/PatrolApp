@@ -616,12 +616,22 @@ class _PatrolFormDialogState extends ConsumerState<PatrolFormDialog> {
         success =
             await ref.read(patrolsProvider.notifier).createPatrol(request);
       } else {
-        // TODO: Implement update patrol
-        success = false;
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Edit patrol functionality coming soon'),
-          ),
+        // Implement update patrol
+        final updateRequest = UpdatePatrolRequest(
+          title: _titleController.text.trim(),
+          description: _descriptionController.text.trim().isEmpty
+              ? null
+              : _descriptionController.text.trim(),
+          siteId: _selectedSite!.id,
+          assignedToId: _selectedAssignee?.id,
+          scheduledStart: _scheduledStart!,
+          scheduledEnd: _scheduledEnd!,
+          priority: _priority,
+          taskType: _taskType,
+        );
+        success = await ref.read(patrolsProvider.notifier).updatePatrol(
+          widget.patrol!.id,
+          updateRequest,
         );
       }
 
