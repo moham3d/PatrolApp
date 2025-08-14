@@ -77,12 +77,12 @@ Understanding these backend capabilities is essential for proper Flutter web int
     - [x] Build password reset and account management
     - [x] Deliverables: Complete auth system, token handling, protected routes
 
-- [ ] **Day 4–5: Role-Based Access Control**
-    - [ ] Implement permission checking with custom widgets
-    - [ ] Create role-based widget rendering system
-    - [ ] Build admin, supervisor, guard role interfaces
-    - [ ] Implement permission-based navigation drawer
-    - [ ] Deliverables: RBAC system, role widgets, permission navigation
+- [x] **Day 4–5: Role-Based Access Control**
+    - [x] Implement permission checking with custom widgets
+    - [x] Create role-based widget rendering system
+    - [x] Build admin, supervisor, guard role interfaces
+    - [x] Implement permission-based navigation drawer
+    - [x] Deliverables: RBAC system, role widgets, permission navigation
 #### Week 3: UI Foundation & Design System
 
 - [x] **Day 1–2: Flutter Material Design System** ✅ **COMPLETED**
