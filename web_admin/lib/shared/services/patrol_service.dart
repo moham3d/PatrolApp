@@ -100,6 +100,38 @@ class PatrolService {
       );
     }
   }
+
+  /// Start a patrol
+  Future<Patrol> startPatrol(int id) async {
+    try {
+      final response = await _httpClient.post<Map<String, dynamic>>(
+        '/patrols/$id/start',
+      );
+      return Patrol.fromJson(response.data!);
+    } catch (e) {
+      if (e is ApiException) rethrow;
+      throw PatrolException(
+        code: 'UNKNOWN_ERROR',
+        message: e.toString(),
+      );
+    }
+  }
+
+  /// Complete a patrol
+  Future<Patrol> completePatrol(int id) async {
+    try {
+      final response = await _httpClient.post<Map<String, dynamic>>(
+        '/patrols/$id/complete',
+      );
+      return Patrol.fromJson(response.data!);
+    } catch (e) {
+      if (e is ApiException) rethrow;
+      throw PatrolException(
+        code: 'UNKNOWN_ERROR',
+        message: e.toString(),
+      );
+    }
+  }
 }
 
 final patrolServiceProvider = Provider<PatrolService>((ref) {
