@@ -12,6 +12,10 @@ class RouteGuard {
     if (user == null) return false;
 
     switch (route) {
+      // Live monitoring - Admin and Operations Manager only
+      case '/monitoring':
+        return user.isAdmin || user.isOperationsManager;
+        
       // User management - Admin, Operations Manager, Site Manager (site only), Supervisor (site only)
       // Guards should NOT have access to user management per access matrix
       case '/users':
@@ -46,8 +50,8 @@ class RouteGuard {
   static String getDefaultRoute(AuthUser? user) {
     if (user == null) return '/login';
     
-    // Admin and Operations Manager start with users
-    if (user.isAdmin || user.isOperationsManager) return '/users';
+    // Admin and Operations Manager start with live monitoring
+    if (user.isAdmin || user.isOperationsManager) return '/monitoring';
     
     // Site Manager starts with their sites
     if (user.isSiteManager) return '/sites';
@@ -292,6 +296,13 @@ class RoleDashboard extends ConsumerWidget {
             children: [
               _buildDashboardCard(
                 context,
+                icon: Icons.monitor,
+                title: 'Live Monitoring',
+                subtitle: 'Real-time system monitoring',
+                onTap: () => context.go('/monitoring'),
+              ),
+              _buildDashboardCard(
+                context,
                 icon: Icons.people,
                 title: 'User Management',
                 subtitle: 'Manage users and permissions',
@@ -342,6 +353,13 @@ class RoleDashboard extends ConsumerWidget {
             crossAxisSpacing: 16,
             mainAxisSpacing: 16,
             children: [
+              _buildDashboardCard(
+                context,
+                icon: Icons.monitor,
+                title: 'Live Monitoring',
+                subtitle: 'Real-time operations monitoring',
+                onTap: () => context.go('/monitoring'),
+              ),
               _buildDashboardCard(
                 context,
                 icon: Icons.people,

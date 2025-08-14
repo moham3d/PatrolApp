@@ -10,6 +10,7 @@ import '../../features/users/pages/users_page.dart';
 import '../../features/sites/pages/sites_page.dart';
 import '../../features/patrols/pages/patrols_page.dart';
 import '../../features/checkpoints/pages/checkpoints_page.dart';
+import '../../features/monitoring/pages/live_monitoring_page.dart';
 
 final appRouterProvider = Provider<GoRouter>((ref) {
   final authState = ref.watch(authProvider);
@@ -55,6 +56,13 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       ShellRoute(
         builder: (context, state, child) => MainLayout(child: child),
         routes: [
+          GoRoute(
+            path: '/monitoring',
+            builder: (context, state) => const PermissionPage(
+              requiredRoles: ['admin', 'operations_manager'],
+              child: LiveMonitoringPage(),
+            ),
+          ),
           GoRoute(
             path: '/users',
             builder: (context, state) => const PermissionPage(
