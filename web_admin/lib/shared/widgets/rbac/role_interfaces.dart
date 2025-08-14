@@ -9,6 +9,11 @@ import 'permission_widgets.dart';
 class AdminNavigation {
   static const List<NavigationRailDestination> destinations = [
     NavigationRailDestination(
+      icon: Icon(Icons.monitor_outlined),
+      selectedIcon: Icon(Icons.monitor),
+      label: Text('Live Monitor'),
+    ),
+    NavigationRailDestination(
       icon: Icon(Icons.people_outline),
       selectedIcon: Icon(Icons.people),
       label: Text('Users'),
@@ -31,6 +36,7 @@ class AdminNavigation {
   ];
 
   static const List<String> routes = [
+    '/monitoring',
     '/users',
     '/sites',
     '/patrols',
@@ -38,6 +44,7 @@ class AdminNavigation {
   ];
 
   static const List<String> titles = [
+    'Live Monitoring Dashboard',
     'User Management',
     'Site Management',
     'Patrol Management',
@@ -49,6 +56,11 @@ class AdminNavigation {
 class OperationsManagerNavigation {
   static const List<NavigationRailDestination> destinations = [
     NavigationRailDestination(
+      icon: Icon(Icons.monitor_outlined),
+      selectedIcon: Icon(Icons.monitor),
+      label: Text('Live Monitor'),
+    ),
+    NavigationRailDestination(
       icon: Icon(Icons.people_outline),
       selectedIcon: Icon(Icons.people),
       label: Text('Users'),
@@ -71,6 +83,7 @@ class OperationsManagerNavigation {
   ];
 
   static const List<String> routes = [
+    '/monitoring',
     '/users',
     '/sites',
     '/patrols',
@@ -78,6 +91,7 @@ class OperationsManagerNavigation {
   ];
 
   static const List<String> titles = [
+    'Live Monitoring Dashboard',
     'User Management',
     'Site Management',
     'Patrol Management',
