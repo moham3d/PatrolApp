@@ -149,6 +149,44 @@ class PatrolsNotifier extends StateNotifier<AsyncValue<List<Patrol>>> {
       },
     );
   }
+
+  /// Start a patrol
+  Future<bool> startPatrol(int id) async {
+    try {
+      final updatedPatrol = await _patrolService.startPatrol(id);
+      
+      // Update in current state if loaded
+      state.whenData((patrols) {
+        final updatedPatrols = patrols.map((patrol) {
+          return patrol.id == id ? updatedPatrol : patrol;
+        }).toList();
+        state = AsyncValue.data(updatedPatrols);
+      });
+      
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  /// Complete a patrol
+  Future<bool> completePatrol(int id) async {
+    try {
+      final updatedPatrol = await _patrolService.completePatrol(id);
+      
+      // Update in current state if loaded
+      state.whenData((patrols) {
+        final updatedPatrols = patrols.map((patrol) {
+          return patrol.id == id ? updatedPatrol : patrol;
+        }).toList();
+        state = AsyncValue.data(updatedPatrols);
+      });
+      
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
 }
 
 /// Provider for patrols state
