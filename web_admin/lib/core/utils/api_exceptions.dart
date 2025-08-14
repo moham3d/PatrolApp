@@ -1,5 +1,5 @@
 import 'package:dio/dio.dart';
-import '../models/api_response.dart';
+import '../../shared/models/api_response.dart';
 
 class ApiException implements Exception {
   final String code;
@@ -42,7 +42,7 @@ class ApiException implements Exception {
     } else {
       // Network or other errors
       switch (error.type) {
-        case DioExceptionType.connectTimeout:
+        case DioExceptionType.connectionTimeout:
         case DioExceptionType.sendTimeout:
         case DioExceptionType.receiveTimeout:
           return const ApiException(

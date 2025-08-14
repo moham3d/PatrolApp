@@ -20,19 +20,19 @@ class AppTheme {
         foregroundColor: Colors.white,
         elevation: 2,
       ),
-      navigationRailTheme: const NavigationRailTheme(
+      navigationRailTheme: NavigationRailThemeData(
         backgroundColor: surfaceColor,
         elevation: 1,
-        selectedIconTheme: IconThemeData(
+        selectedIconTheme: const IconThemeData(
           color: primaryColor,
           size: 24,
         ),
-        unselectedIconTheme: IconThemeData(
+        unselectedIconTheme: const IconThemeData(
           color: Colors.grey,
           size: 24,
         ),
       ),
-      cardTheme: const CardTheme(
+      cardTheme: const CardThemeData(
         elevation: 2,
         margin: EdgeInsets.all(8),
       ),
@@ -57,14 +57,14 @@ class AppTheme {
         foregroundColor: Colors.white,
         elevation: 2,
       ),
-      navigationRailTheme: const NavigationRailTheme(
-        backgroundColor: Color(0xFF2D2D2D),
+      navigationRailTheme: NavigationRailThemeData(
+        backgroundColor: const Color(0xFF2D2D2D),
         elevation: 1,
-        selectedIconTheme: IconThemeData(
+        selectedIconTheme: const IconThemeData(
           color: primaryColor,
           size: 24,
         ),
-        unselectedIconTheme: IconThemeData(
+        unselectedIconTheme: const IconThemeData(
           color: Colors.grey,
           size: 24,
         ),
