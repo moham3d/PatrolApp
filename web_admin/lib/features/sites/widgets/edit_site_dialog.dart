@@ -1,0 +1,304 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import '../../../shared/models/site.dart';
+import '../providers/sites_provider.dart';
+
+class EditSiteDialog extends ConsumerStatefulWidget {
+  final Site site;
+
+  const EditSiteDialog({
+    super.key,
+    required this.site,
+  });
+
+  @override
+  ConsumerState<EditSiteDialog> createState() => _EditSiteDialogState();
+}
+
+class _EditSiteDialogState extends ConsumerState<EditSiteDialog> {
+  final _formKey = GlobalKey<FormState>();
+  late final TextEditingController _nameController;
+  late final TextEditingController _addressController;
+  late final TextEditingController _phoneController;
+  late final TextEditingController _emailController;
+  late final TextEditingController _latitudeController;
+  late final TextEditingController _longitudeController;
+  
+  late bool _isActive;
+  bool _isLoading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _nameController = TextEditingController(text: widget.site.name);
+    _addressController = TextEditingController(text: widget.site.address);
+    _phoneController = TextEditingController(text: widget.site.contactInfo?.phone ?? '');
+    _emailController = TextEditingController(text: widget.site.contactInfo?.email ?? '');
+    _latitudeController = TextEditingController(text: widget.site.coordinates.latitude.toString());
+    _longitudeController = TextEditingController(text: widget.site.coordinates.longitude.toString());
+    _isActive = widget.site.isActive;
+  }
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _addressController.dispose();
+    _phoneController.dispose();
+    _emailController.dispose();
+    _latitudeController.dispose();
+    _longitudeController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _updateSite() async {
+    if (!_formKey.currentState!.validate()) return;
+
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      final coordinates = Coordinates(
+        latitude: double.parse(_latitudeController.text),
+        longitude: double.parse(_longitudeController.text),
+      );
+
+      final contactInfo = _phoneController.text.isNotEmpty || _emailController.text.isNotEmpty
+          ? ContactInfo(
+              phone: _phoneController.text.isNotEmpty ? _phoneController.text : null,
+              email: _emailController.text.isNotEmpty ? _emailController.text : null,
+            )
+          : null;
+
+      final request = UpdateSiteRequest(
+        name: _nameController.text.trim(),
+        address: _addressController.text.trim(),
+        coordinates: coordinates,
+        contactInfo: contactInfo,
+        isActive: _isActive,
+      );
+
+      final success = await ref.read(sitesProvider.notifier).updateSite(widget.site.id, request);
+
+      if (success && mounted) {
+        Navigator.of(context).pop();
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Site updated successfully'),
+            backgroundColor: Colors.green,
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to update site: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Dialog(
+      child: Container(
+        width: 500,
+        padding: const EdgeInsets.all(24),
+        child: Form(
+          key: _formKey,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Text(
+                    'Edit Site',
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const Spacer(),
+                  IconButton(
+                    onPressed: () => Navigator.of(context).pop(),
+                    icon: const Icon(Icons.close),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 24),
+
+              // Site name
+              TextFormField(
+                controller: _nameController,
+                decoration: const InputDecoration(
+                  labelText: 'Site Name *',
+                  border: OutlineInputBorder(),
+                ),
+                validator: (value) {
+                  if (value == null || value.trim().isEmpty) {
+                    return 'Site name is required';
+                  }
+                  return null;
+                },
+              ),
+              const SizedBox(height: 16),
+
+              // Address
+              TextFormField(
+                controller: _addressController,
+                decoration: const InputDecoration(
+                  labelText: 'Address *',
+                  border: OutlineInputBorder(),
+                ),
+                maxLines: 2,
+                validator: (value) {
+                  if (value == null || value.trim().isEmpty) {
+                    return 'Address is required';
+                  }
+                  return null;
+                },
+              ),
+              const SizedBox(height: 16),
+
+              // Contact information
+              Row(
+                children: [
+                  Expanded(
+                    child: TextFormField(
+                      controller: _phoneController,
+                      decoration: const InputDecoration(
+                        labelText: 'Phone',
+                        border: OutlineInputBorder(),
+                      ),
+                      keyboardType: TextInputType.phone,
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: TextFormField(
+                      controller: _emailController,
+                      decoration: const InputDecoration(
+                        labelText: 'Email',
+                        border: OutlineInputBorder(),
+                      ),
+                      keyboardType: TextInputType.emailAddress,
+                      validator: (value) {
+                        if (value != null && value.isNotEmpty) {
+                          if (!value.contains('@')) {
+                            return 'Invalid email format';
+                          }
+                        }
+                        return null;
+                      },
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+
+              // Coordinates
+              Row(
+                children: [
+                  Expanded(
+                    child: TextFormField(
+                      controller: _latitudeController,
+                      decoration: const InputDecoration(
+                        labelText: 'Latitude *',
+                        border: OutlineInputBorder(),
+                      ),
+                      keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                      validator: (value) {
+                        if (value == null || value.trim().isEmpty) {
+                          return 'Latitude is required';
+                        }
+                        final lat = double.tryParse(value);
+                        if (lat == null || lat < -90 || lat > 90) {
+                          return 'Invalid latitude (-90 to 90)';
+                        }
+                        return null;
+                      },
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: TextFormField(
+                      controller: _longitudeController,
+                      decoration: const InputDecoration(
+                        labelText: 'Longitude *',
+                        border: OutlineInputBorder(),
+                      ),
+                      keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                      validator: (value) {
+                        if (value == null || value.trim().isEmpty) {
+                          return 'Longitude is required';
+                        }
+                        final lng = double.tryParse(value);
+                        if (lng == null || lng < -180 || lng > 180) {
+                          return 'Invalid longitude (-180 to 180)';
+                        }
+                        return null;
+                      },
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+
+              // Active status
+              Row(
+                children: [
+                  Checkbox(
+                    value: _isActive,
+                    onChanged: (value) {
+                      setState(() {
+                        _isActive = value ?? false;
+                      });
+                    },
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    'Site is active',
+                    style: Theme.of(context).textTheme.bodyLarge,
+                  ),
+                ],
+              ),
+              const SizedBox(height: 24),
+
+              // Actions
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  TextButton(
+                    onPressed: _isLoading ? null : () => Navigator.of(context).pop(),
+                    child: const Text('Cancel'),
+                  ),
+                  const SizedBox(width: 8),
+                  FilledButton(
+                    onPressed: _isLoading ? null : _updateSite,
+                    child: _isLoading
+                        ? const SizedBox(
+                            width: 16,
+                            height: 16,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          )
+                        : const Text('Update Site'),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
