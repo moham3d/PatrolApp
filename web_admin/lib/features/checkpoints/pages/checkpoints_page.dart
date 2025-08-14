@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/checkpoints_provider.dart';
 import '../widgets/checkpoint_list_view.dart';
 import '../widgets/create_checkpoint_dialog.dart';
+import '../widgets/route_optimization_widget.dart';
 import '../../../shared/widgets/rbac/rbac.dart';
 import '../../../features/auth/providers/auth_provider.dart';
 import '../../../features/sites/providers/sites_provider.dart';
@@ -56,6 +57,13 @@ class _CheckpointsPageState extends ConsumerState<CheckpointsPage> {
     );
   }
 
+  void _showRouteOptimization() {
+    showDialog(
+      context: context,
+      builder: (context) => const RouteOptimizationWidget(),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final checkpointsState = ref.watch(checkpointsProvider);
@@ -79,6 +87,17 @@ class _CheckpointsPageState extends ConsumerState<CheckpointsPage> {
                   ),
                 ),
                 const Spacer(),
+                
+                // Route optimization button
+                PermissionGuard(
+                  requiredRoles: Permissions.checkpointView,
+                  child: OutlinedButton.icon(
+                    onPressed: _showRouteOptimization,
+                    icon: const Icon(Icons.route),
+                    label: const Text('Route Optimizer'),
+                  ),
+                ),
+                const SizedBox(width: 12),
                 
                 // Create checkpoint button - permission-based
                 PermissionGuard(

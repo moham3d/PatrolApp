@@ -7,6 +7,8 @@ import '../../../shared/widgets/rbac/rbac.dart';
 import '../../../features/auth/providers/auth_provider.dart';
 import '../widgets/checkpoint_details_dialog.dart';
 import '../widgets/edit_checkpoint_dialog.dart';
+import '../widgets/checkpoint_visit_tracker.dart';
+import '../widgets/qr_nfc_management_widget.dart';
 
 class CheckpointListView extends ConsumerWidget {
   final List<Checkpoint> checkpoints;
@@ -162,6 +164,13 @@ class CheckpointListView extends ConsumerWidget {
                   Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
+                      // Visit history button
+                      IconButton(
+                        onPressed: () => _showVisitHistory(context, checkpoint),
+                        icon: const Icon(Icons.history),
+                        tooltip: 'Visit History',
+                      ),
+                      
                       // View details button
                       IconButton(
                         onPressed: () => _showCheckpointDetails(context, checkpoint, site),
@@ -179,13 +188,13 @@ class CheckpointListView extends ConsumerWidget {
                         ),
                       ),
                       
-                      // QR Code generation button
+                      // QR/NFC management button
                       PermissionGuard(
                         requiredRoles: Permissions.checkpointEdit,
                         child: IconButton(
-                          onPressed: () => _generateQrCode(context, checkpoint),
+                          onPressed: () => _showQrNfcManagement(context, checkpoint),
                           icon: const Icon(Icons.qr_code_scanner),
-                          tooltip: 'Generate QR Code',
+                          tooltip: 'QR/NFC Management',
                         ),
                       ),
                     ],
@@ -306,6 +315,20 @@ class CheckpointListView extends ConsumerWidget {
           ),
         ),
       ),
+    );
+  }
+
+  void _showVisitHistory(BuildContext context, Checkpoint checkpoint) {
+    showDialog(
+      context: context,
+      builder: (context) => CheckpointVisitTracker(checkpoint: checkpoint),
+    );
+  }
+
+  void _showQrNfcManagement(BuildContext context, Checkpoint checkpoint) {
+    showDialog(
+      context: context,
+      builder: (context) => QrNfcManagementWidget(checkpoint: checkpoint),
     );
   }
 
