@@ -4,6 +4,30 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../features/auth/providers/auth_provider.dart';
 import '../../models/auth.dart';
 
+/// Static permissions based on access matrix
+class Permissions {
+  // User permissions
+  static const List<String> userView = ['admin', 'operations_manager', 'site_manager'];
+  static const List<String> userCreate = ['admin', 'operations_manager'];
+  static const List<String> userEdit = ['admin', 'operations_manager'];
+  static const List<String> userDelete = ['admin'];
+
+  // Site permissions  
+  static const List<String> siteView = ['admin', 'operations_manager', 'site_manager', 'supervisor'];
+  static const List<String> siteCreate = ['admin', 'operations_manager'];
+  static const List<String> siteEdit = ['admin', 'operations_manager', 'site_manager'];
+
+  // Patrol permissions
+  static const List<String> patrolView = ['admin', 'operations_manager', 'site_manager', 'supervisor', 'guard'];
+  static const List<String> patrolCreate = ['admin', 'operations_manager', 'site_manager', 'supervisor'];
+  static const List<String> patrolEdit = ['admin', 'operations_manager', 'site_manager', 'supervisor'];
+
+  // Checkpoint permissions
+  static const List<String> checkpointView = ['admin', 'operations_manager', 'site_manager', 'supervisor', 'guard'];
+  static const List<String> checkpointCreate = ['admin', 'operations_manager', 'site_manager'];
+  static const List<String> checkpointEdit = ['admin', 'operations_manager', 'site_manager'];
+}
+
 /// A widget that conditionally renders its child based on user permissions
 class PermissionGuard extends ConsumerWidget {
   final Widget child;
