@@ -1,5 +1,7 @@
 # PatrolShield Frontend AI Agent Instructions
 
+🚨 **CRITICAL**: Before doing ANYTHING, read and follow `MANDATORY-AI-AGENT-WORKFLOW.md` - NO EXCEPTIONS!
+
 You are an AI agent specialized in developing the **PatrolShield Flutter Web Admin Dashboard**. Focus on creating a clean, efficient frontend for security patrol management.
 
 ## 🎯 Primary Objective
@@ -10,11 +12,34 @@ Build a Flutter web admin dashboard with 4 core modules:
 - **Patrols** - Patrol scheduling and monitoring
 - **Checkpoints** - Checkpoint creation and tracking
 
-## 📋 Required Reading
+## 📋 Required Reading (MANDATORY ORDER)
 
-Before coding, review these documentation files:
-- `docs/comprehensive-api-documentation.md` - Backend API endpoints and schemas
-- `docs/access_matrix.csv` - User roles and permissions
+🚨 **YOU MUST READ THESE FILES IN THIS EXACT ORDER BEFORE ANY CODING:**
+
+1. **`MANDATORY-AI-AGENT-WORKFLOW.md`** - Critical workflow protocol
+2. **`docs/comprehensive-api-documentation.md`** - Backend API endpoints and schemas  
+3. **`docs/access_matrix.csv`** - User roles and permissions
+4. **`web_admin/pubspec.yaml`** - Project dependencies
+5. **`web_admin/lib/shared/models/`** - Existing data models
+6. **`web_admin/lib/shared/services/`** - Existing API services
+
+❌ **STOP**: If you haven't read ALL files above, you are FORBIDDEN from writing any code.
+
+## 🚨 CHECKLIST UPDATE PROTOCOL
+
+**MANDATORY FOR ALL AI AGENTS:**
+
+1. **Before starting any task**: Mark relevant checklist items as `[⏳]` (in-progress)
+2. **After completing any task**: Mark checklist items as `[x]` (completed) 
+3. **Always save the file** after updating checkboxes
+4. **Never skip checklist updates** - this is how progress is tracked
+
+**Example:**
+```markdown
+- [x] ✅ Completed task 
+- [⏳] Currently working on this
+- [ ] Not started yet
+```
 
 ## 🛠 Tech Stack
 
@@ -167,11 +192,73 @@ AppBar (with user profile, notifications)
 - **Accessibility**: Ensure proper contrast and keyboard navigation
 - **Testing**: Test all CRUD operations with actual API calls
 
+## 📋 PROGRESS TRACKING CHECKLIST
+
+🚨 **MANDATORY**: You MUST update these checkboxes as you complete tasks. Use `[x]` for completed, `[⏳]` for in-progress, `[ ]` for not started.
+
+### Phase 1: Foundation Setup
+- [x] ✅ Project structure and dependencies verified
+- [x] ✅ Authentication system implemented  
+- [x] ✅ Base layout and navigation completed
+- [x] ✅ RBAC (Role-Based Access Control) implemented
+
+### Phase 2: Core Modules Implementation
+
+#### Users Module
+- [x] ✅ User management interface completed
+- [x] ✅ User CRUD operations implemented
+- [x] ✅ User permissions and roles working
+- [x] ✅ User activity tracking implemented
+
+#### Sites Module  
+- [ ] Site management interface
+- [ ] Site CRUD operations with API integration
+- [ ] Location management with maps
+- [ ] Site-specific configurations
+
+#### Patrols Module
+- [ ] Patrol management interface  
+- [ ] Patrol CRUD operations with API integration
+- [ ] Patrol scheduling system
+- [ ] Route planning with maps
+- [ ] Real-time patrol tracking
+
+#### Checkpoints Module
+- [x] ✅ Checkpoint management interface completed
+- [x] ✅ Checkpoint CRUD operations implemented
+- [x] ✅ QR code management features
+- [x] ✅ Checkpoint tracking and validation
+
+### Phase 3: Advanced Features
+- [x] ✅ Real-time monitoring dashboard
+- [x] ✅ Live patrol tracking with WebSocket
+- [x] ✅ System health monitoring
+- [x] ✅ Performance metrics visualization
+
+#### Analytics & Reporting
+- [ ] Analytics dashboard with charts
+- [ ] Report generation (PDF/CSV export)
+- [ ] Custom report builder
+- [ ] Scheduled reports
+
+#### Communication Features  
+- [ ] Real-time messaging system
+- [ ] Notification management
+- [ ] Push-to-talk interface
+- [ ] Communication channels
+
+### Phase 4: Production Readiness
+- [ ] Performance optimization
+- [ ] Comprehensive testing suite
+- [ ] Accessibility compliance
+- [ ] Production deployment setup
+
 ## 🎯 Success Criteria
 
 ✅ **Module Complete When:**
 - All CRUD operations work with backend API
-- UI is responsive across all device sizes
+- UI is responsive across all device sizes  
 - Error handling covers all edge cases
 - Unit tests pass with >80% coverage
 - Code follows project conventions
+- **Checklist item marked as `[x]` completed**
