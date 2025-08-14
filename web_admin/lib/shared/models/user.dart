@@ -58,6 +58,27 @@ class User {
   }
 
   String get fullName => '$firstName $lastName';
+  
+  // Role checking methods to match access matrix
+  bool hasRole(String role) => roles.contains(role);
+  bool get isAdmin => roles.contains('admin');
+  bool get isOperationsManager => roles.contains('operations_manager');
+  bool get isSiteManager => roles.contains('site_manager');
+  bool get isSupervisor => roles.contains('supervisor');
+  bool get isGuard => roles.contains('guard');
+  bool get isMobileGuard => roles.contains('mobile_guard');
+  bool get isVisitor => roles.contains('visitor');
+  
+  String get primaryRole {
+    if (isAdmin) return 'Admin';
+    if (isOperationsManager) return 'Operations Manager';
+    if (isSiteManager) return 'Site Manager';
+    if (isSupervisor) return 'Supervisor';
+    if (isGuard) return 'Guard';
+    if (isMobileGuard) return 'Mobile Guard';
+    if (isVisitor) return 'Visitor';
+    return 'User';
+  }
 }
 
 @JsonSerializable()
