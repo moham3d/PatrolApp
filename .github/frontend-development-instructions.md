@@ -119,14 +119,15 @@ Understanding these backend capabilities is essential for proper Flutter web int
     - [x] Create real-time statistics widgets
     - [x] Deliverables: Health monitoring, metrics dashboard, status indicators
 
+
 #### Week 5: Incident & Emergency Management
 
-- [ ] **Day 1–3: Flutter Incident Management Interface**
-    - [ ] Create incident creation forms with custom validators
-    - [ ] Implement incident timeline with timeline_tile package
-    - [ ] Build incident assignment interface with dropdown selectors
-    - [ ] Create incident reporting with pdf generation
-    - [ ] Deliverables: Incident management, status tracking, reporting
+- [x] **Day 1–3: Flutter Incident Management Interface**
+    - [x] Create incident creation forms with custom validators
+    - [x] Implement incident timeline with timeline_tile package
+    - [x] Build incident assignment interface with dropdown selectors
+    - [x] Create incident reporting with pdf generation
+    - [x] Deliverables: Incident management, status tracking, reporting
 
 - [ ] **Day 4–5: Emergency & Panic Alert System**
     - [ ] Implement panic alert monitoring with real-time updates
