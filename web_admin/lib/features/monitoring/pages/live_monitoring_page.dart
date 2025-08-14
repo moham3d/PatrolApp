@@ -9,6 +9,8 @@ import '../widgets/live_patrol_map.dart';
 import '../widgets/live_alerts_feed.dart';
 import '../widgets/guard_locations_panel.dart';
 import '../widgets/system_health_panel.dart';
+import '../widgets/system_health_dashboard.dart';
+import '../widgets/performance_metrics_widget.dart';
 import '../providers/monitoring_provider.dart';
 
 /// Live monitoring dashboard page with real-time updates
@@ -181,7 +183,7 @@ class _LiveMonitoringPageState extends ConsumerState<LiveMonitoringPage> {
                         ),
                       ),
                     ),
-                    // System health
+                    // System health dashboard
                     Expanded(
                       flex: 2,
                       child: Card(
@@ -192,11 +194,11 @@ class _LiveMonitoringPageState extends ConsumerState<LiveMonitoringPage> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                'System Health',
+                                'System Health Dashboard',
                                 style: Theme.of(context).textTheme.headlineSmall,
                               ),
                               const SizedBox(height: 16),
-                              const Expanded(child: SystemHealthPanel()),
+                              const Expanded(child: SystemHealthDashboard()),
                             ],
                           ),
                         ),
@@ -210,15 +212,18 @@ class _LiveMonitoringPageState extends ConsumerState<LiveMonitoringPage> {
         } else {
           // Narrow screen: tabbed layout
           return DefaultTabController(
-            length: 4,
+            length: 6,
             child: Column(
               children: [
                 const TabBar(
+                  isScrollable: true,
                   tabs: [
                     Tab(icon: Icon(Icons.map), text: 'Map'),
                     Tab(icon: Icon(Icons.notifications), text: 'Alerts'),
                     Tab(icon: Icon(Icons.people), text: 'Guards'),
                     Tab(icon: Icon(Icons.health_and_safety), text: 'Health'),
+                    Tab(icon: Icon(Icons.dashboard), text: 'Dashboard'),
+                    Tab(icon: Icon(Icons.analytics), text: 'Metrics'),
                   ],
                 ),
                 Expanded(
@@ -288,6 +293,40 @@ class _LiveMonitoringPageState extends ConsumerState<LiveMonitoringPage> {
                               ),
                               const SizedBox(height: 16),
                               const Expanded(child: SystemHealthPanel()),
+                            ],
+                          ),
+                        ),
+                      ),
+                      Card(
+                        margin: const EdgeInsets.all(8),
+                        child: Padding(
+                          padding: const EdgeInsets.all(16),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'System Dashboard',
+                                style: Theme.of(context).textTheme.headlineSmall,
+                              ),
+                              const SizedBox(height: 16),
+                              const Expanded(child: SystemHealthDashboard()),
+                            ],
+                          ),
+                        ),
+                      ),
+                      Card(
+                        margin: const EdgeInsets.all(8),
+                        child: Padding(
+                          padding: const EdgeInsets.all(16),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Performance Metrics',
+                                style: Theme.of(context).textTheme.headlineSmall,
+                              ),
+                              const SizedBox(height: 16),
+                              const Expanded(child: PerformanceMetricsWidget()),
                             ],
                           ),
                         ),
