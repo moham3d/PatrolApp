@@ -22,7 +22,7 @@ All other modules (incidents, evidence, analytics, emergency, media, etc.) are e
   - Maps: flutter_map (for site/patrol visualization)
 
 ## Backend API Integration
-
+Read `docs/access_matrix.csv` for more understanding of the API access levels.
 Integrate only the following endpoints from `docs/comprehensive-api-documentation.md`:
 - `/users/` (GET, POST, PUT, DELETE)
 - `/sites/` (GET, POST, PUT)
