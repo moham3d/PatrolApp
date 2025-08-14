@@ -18,8 +18,8 @@ class UserService {
   }) async {
     try {
       final queryParams = <String, dynamic>{
-        'page': page,
-        'per_page': perPage,
+        'limit': perPage,
+        'offset': (page - 1) * perPage,
       };
 
       if (search != null && search.isNotEmpty) {
@@ -27,7 +27,7 @@ class UserService {
       }
 
       if (isActive != null) {
-        queryParams['is_active'] = isActive;
+        queryParams['active'] = isActive;
       }
 
       final response = await _httpClient.get<Map<String, dynamic>>(
@@ -35,9 +35,32 @@ class UserService {
         queryParameters: queryParams,
       );
 
-      return PaginatedResponse.fromJson(
-        response.data!,
-        (json) => User.fromJson(json as Map<String, dynamic>),
+      // Convert API response format to PaginatedResponse format
+      final apiData = response.data!;
+      final users = (apiData['users'] as List<dynamic>)
+          .map((json) => User.fromJson(json as Map<String, dynamic>))
+          .toList();
+      
+      final total = apiData['total'] as int;
+      final limit = apiData['limit'] as int;
+      final offset = apiData['offset'] as int;
+      
+      // Calculate pagination info
+      final currentPage = (offset ~/ limit) + 1;
+      final totalPages = (total / limit).ceil();
+      
+      final paginationInfo = PaginationInfo(
+        total: total,
+        page: currentPage,
+        perPage: limit,
+        pages: totalPages,
+        hasNext: offset + limit < total,
+        hasPrev: offset > 0,
+      );
+
+      return PaginatedResponse(
+        data: users,
+        pagination: paginationInfo,
       );
     } catch (e) {
       if (e is ApiException) rethrow;
