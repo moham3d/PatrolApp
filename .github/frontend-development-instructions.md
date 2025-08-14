@@ -105,19 +105,19 @@ Understanding these backend capabilities is essential for proper Flutter web int
 
 #### Week 4: Live Monitoring Dashboard
 
-- [ ] **Day 1–3: Real-time Monitoring Interface**
-    - [ ] Implement WebSocket connection using web_socket_channel
-    - [ ] Create live patrol tracking with flutter_map integration
-    - [ ] Build real-time guard location monitoring with StreamBuilder
-    - [ ] Implement live alert feed with push notifications
-    - [ ] Deliverables: Real-time dashboard, live tracking, alert system
+- [x] **Day 1–3: Real-time Monitoring Interface**
+    - [x] Implement WebSocket connection using web_socket_channel
+    - [x] Create live patrol tracking with flutter_map integration
+    - [x] Build real-time guard location monitoring with StreamBuilder
+    - [x] Implement live alert feed with push notifications
+    - [x] Deliverables: Real-time dashboard, live tracking, alert system
 
-- [ ] **Day 4–5: System Health & Status Monitoring**
-    - [ ] Create system health monitoring dashboard with fl_chart
-    - [ ] Implement performance metrics visualization
-    - [ ] Build service status indicators with custom animations
-    - [ ] Create real-time statistics widgets
-    - [ ] Deliverables: Health monitoring, metrics dashboard, status indicators
+- [x] **Day 4–5: System Health & Status Monitoring**
+    - [x] Create system health monitoring dashboard with fl_chart
+    - [x] Implement performance metrics visualization
+    - [x] Build service status indicators with custom animations
+    - [x] Create real-time statistics widgets
+    - [x] Deliverables: Health monitoring, metrics dashboard, status indicators
 
 #### Week 5: Incident & Emergency Management
 
