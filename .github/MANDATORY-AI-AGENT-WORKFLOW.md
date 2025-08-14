@@ -53,7 +53,8 @@ MANDATORY CHECKS:
 **NEVER DO THESE:**
 - ❌ Skip reading documentation files
 - ❌ Create code without checking existing patterns
-- ❌ Hardcode API URLs or endpoints
+- ❌ Hardcode API URLs or endpoints (ONLY use `https://api.millio.space` via AppConfig)
+- ❌ Use any API endpoint other than `https://api.millio.space`
 - ❌ Forget error handling in API calls
 - ❌ Create models that don't match API schemas
 - ❌ Forget to update the checklist
@@ -70,7 +71,8 @@ class SomeService {
 
   Future<List<SomeModel>> getSomeItems() async {
     try {
-      final response = await _dio.get('/api/endpoint/');
+      // ALWAYS use AppConfig.apiBaseUrl - NEVER hardcode URLs
+      final response = await _dio.get('${AppConfig.apiBaseUrl}/api/endpoint/');
       if (response.statusCode == 200) {
         final List<dynamic> data = response.data['results'] ?? response.data;
         return data.map((json) => SomeModel.fromJson(json)).toList();
@@ -84,6 +86,12 @@ class SomeService {
   }
 }
 ```
+
+**🚨 API RESTRICTIONS:**
+- **ONLY ALLOWED API**: `https://api.millio.space`
+- **Access via**: `AppConfig.apiBaseUrl` 
+- **NEVER hardcode**: API URLs in code
+- **FORBIDDEN**: Using any other API endpoints
 
 ### Provider Pattern (REQUIRED)
 ```dart

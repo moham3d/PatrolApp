@@ -58,11 +58,13 @@ Build a Flutter web admin dashboard with 4 core modules:
 - Write unit tests for services and widgets
 
 ### API Integration
+- **API Base URL**: `https://api.millio.space` (RESTRICTED - this is the only allowed API endpoint)
 - Always authenticate requests with JWT Bearer tokens
 - Use proper error handling for HTTP status codes
 - Implement retry logic for failed requests
 - Cache responses when appropriate
 - Follow REST conventions
+- Never hardcode API URLs - use `AppConfig.apiBaseUrl` from environment
 
 ## 🚀 Core Module Implementation Guide
 
