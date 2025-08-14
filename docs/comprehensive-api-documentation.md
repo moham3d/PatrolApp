@@ -1,5 +1,7 @@
-# PatrolShield API Documentation
+# ProsperShield API Documentation
 **Version 1.0.0** | **For Flutter Frontend & Mobile App Development**
+
+✅ **MOBILE API READY**: All Mobile API v1 endpoints (`/mobile/v1/*`) are fully implemented and ready for frontend integration.
 
 ## Table of Contents
 1. [Authentication](#authentication)
@@ -98,7 +100,7 @@ Future<AuthToken> login(String username, String password) async {
 
 The Mobile API v1 provides optimized endpoints specifically designed for mobile applications with:
 - Lightweight response payloads
-- Offline sync capabilities
+- Offline sync capabilities  
 - Mobile-optimized authentication
 - Version compatibility checks
 
@@ -205,7 +207,7 @@ class MobileAuthService {
 ### Mobile Patrols
 
 #### GET `/mobile/v1/patrols/assigned`
-**Description**: Get patrols assigned to current user
+**Description**: Get patrols assigned to current user (mobile optimized with versioning)
 
 **Query Parameters**:
 - `status` (optional): `assigned|active|completed`
@@ -395,7 +397,7 @@ class PatrolService {
 ### Mobile Incidents
 
 #### GET `/mobile/v1/incidents/`
-**Description**: Get incidents for mobile display
+**Description**: Get incidents for mobile app (filtered by user access)
 
 **Query Parameters**:
 - `status`: `open|in_progress|resolved`
@@ -469,7 +471,7 @@ class PatrolService {
 ### Mobile Emergency
 
 #### POST `/mobile/v1/emergency/trigger`
-**Description**: Trigger emergency alert (panic button)
+**Description**: Trigger an emergency alert from mobile app
 
 **Request Body**:
 ```json
@@ -522,7 +524,7 @@ class PatrolService {
 ### Mobile Sync
 
 #### POST `/mobile/v1/sync/upload`
-**Description**: Upload offline data for synchronization
+**Description**: Upload offline data from mobile app
 
 **Request Body**:
 ```json
@@ -618,25 +620,20 @@ class PatrolService {
 - `limit`: Number of results (default: 20)
 - `offset`: Pagination offset
 
-**Response**:
+**Response** (Array format):
 ```json
-{
-  "users": [
-    {
-      "id": 1,
-      "username": "john.doe",
-      "email": "john@example.com",
-      "first_name": "John",
-      "last_name": "Doe",
-      "is_active": true,
-      "roles": ["guard"],
-      "created_at": "2025-01-01T00:00:00Z"
-    }
-  ],
-  "total": 1,
-  "limit": 20,
-  "offset": 0
-}
+[
+  {
+    "id": 1,
+    "username": "john.doe",
+    "email": "john@example.com",
+    "first_name": "John",
+    "last_name": "Doe",
+    "is_active": true,
+    "roles": ["guard"],
+    "created_at": "2025-01-01T00:00:00Z"
+  }
+]
 ```
 
 #### POST `/users/`
@@ -835,7 +832,7 @@ class PatrolService {
 ### GPS Tracking
 
 #### POST `/gps/location`
-**Description**: Submit GPS location
+**Description**: Record a new GPS location for a guard
 
 **Request Body**:
 ```json
@@ -939,11 +936,12 @@ ws://localhost:8000/ws/123?token=your_jwt_token
 ## Response Schemas
 
 ### Common Response Structure
+**Note**: Most endpoints return data directly without wrapping objects.
+
+Standard response format:
 ```json
 {
-  "data": { /* Response data */ },
-  "message": "Success",
-  "timestamp": "2025-08-14T12:00:00Z"
+  /* Response data directly */
 }
 ```
 
@@ -965,19 +963,15 @@ ws://localhost:8000/ws/123?token=your_jwt_token
 ```
 
 ### Pagination Response
+**Note**: Current API uses simple query parameters (skip/limit) without pagination metadata in response.
+
 ```json
-{
-  "data": [ /* Array of items */ ],
-  "pagination": {
-    "total": 100,
-    "page": 1,
-    "per_page": 20,
-    "pages": 5,
-    "has_next": true,
-    "has_prev": false
-  }
-}
+[ /* Array of items directly */ ]
 ```
+
+Use query parameters:
+- `skip`: Number of items to skip (default: 0)
+- `limit`: Number of items to return (default: 100)
 
 ---
 
