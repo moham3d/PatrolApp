@@ -241,7 +241,7 @@ AppBar (with user profile, notifications)
 #### Analytics & Reporting
 - [x] ✅ Analytics dashboard with charts (Performance metrics implemented)
 - [x] ✅ Report generation (CSV export implemented for patrols and routes)
-- [ ] Custom report builder
+- [x] ✅ Custom report builder
 - [ ] Scheduled reports
 
 #### Communication Features  
