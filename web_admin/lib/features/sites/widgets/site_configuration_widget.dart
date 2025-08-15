@@ -371,7 +371,7 @@ class _SiteConfigurationWidgetState extends State<SiteConfigurationWidget> {
                 ),
               ),
             );
-          }).toList(),
+          }),
       ],
     );
   }
