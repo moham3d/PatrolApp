@@ -7,10 +7,8 @@ class User {
   final int id;
   final String username;
   final String email;
-  @JsonKey(name: 'first_name')
-  final String firstName;
-  @JsonKey(name: 'last_name')
-  final String lastName;
+  @JsonKey(name: 'full_name')
+  final String fullName;
   final String? phone;
   @JsonKey(name: 'is_active')
   final bool isActive;
@@ -22,8 +20,7 @@ class User {
     required this.id,
     required this.username,
     required this.email,
-    required this.firstName,
-    required this.lastName,
+    required this.fullName,
     this.phone,
     required this.isActive,
     required this.roles,
@@ -37,8 +34,7 @@ class User {
     int? id,
     String? username,
     String? email,
-    String? firstName,
-    String? lastName,
+    String? fullName,
     String? phone,
     bool? isActive,
     List<String>? roles,
@@ -48,8 +44,7 @@ class User {
       id: id ?? this.id,
       username: username ?? this.username,
       email: email ?? this.email,
-      firstName: firstName ?? this.firstName,
-      lastName: lastName ?? this.lastName,
+      fullName: fullName ?? this.fullName,
       phone: phone ?? this.phone,
       isActive: isActive ?? this.isActive,
       roles: roles ?? this.roles,
@@ -57,8 +52,6 @@ class User {
     );
   }
 
-  String get fullName => '$firstName $lastName';
-  
   // Role checking methods to match access matrix
   bool hasRole(String role) => roles.contains(role);
   bool get isAdmin => roles.contains('admin');
@@ -68,7 +61,7 @@ class User {
   bool get isGuard => roles.contains('guard');
   bool get isMobileGuard => roles.contains('mobile_guard');
   bool get isVisitor => roles.contains('visitor');
-  
+
   String get primaryRole {
     if (isAdmin) return 'Admin';
     if (isOperationsManager) return 'Operations Manager';
@@ -86,10 +79,8 @@ class CreateUserRequest {
   final String username;
   final String email;
   final String password;
-  @JsonKey(name: 'first_name')
-  final String firstName;
-  @JsonKey(name: 'last_name')
-  final String lastName;
+  @JsonKey(name: 'full_name')
+  final String fullName;
   final String? phone;
   @JsonKey(name: 'role_ids')
   final List<int> roleIds;
@@ -98,13 +89,12 @@ class CreateUserRequest {
     required this.username,
     required this.email,
     required this.password,
-    required this.firstName,
-    required this.lastName,
+    required this.fullName,
     this.phone,
     required this.roleIds,
   });
 
-  factory CreateUserRequest.fromJson(Map<String, dynamic> json) => 
+  factory CreateUserRequest.fromJson(Map<String, dynamic> json) =>
       _$CreateUserRequestFromJson(json);
   Map<String, dynamic> toJson() => _$CreateUserRequestToJson(this);
 }
@@ -113,10 +103,8 @@ class CreateUserRequest {
 class UpdateUserRequest {
   final String? username;
   final String? email;
-  @JsonKey(name: 'first_name')
-  final String? firstName;
-  @JsonKey(name: 'last_name')
-  final String? lastName;
+  @JsonKey(name: 'full_name')
+  final String? fullName;
   final String? phone;
   @JsonKey(name: 'role_ids')
   final List<int>? roleIds;
@@ -126,14 +114,13 @@ class UpdateUserRequest {
   const UpdateUserRequest({
     this.username,
     this.email,
-    this.firstName,
-    this.lastName,
+    this.fullName,
     this.phone,
     this.roleIds,
     this.isActive,
   });
 
-  factory UpdateUserRequest.fromJson(Map<String, dynamic> json) => 
+  factory UpdateUserRequest.fromJson(Map<String, dynamic> json) =>
       _$UpdateUserRequestFromJson(json);
   Map<String, dynamic> toJson() => _$UpdateUserRequestToJson(this);
 }

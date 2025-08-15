@@ -3,7 +3,7 @@ import 'package:dio/dio.dart';
 
 import '../../shared/models/auth.dart';
 import '../../core/services/http_client.dart';
-import '../../core/utils/api_exceptions.dart';
+import '../../core/utils/api_exceptions.dart' as api_ex;
 
 class AuthService {
   final HttpClient _httpClient;
@@ -26,10 +26,10 @@ class AuthService {
       final authToken = AuthToken.fromJson(response.data!);
       await _httpClient.storeToken(authToken.accessToken);
       return authToken;
-    } on ApiException {
+    } on api_ex.ApiException {
       rethrow;
     } catch (e) {
-      throw AuthException(
+      throw api_ex.AuthException(
         code: 'LOGIN_ERROR',
         message: e.toString(),
       );
@@ -40,10 +40,10 @@ class AuthService {
     try {
       final response = await _httpClient.get<Map<String, dynamic>>('/auth/me');
       return AuthUser.fromJson(response.data!);
-    } on ApiException {
+    } on api_ex.ApiException {
       rethrow;
     } catch (e) {
-      throw AuthException(
+      throw api_ex.AuthException(
         code: 'USER_INFO_ERROR',
         message: e.toString(),
       );

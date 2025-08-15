@@ -2,7 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../shared/models/patrol.dart';
 import '../../core/services/http_client.dart';
-import '../../core/utils/api_exceptions.dart';
+import '../../core/utils/api_exceptions.dart' as api_ex;
 
 class PatrolService {
   final HttpClient _httpClient;
@@ -48,8 +48,8 @@ class PatrolService {
           .map((json) => Patrol.fromJson(json as Map<String, dynamic>))
           .toList();
     } catch (e) {
-      if (e is ApiException) rethrow;
-      throw PatrolException(
+      if (e is api_ex.ApiException) rethrow;
+      throw api_ex.PatrolException(
         code: 'UNKNOWN_ERROR',
         message: e.toString(),
       );
@@ -58,11 +58,12 @@ class PatrolService {
 
   Future<Patrol> getPatrolById(int id) async {
     try {
-      final response = await _httpClient.get<Map<String, dynamic>>('/tasks/$id');
+      final response =
+          await _httpClient.get<Map<String, dynamic>>('/tasks/$id');
       return Patrol.fromJson(response.data!);
     } catch (e) {
-      if (e is ApiException) rethrow;
-      throw PatrolException(
+      if (e is api_ex.ApiException) rethrow;
+      throw api_ex.PatrolException(
         code: 'UNKNOWN_ERROR',
         message: e.toString(),
       );
@@ -77,8 +78,8 @@ class PatrolService {
       );
       return Patrol.fromJson(response.data!);
     } catch (e) {
-      if (e is ApiException) rethrow;
-      throw PatrolException(
+      if (e is api_ex.ApiException) rethrow;
+      throw api_ex.PatrolException(
         code: 'UNKNOWN_ERROR',
         message: e.toString(),
       );
@@ -93,8 +94,8 @@ class PatrolService {
       );
       return Patrol.fromJson(response.data!);
     } catch (e) {
-      if (e is ApiException) rethrow;
-      throw PatrolException(
+      if (e is api_ex.ApiException) rethrow;
+      throw api_ex.PatrolException(
         code: 'UNKNOWN_ERROR',
         message: e.toString(),
       );
@@ -109,8 +110,8 @@ class PatrolService {
       );
       return Patrol.fromJson(response.data!);
     } catch (e) {
-      if (e is ApiException) rethrow;
-      throw PatrolException(
+      if (e is api_ex.ApiException) rethrow;
+      throw api_ex.PatrolException(
         code: 'UNKNOWN_ERROR',
         message: e.toString(),
       );
@@ -125,8 +126,8 @@ class PatrolService {
       );
       return Patrol.fromJson(response.data!);
     } catch (e) {
-      if (e is ApiException) rethrow;
-      throw PatrolException(
+      if (e is api_ex.ApiException) rethrow;
+      throw api_ex.PatrolException(
         code: 'UNKNOWN_ERROR',
         message: e.toString(),
       );

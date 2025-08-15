@@ -425,8 +425,7 @@ class _RouteOptimizationWidgetState
       mapController: _mapController,
       options: MapOptions(
         initialCenter: _selectedSite?.coordinates != null
-            ? LatLng(_selectedSite!.coordinates.latitude,
-                _selectedSite!.coordinates.longitude)
+            ? LatLng(_selectedSite!.latitude, _selectedSite!.longitude)
             : _defaultCenter,
         initialZoom: _selectedSite != null ? 16.0 : 12.0,
         minZoom: 8.0,
@@ -537,7 +536,7 @@ class _RouteOptimizationWidgetState
 
   void _centerMapOnSite(Site site) {
     _mapController.move(
-      LatLng(site.coordinates.latitude, site.coordinates.longitude),
+      LatLng(site.latitude, site.longitude),
       16.0,
     );
   }

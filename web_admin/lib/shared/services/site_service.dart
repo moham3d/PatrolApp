@@ -2,7 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../shared/models/site.dart';
 import '../../core/services/http_client.dart';
-import '../../core/utils/api_exceptions.dart';
+import '../../core/utils/api_exceptions.dart' as api_ex;
 
 class SiteService {
   final HttpClient _httpClient;
@@ -29,12 +29,18 @@ class SiteService {
         queryParameters: queryParams.isNotEmpty ? queryParams : null,
       );
 
-      return (response.data!)
-          .map((json) => Site.fromJson(json as Map<String, dynamic>))
-          .toList();
+      return (response.data!).map((json) {
+        try {
+          return Site.fromJson(json as Map<String, dynamic>);
+        } catch (e) {
+          print('Error parsing site JSON: $json');
+          print('Parse error: $e');
+          rethrow;
+        }
+      }).toList();
     } catch (e) {
-      if (e is ApiException) rethrow;
-      throw SiteException(
+      if (e is api_ex.ApiException) rethrow;
+      throw api_ex.SiteException(
         code: 'UNKNOWN_ERROR',
         message: e.toString(),
       );
@@ -43,11 +49,12 @@ class SiteService {
 
   Future<Site> getSiteById(int id) async {
     try {
-      final response = await _httpClient.get<Map<String, dynamic>>('/sites/$id');
+      final response =
+          await _httpClient.get<Map<String, dynamic>>('/sites/$id');
       return Site.fromJson(response.data!);
     } catch (e) {
-      if (e is ApiException) rethrow;
-      throw SiteException(
+      if (e is api_ex.ApiException) rethrow;
+      throw api_ex.SiteException(
         code: 'UNKNOWN_ERROR',
         message: e.toString(),
       );
@@ -62,8 +69,8 @@ class SiteService {
       );
       return Site.fromJson(response.data!);
     } catch (e) {
-      if (e is ApiException) rethrow;
-      throw SiteException(
+      if (e is api_ex.ApiException) rethrow;
+      throw api_ex.SiteException(
         code: 'UNKNOWN_ERROR',
         message: e.toString(),
       );
@@ -78,8 +85,8 @@ class SiteService {
       );
       return Site.fromJson(response.data!);
     } catch (e) {
-      if (e is ApiException) rethrow;
-      throw SiteException(
+      if (e is api_ex.ApiException) rethrow;
+      throw api_ex.SiteException(
         code: 'UNKNOWN_ERROR',
         message: e.toString(),
       );

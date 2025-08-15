@@ -25,7 +25,7 @@ class _EditSiteDialogState extends ConsumerState<EditSiteDialog> {
   late final TextEditingController _emailController;
   late final TextEditingController _latitudeController;
   late final TextEditingController _longitudeController;
-  
+
   late bool _isActive;
   bool _isLoading = false;
 
@@ -34,11 +34,15 @@ class _EditSiteDialogState extends ConsumerState<EditSiteDialog> {
     super.initState();
     _nameController = TextEditingController(text: widget.site.name);
     _addressController = TextEditingController(text: widget.site.address);
-    _phoneController = TextEditingController(text: widget.site.contactInfo?.phone ?? '');
-    _emailController = TextEditingController(text: widget.site.contactInfo?.email ?? '');
-    _latitudeController = TextEditingController(text: widget.site.coordinates.latitude.toString());
-    _longitudeController = TextEditingController(text: widget.site.coordinates.longitude.toString());
-    _isActive = widget.site.isActive;
+    _phoneController =
+        TextEditingController(text: widget.site.contactInfo?.phone ?? '');
+    _emailController =
+        TextEditingController(text: widget.site.contactInfo?.email ?? '');
+    _latitudeController =
+        TextEditingController(text: widget.site.latitude.toString());
+    _longitudeController =
+        TextEditingController(text: widget.site.longitude.toString());
+    _isActive = widget.site.isActive ?? false;
   }
 
   @override
@@ -65,22 +69,30 @@ class _EditSiteDialogState extends ConsumerState<EditSiteDialog> {
         longitude: double.parse(_longitudeController.text),
       );
 
-      final contactInfo = _phoneController.text.isNotEmpty || _emailController.text.isNotEmpty
-          ? ContactInfo(
-              phone: _phoneController.text.isNotEmpty ? _phoneController.text : null,
-              email: _emailController.text.isNotEmpty ? _emailController.text : null,
-            )
-          : null;
+      final contactInfo =
+          _phoneController.text.isNotEmpty || _emailController.text.isNotEmpty
+              ? ContactInfo(
+                  phone: _phoneController.text.isNotEmpty
+                      ? _phoneController.text
+                      : null,
+                  email: _emailController.text.isNotEmpty
+                      ? _emailController.text
+                      : null,
+                )
+              : null;
 
       final request = UpdateSiteRequest(
         name: _nameController.text.trim(),
         address: _addressController.text.trim(),
-        coordinates: coordinates,
+        latitude: coordinates.latitude,
+        longitude: coordinates.longitude,
         contactInfo: contactInfo,
         isActive: _isActive,
       );
 
-      final success = await ref.read(sitesProvider.notifier).updateSite(widget.site.id, request);
+      final success = await ref
+          .read(sitesProvider.notifier)
+          .updateSite(widget.site.id, request);
 
       if (success && mounted) {
         Navigator.of(context).pop();
@@ -125,8 +137,8 @@ class _EditSiteDialogState extends ConsumerState<EditSiteDialog> {
                   Text(
                     'Select Location',
                     style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
+                          fontWeight: FontWeight.bold,
+                        ),
                   ),
                   const Spacer(),
                   IconButton(
@@ -136,15 +148,15 @@ class _EditSiteDialogState extends ConsumerState<EditSiteDialog> {
                 ],
               ),
               const SizedBox(height: 16),
-              
+
               // Interactive map picker
               Expanded(
                 child: InteractiveMapPicker(
-                  initialLatitude: _latitudeController.text.isNotEmpty 
-                      ? double.tryParse(_latitudeController.text) 
+                  initialLatitude: _latitudeController.text.isNotEmpty
+                      ? double.tryParse(_latitudeController.text)
                       : null,
-                  initialLongitude: _longitudeController.text.isNotEmpty 
-                      ? double.tryParse(_longitudeController.text) 
+                  initialLongitude: _longitudeController.text.isNotEmpty
+                      ? double.tryParse(_longitudeController.text)
                       : null,
                   onLocationSelected: (latitude, longitude) {
                     setState(() {
@@ -155,7 +167,7 @@ class _EditSiteDialogState extends ConsumerState<EditSiteDialog> {
                 ),
               ),
               const SizedBox(height: 16),
-              
+
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
@@ -194,8 +206,8 @@ class _EditSiteDialogState extends ConsumerState<EditSiteDialog> {
                   Text(
                     'Edit Site',
                     style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
+                          fontWeight: FontWeight.bold,
+                        ),
                   ),
                   const Spacer(),
                   IconButton(
@@ -285,7 +297,8 @@ class _EditSiteDialogState extends ConsumerState<EditSiteDialog> {
                         labelText: 'Latitude *',
                         border: OutlineInputBorder(),
                       ),
-                      keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                      keyboardType:
+                          const TextInputType.numberWithOptions(decimal: true),
                       validator: (value) {
                         if (value == null || value.trim().isEmpty) {
                           return 'Latitude is required';
@@ -306,7 +319,8 @@ class _EditSiteDialogState extends ConsumerState<EditSiteDialog> {
                         labelText: 'Longitude *',
                         border: OutlineInputBorder(),
                       ),
-                      keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                      keyboardType:
+                          const TextInputType.numberWithOptions(decimal: true),
                       validator: (value) {
                         if (value == null || value.trim().isEmpty) {
                           return 'Longitude is required';
@@ -360,7 +374,8 @@ class _EditSiteDialogState extends ConsumerState<EditSiteDialog> {
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   TextButton(
-                    onPressed: _isLoading ? null : () => Navigator.of(context).pop(),
+                    onPressed:
+                        _isLoading ? null : () => Navigator.of(context).pop(),
                     child: const Text('Cancel'),
                   ),
                   const SizedBox(width: 8),

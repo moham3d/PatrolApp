@@ -98,8 +98,8 @@ class UserListWidget extends ConsumerWidget {
                   child: Text(
                     'Name',
                     style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
+                          fontWeight: FontWeight.bold,
+                        ),
                   ),
                 ),
                 Expanded(
@@ -107,8 +107,8 @@ class UserListWidget extends ConsumerWidget {
                   child: Text(
                     'Email',
                     style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
+                          fontWeight: FontWeight.bold,
+                        ),
                   ),
                 ),
                 Expanded(
@@ -116,24 +116,24 @@ class UserListWidget extends ConsumerWidget {
                   child: Text(
                     'Roles',
                     style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
+                          fontWeight: FontWeight.bold,
+                        ),
                   ),
                 ),
                 Expanded(
                   child: Text(
                     'Status',
                     style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
+                          fontWeight: FontWeight.bold,
+                        ),
                   ),
                 ),
                 Expanded(
                   child: Text(
                     'Created',
                     style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
+                          fontWeight: FontWeight.bold,
+                        ),
                   ),
                 ),
                 const SizedBox(width: 120), // Actions column
@@ -234,7 +234,7 @@ class _UserListItem extends StatelessWidget {
                 CircleAvatar(
                   backgroundColor: Theme.of(context).primaryColor,
                   child: Text(
-                    user.firstName[0].toUpperCase(),
+                    user.fullName[0].toUpperCase(),
                     style: const TextStyle(
                       color: Colors.white,
                       fontWeight: FontWeight.bold,
@@ -249,14 +249,16 @@ class _UserListItem extends StatelessWidget {
                       Text(
                         user.fullName,
                         style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                          fontWeight: FontWeight.w600,
-                        ),
+                              fontWeight: FontWeight.w600,
+                            ),
                       ),
                       Text(
                         '@${user.username}',
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: Theme.of(context).colorScheme.onSurfaceVariant,
-                        ),
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .onSurfaceVariant,
+                            ),
                       ),
                     ],
                   ),
@@ -306,7 +308,9 @@ class _UserListItem extends StatelessWidget {
               child: Text(
                 user.isActive ? 'Active' : 'Inactive',
                 style: TextStyle(
-                  color: user.isActive ? Colors.green.shade700 : Colors.red.shade700,
+                  color: user.isActive
+                      ? Colors.green.shade700
+                      : Colors.red.shade700,
                   fontSize: 12,
                   fontWeight: FontWeight.w500,
                 ),

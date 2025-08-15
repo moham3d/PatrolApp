@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../shared/models/user.dart';
 import '../../shared/models/api_response.dart';
 import '../../core/services/http_client.dart';
-import '../../core/utils/api_exceptions.dart';
+import '../../core/utils/api_exceptions.dart' as api_ex;
 
 class UserService {
   final HttpClient _httpClient;
@@ -30,25 +30,26 @@ class UserService {
         queryParams['active'] = isActive;
       }
 
-      final response = await _httpClient.get<Map<String, dynamic>>(
+      final response = await _httpClient.get<List<dynamic>>(
         '/users/',
         queryParameters: queryParams,
       );
 
-      // Convert API response format to PaginatedResponse format
-      final apiData = response.data!;
-      final users = (apiData['users'] as List<dynamic>)
+      // API returns direct array of users, not paginated response
+      final userList = response.data!;
+      final users = userList
           .map((json) => User.fromJson(json as Map<String, dynamic>))
           .toList();
-      
-      final total = apiData['total'] as int;
-      final limit = apiData['limit'] as int;
-      final offset = apiData['offset'] as int;
-      
+
+      // Since API doesn't return pagination info, calculate it
+      final total = users.length;
+      final limit = perPage;
+      final offset = (page - 1) * perPage;
+
       // Calculate pagination info
-      final currentPage = (offset ~/ limit) + 1;
+      final currentPage = page;
       final totalPages = (total / limit).ceil();
-      
+
       final paginationInfo = PaginationInfo(
         total: total,
         page: currentPage,
@@ -57,14 +58,13 @@ class UserService {
         hasNext: offset + limit < total,
         hasPrev: offset > 0,
       );
-
       return PaginatedResponse(
         data: users,
         pagination: paginationInfo,
       );
     } catch (e) {
-      if (e is ApiException) rethrow;
-      throw UserException(
+      if (e is api_ex.ApiException) rethrow;
+      throw api_ex.UserException(
         code: 'UNKNOWN_ERROR',
         message: e.toString(),
       );
@@ -73,11 +73,12 @@ class UserService {
 
   Future<User> getUserById(int id) async {
     try {
-      final response = await _httpClient.get<Map<String, dynamic>>('/users/$id');
+      final response =
+          await _httpClient.get<Map<String, dynamic>>('/users/$id');
       return User.fromJson(response.data!);
     } catch (e) {
-      if (e is ApiException) rethrow;
-      throw UserException(
+      if (e is api_ex.ApiException) rethrow;
+      throw api_ex.UserException(
         code: 'UNKNOWN_ERROR',
         message: e.toString(),
       );
@@ -92,8 +93,8 @@ class UserService {
       );
       return User.fromJson(response.data!);
     } catch (e) {
-      if (e is ApiException) rethrow;
-      throw UserException(
+      if (e is api_ex.ApiException) rethrow;
+      throw api_ex.UserException(
         code: 'UNKNOWN_ERROR',
         message: e.toString(),
       );
@@ -108,8 +109,8 @@ class UserService {
       );
       return User.fromJson(response.data!);
     } catch (e) {
-      if (e is ApiException) rethrow;
-      throw UserException(
+      if (e is api_ex.ApiException) rethrow;
+      throw api_ex.UserException(
         code: 'UNKNOWN_ERROR',
         message: e.toString(),
       );
@@ -120,8 +121,8 @@ class UserService {
     try {
       await _httpClient.delete('/users/$id');
     } catch (e) {
-      if (e is ApiException) rethrow;
-      throw UserException(
+      if (e is api_ex.ApiException) rethrow;
+      throw api_ex.UserException(
         code: 'UNKNOWN_ERROR',
         message: e.toString(),
       );

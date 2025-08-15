@@ -47,21 +47,28 @@ class _CreateSiteDialogState extends ConsumerState<CreateSiteDialog> {
         longitude: double.parse(_longitudeController.text),
       );
 
-      final contactInfo = _phoneController.text.isNotEmpty || _emailController.text.isNotEmpty
-          ? ContactInfo(
-              phone: _phoneController.text.isNotEmpty ? _phoneController.text : null,
-              email: _emailController.text.isNotEmpty ? _emailController.text : null,
-            )
-          : null;
+      final contactInfo =
+          _phoneController.text.isNotEmpty || _emailController.text.isNotEmpty
+              ? ContactInfo(
+                  phone: _phoneController.text.isNotEmpty
+                      ? _phoneController.text
+                      : null,
+                  email: _emailController.text.isNotEmpty
+                      ? _emailController.text
+                      : null,
+                )
+              : null;
 
       final request = CreateSiteRequest(
         name: _nameController.text.trim(),
         address: _addressController.text.trim(),
-        coordinates: coordinates,
+        latitude: coordinates.latitude,
+        longitude: coordinates.longitude,
         contactInfo: contactInfo,
       );
 
-      final success = await ref.read(sitesProvider.notifier).createSite(request);
+      final success =
+          await ref.read(sitesProvider.notifier).createSite(request);
 
       if (success && mounted) {
         Navigator.of(context).pop();
@@ -106,8 +113,8 @@ class _CreateSiteDialogState extends ConsumerState<CreateSiteDialog> {
                   Text(
                     'Select Location',
                     style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
+                          fontWeight: FontWeight.bold,
+                        ),
                   ),
                   const Spacer(),
                   IconButton(
@@ -117,15 +124,15 @@ class _CreateSiteDialogState extends ConsumerState<CreateSiteDialog> {
                 ],
               ),
               const SizedBox(height: 16),
-              
+
               // Interactive map picker
               Expanded(
                 child: InteractiveMapPicker(
-                  initialLatitude: _latitudeController.text.isNotEmpty 
-                      ? double.tryParse(_latitudeController.text) 
+                  initialLatitude: _latitudeController.text.isNotEmpty
+                      ? double.tryParse(_latitudeController.text)
                       : null,
-                  initialLongitude: _longitudeController.text.isNotEmpty 
-                      ? double.tryParse(_longitudeController.text) 
+                  initialLongitude: _longitudeController.text.isNotEmpty
+                      ? double.tryParse(_longitudeController.text)
                       : null,
                   onLocationSelected: (latitude, longitude) {
                     setState(() {
@@ -136,7 +143,7 @@ class _CreateSiteDialogState extends ConsumerState<CreateSiteDialog> {
                 ),
               ),
               const SizedBox(height: 16),
-              
+
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
@@ -175,8 +182,8 @@ class _CreateSiteDialogState extends ConsumerState<CreateSiteDialog> {
                   Text(
                     'Create Site',
                     style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
+                          fontWeight: FontWeight.bold,
+                        ),
                   ),
                   const Spacer(),
                   IconButton(
@@ -266,7 +273,8 @@ class _CreateSiteDialogState extends ConsumerState<CreateSiteDialog> {
                         labelText: 'Latitude *',
                         border: OutlineInputBorder(),
                       ),
-                      keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                      keyboardType:
+                          const TextInputType.numberWithOptions(decimal: true),
                       validator: (value) {
                         if (value == null || value.trim().isEmpty) {
                           return 'Latitude is required';
@@ -287,7 +295,8 @@ class _CreateSiteDialogState extends ConsumerState<CreateSiteDialog> {
                         labelText: 'Longitude *',
                         border: OutlineInputBorder(),
                       ),
-                      keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                      keyboardType:
+                          const TextInputType.numberWithOptions(decimal: true),
                       validator: (value) {
                         if (value == null || value.trim().isEmpty) {
                           return 'Longitude is required';
@@ -321,7 +330,8 @@ class _CreateSiteDialogState extends ConsumerState<CreateSiteDialog> {
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   TextButton(
-                    onPressed: _isLoading ? null : () => Navigator.of(context).pop(),
+                    onPressed:
+                        _isLoading ? null : () => Navigator.of(context).pop(),
                     child: const Text('Cancel'),
                   ),
                   const SizedBox(width: 8),

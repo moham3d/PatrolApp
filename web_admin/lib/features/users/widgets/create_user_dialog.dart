@@ -54,16 +54,16 @@ class _CreateUserDialogState extends ConsumerState<CreateUserDialog> {
         username: _usernameController.text.trim(),
         email: _emailController.text.trim(),
         password: _passwordController.text,
-        firstName: _firstNameController.text.trim(),
-        lastName: _lastNameController.text.trim(),
-        phone: _phoneController.text.trim().isNotEmpty 
-            ? _phoneController.text.trim() 
+        fullName:
+            '${_firstNameController.text.trim()} ${_lastNameController.text.trim()}',
+        phone: _phoneController.text.trim().isNotEmpty
+            ? _phoneController.text.trim()
             : null,
         roleIds: _selectedRoles.map((role) => _getRoleId(role)).toList(),
       );
 
       await ref.read(usersProvider.notifier).createUser(request);
-      
+
       if (mounted) {
         Navigator.of(context).pop();
         ScaffoldMessenger.of(context).showSnackBar(
@@ -142,7 +142,8 @@ class _CreateUserDialogState extends ConsumerState<CreateUserDialog> {
                     if (value == null || value.trim().isEmpty) {
                       return 'Email is required';
                     }
-                    if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value)) {
+                    if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$')
+                        .hasMatch(value)) {
                       return 'Please enter a valid email address';
                     }
                     return null;

@@ -48,9 +48,12 @@ class SiteListView extends ConsumerWidget {
                       if (site.contactInfo?.email != null)
                         Text(
                           site.contactInfo!.email!,
-                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: Theme.of(context).colorScheme.onSurfaceVariant,
-                          ),
+                          style:
+                              Theme.of(context).textTheme.bodySmall?.copyWith(
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .onSurfaceVariant,
+                                  ),
                         ),
                     ],
                   ),
@@ -67,17 +70,20 @@ class SiteListView extends ConsumerWidget {
                 ),
                 DataCell(
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                     decoration: BoxDecoration(
-                      color: site.isActive 
+                      color: (site.isActive ?? false)
                           ? Colors.green.withOpacity(0.1)
                           : Colors.red.withOpacity(0.1),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Text(
-                      site.isActive ? 'Active' : 'Inactive',
+                      (site.isActive ?? false) ? 'Active' : 'Inactive',
                       style: TextStyle(
-                        color: site.isActive ? Colors.green.shade700 : Colors.red.shade700,
+                        color: (site.isActive ?? false)
+                            ? Colors.green.shade700
+                            : Colors.red.shade700,
                         fontSize: 12,
                         fontWeight: FontWeight.w500,
                       ),
@@ -100,10 +106,10 @@ class SiteListView extends ConsumerWidget {
                 ),
                 DataCell(
                   Text(
-                    '${site.coordinates.latitude.toStringAsFixed(4)}, ${site.coordinates.longitude.toStringAsFixed(4)}',
+                    '${site.latitude.toStringAsFixed(4)}, ${site.longitude.toStringAsFixed(4)}',
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      fontFamily: 'monospace',
-                    ),
+                          fontFamily: 'monospace',
+                        ),
                   ),
                 ),
                 DataCell(
@@ -116,7 +122,7 @@ class SiteListView extends ConsumerWidget {
                         icon: const Icon(Icons.visibility),
                         tooltip: 'View Details',
                       ),
-                      
+
                       // Edit button - permission-based
                       PermissionGuard(
                         requiredRoles: _getEditPermissions(user, site),
@@ -126,7 +132,7 @@ class SiteListView extends ConsumerWidget {
                           tooltip: 'Edit Site',
                         ),
                       ),
-                      
+
                       // Map button
                       IconButton(
                         onPressed: () => _showSiteOnMap(context, site),
@@ -174,8 +180,8 @@ class SiteListView extends ConsumerWidget {
                   Text(
                     site.name,
                     style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
+                          fontWeight: FontWeight.bold,
+                        ),
                   ),
                   const Spacer(),
                   IconButton(
@@ -207,19 +213,22 @@ class SiteListView extends ConsumerWidget {
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          'Lat: ${site.coordinates.latitude.toStringAsFixed(6)}',
+                          'Lat: ${site.latitude.toStringAsFixed(6)}',
                           style: Theme.of(context).textTheme.bodySmall,
                         ),
                         Text(
-                          'Lng: ${site.coordinates.longitude.toStringAsFixed(6)}',
+                          'Lng: ${site.longitude.toStringAsFixed(6)}',
                           style: Theme.of(context).textTheme.bodySmall,
                         ),
                         const SizedBox(height: 8),
                         Text(
                           'Flutter Map integration coming soon',
-                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: Theme.of(context).colorScheme.onSurfaceVariant,
-                          ),
+                          style:
+                              Theme.of(context).textTheme.bodySmall?.copyWith(
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .onSurfaceVariant,
+                                  ),
                         ),
                       ],
                     ),

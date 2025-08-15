@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 
-import '../../models/site.dart';
-
 /// Interactive map widget for picking location coordinates
 class InteractiveMapPicker extends StatefulWidget {
   final double? initialLatitude;
@@ -32,13 +30,13 @@ class _InteractiveMapPickerState extends State<InteractiveMapPicker> {
   void initState() {
     super.initState();
     _mapController = MapController();
-    
+
     // Use provided coordinates or default to a central location
     _center = LatLng(
       widget.initialLatitude ?? 40.7128, // Default to New York City
       widget.initialLongitude ?? -74.0060,
     );
-    
+
     // If initial coordinates provided, set as selected
     if (widget.initialLatitude != null && widget.initialLongitude != null) {
       _selectedLocation = _center;
@@ -82,8 +80,8 @@ class _InteractiveMapPickerState extends State<InteractiveMapPicker> {
               Text(
                 'Tap on the map to select location',
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: Theme.of(context).colorScheme.onSurfaceVariant,
-                ),
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    ),
               ),
               const Spacer(),
               if (_selectedLocation != null) ...[
@@ -97,7 +95,7 @@ class _InteractiveMapPickerState extends State<InteractiveMapPicker> {
             ],
           ),
         ),
-        
+
         // Map widget
         Expanded(
           child: Container(
@@ -120,11 +118,12 @@ class _InteractiveMapPickerState extends State<InteractiveMapPicker> {
                 children: [
                   // Tile layer
                   TileLayer(
-                    urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                    urlTemplate:
+                        'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
                     userAgentPackageName: 'com.patrolshield.admin',
                     maxZoom: 19,
                   ),
-                  
+
                   // Marker layer for selected location
                   if (_selectedLocation != null)
                     MarkerLayer(
@@ -163,7 +162,7 @@ class _InteractiveMapPickerState extends State<InteractiveMapPicker> {
             ),
           ),
         ),
-        
+
         // Coordinates display
         if (_selectedLocation != null)
           Padding(
@@ -187,8 +186,8 @@ class _InteractiveMapPickerState extends State<InteractiveMapPicker> {
                     'Lat: ${_selectedLocation!.latitude.toStringAsFixed(6)}, '
                     'Lng: ${_selectedLocation!.longitude.toStringAsFixed(6)}',
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: Theme.of(context).colorScheme.onSurfaceVariant,
-                    ),
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        ),
                   ),
                 ],
               ),

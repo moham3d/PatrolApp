@@ -31,21 +31,25 @@ Map<String, dynamic> _$ContactInfoToJson(ContactInfo instance) =>
 Site _$SiteFromJson(Map<String, dynamic> json) => Site(
       id: (json['id'] as num).toInt(),
       name: json['name'] as String,
+      description: json['description'] as String?,
       address: json['address'] as String,
-      coordinates: Coordinates.fromJson(json['coordinates'] as Map<String, dynamic>),
+      latitude: (json['latitude'] as num).toDouble(),
+      longitude: (json['longitude'] as num).toDouble(),
       contactInfo: json['contact_info'] == null
           ? null
           : ContactInfo.fromJson(json['contact_info'] as Map<String, dynamic>),
-      isActive: json['is_active'] as bool,
-      checkpointsCount: (json['checkpoints_count'] as num).toInt(),
+      isActive: json['is_active'] as bool?,
+      checkpointsCount: (json['checkpoints_count'] as num?)?.toInt(),
     );
 
 Map<String, dynamic> _$SiteToJson(Site instance) => <String, dynamic>{
       'id': instance.id,
       'name': instance.name,
+      'description': instance.description,
       'address': instance.address,
-      'coordinates': instance.coordinates.toJson(),
-      'contact_info': instance.contactInfo?.toJson(),
+      'latitude': instance.latitude,
+      'longitude': instance.longitude,
+      'contact_info': instance.contactInfo,
       'is_active': instance.isActive,
       'checkpoints_count': instance.checkpointsCount,
     };
@@ -53,8 +57,10 @@ Map<String, dynamic> _$SiteToJson(Site instance) => <String, dynamic>{
 CreateSiteRequest _$CreateSiteRequestFromJson(Map<String, dynamic> json) =>
     CreateSiteRequest(
       name: json['name'] as String,
+      description: json['description'] as String?,
       address: json['address'] as String,
-      coordinates: Coordinates.fromJson(json['coordinates'] as Map<String, dynamic>),
+      latitude: (json['latitude'] as num).toDouble(),
+      longitude: (json['longitude'] as num).toDouble(),
       contactInfo: json['contact_info'] == null
           ? null
           : ContactInfo.fromJson(json['contact_info'] as Map<String, dynamic>),
@@ -63,18 +69,20 @@ CreateSiteRequest _$CreateSiteRequestFromJson(Map<String, dynamic> json) =>
 Map<String, dynamic> _$CreateSiteRequestToJson(CreateSiteRequest instance) =>
     <String, dynamic>{
       'name': instance.name,
+      'description': instance.description,
       'address': instance.address,
-      'coordinates': instance.coordinates.toJson(),
-      'contact_info': instance.contactInfo?.toJson(),
+      'latitude': instance.latitude,
+      'longitude': instance.longitude,
+      'contact_info': instance.contactInfo,
     };
 
 UpdateSiteRequest _$UpdateSiteRequestFromJson(Map<String, dynamic> json) =>
     UpdateSiteRequest(
       name: json['name'] as String?,
+      description: json['description'] as String?,
       address: json['address'] as String?,
-      coordinates: json['coordinates'] == null
-          ? null
-          : Coordinates.fromJson(json['coordinates'] as Map<String, dynamic>),
+      latitude: (json['latitude'] as num?)?.toDouble(),
+      longitude: (json['longitude'] as num?)?.toDouble(),
       contactInfo: json['contact_info'] == null
           ? null
           : ContactInfo.fromJson(json['contact_info'] as Map<String, dynamic>),
@@ -84,22 +92,10 @@ UpdateSiteRequest _$UpdateSiteRequestFromJson(Map<String, dynamic> json) =>
 Map<String, dynamic> _$UpdateSiteRequestToJson(UpdateSiteRequest instance) =>
     <String, dynamic>{
       'name': instance.name,
+      'description': instance.description,
       'address': instance.address,
-      'coordinates': instance.coordinates?.toJson(),
-      'contact_info': instance.contactInfo?.toJson(),
+      'latitude': instance.latitude,
+      'longitude': instance.longitude,
+      'contact_info': instance.contactInfo,
       'is_active': instance.isActive,
     };
-
-// Custom exception for site operations
-class SiteException implements Exception {
-  final String code;
-  final String message;
-
-  const SiteException({
-    required this.code,
-    required this.message,
-  });
-
-  @override
-  String toString() => 'SiteException: $message (code: $code)';
-}

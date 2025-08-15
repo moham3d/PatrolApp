@@ -2,7 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../shared/models/checkpoint.dart';
 import '../../core/services/http_client.dart';
-import '../../core/utils/api_exceptions.dart';
+import '../../core/utils/api_exceptions.dart' as api_ex;
 
 class CheckpointService {
   final HttpClient _httpClient;
@@ -33,8 +33,8 @@ class CheckpointService {
           .map((json) => Checkpoint.fromJson(json as Map<String, dynamic>))
           .toList();
     } catch (e) {
-      if (e is ApiException) rethrow;
-      throw CheckpointException(
+      if (e is api_ex.ApiException) rethrow;
+      throw api_ex.CheckpointException(
         code: 'UNKNOWN_ERROR',
         message: e.toString(),
       );
@@ -43,11 +43,12 @@ class CheckpointService {
 
   Future<Checkpoint> getCheckpointById(int id) async {
     try {
-      final response = await _httpClient.get<Map<String, dynamic>>('/checkpoints/$id');
+      final response =
+          await _httpClient.get<Map<String, dynamic>>('/checkpoints/$id');
       return Checkpoint.fromJson(response.data!);
     } catch (e) {
-      if (e is ApiException) rethrow;
-      throw CheckpointException(
+      if (e is api_ex.ApiException) rethrow;
+      throw api_ex.CheckpointException(
         code: 'UNKNOWN_ERROR',
         message: e.toString(),
       );
@@ -62,15 +63,16 @@ class CheckpointService {
       );
       return Checkpoint.fromJson(response.data!);
     } catch (e) {
-      if (e is ApiException) rethrow;
-      throw CheckpointException(
+      if (e is api_ex.ApiException) rethrow;
+      throw api_ex.CheckpointException(
         code: 'UNKNOWN_ERROR',
         message: e.toString(),
       );
     }
   }
 
-  Future<Checkpoint> updateCheckpoint(int id, UpdateCheckpointRequest request) async {
+  Future<Checkpoint> updateCheckpoint(
+      int id, UpdateCheckpointRequest request) async {
     try {
       final response = await _httpClient.put<Map<String, dynamic>>(
         '/checkpoints/$id',
@@ -78,8 +80,8 @@ class CheckpointService {
       );
       return Checkpoint.fromJson(response.data!);
     } catch (e) {
-      if (e is ApiException) rethrow;
-      throw CheckpointException(
+      if (e is api_ex.ApiException) rethrow;
+      throw api_ex.CheckpointException(
         code: 'UNKNOWN_ERROR',
         message: e.toString(),
       );

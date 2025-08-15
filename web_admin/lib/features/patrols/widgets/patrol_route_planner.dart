@@ -350,8 +350,7 @@ class _PatrolRoutePlannerState extends ConsumerState<PatrolRoutePlanner> {
       mapController: _mapController,
       options: MapOptions(
         initialCenter: _selectedSite?.coordinates != null
-            ? LatLng(_selectedSite!.coordinates.latitude,
-                _selectedSite!.coordinates.longitude)
+            ? LatLng(_selectedSite!.latitude, _selectedSite!.longitude)
             : _defaultCenter,
         initialZoom: _selectedSite != null ? 15.0 : _defaultZoom,
         minZoom: 8.0,
@@ -446,7 +445,7 @@ class _PatrolRoutePlannerState extends ConsumerState<PatrolRoutePlanner> {
 
   void _centerMapOnSite(Site site) {
     _mapController.move(
-      LatLng(site.coordinates.latitude, site.coordinates.longitude),
+      LatLng(site.latitude, site.longitude),
       15.0,
     );
   }

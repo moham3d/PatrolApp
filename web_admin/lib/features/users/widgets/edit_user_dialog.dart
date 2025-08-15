@@ -35,8 +35,14 @@ class _EditUserDialogState extends ConsumerState<EditUserDialog> {
     super.initState();
     _usernameController = TextEditingController(text: widget.user.username);
     _emailController = TextEditingController(text: widget.user.email);
-    _firstNameController = TextEditingController(text: widget.user.firstName);
-    _lastNameController = TextEditingController(text: widget.user.lastName);
+
+    // Split fullName into first and last name for editing
+    final nameParts = widget.user.fullName.split(' ');
+    _firstNameController = TextEditingController(
+        text: nameParts.isNotEmpty ? nameParts.first : '');
+    _lastNameController = TextEditingController(
+        text: nameParts.length > 1 ? nameParts.sublist(1).join(' ') : '');
+
     _phoneController = TextEditingController(text: widget.user.phone ?? '');
     _selectedRoles = Set<String>.from(widget.user.roles);
     _isActive = widget.user.isActive;
@@ -73,24 +79,31 @@ class _EditUserDialogState extends ConsumerState<EditUserDialog> {
         email: _emailController.text.trim() != widget.user.email
             ? _emailController.text.trim()
             : null,
-        firstName: _firstNameController.text.trim() != widget.user.firstName
-            ? _firstNameController.text.trim()
-            : null,
-        lastName: _lastNameController.text.trim() != widget.user.lastName
-            ? _lastNameController.text.trim()
-            : null,
+        fullName:
+            '${_firstNameController.text.trim()} ${_lastNameController.text.trim()}' !=
+                    widget.user.fullName
+                ? '${_firstNameController.text.trim()} ${_lastNameController.text.trim()}'
+                : null,
         phone: _phoneController.text.trim() != (widget.user.phone ?? '')
-            ? (_phoneController.text.trim().isNotEmpty ? _phoneController.text.trim() : null)
+            ? (_phoneController.text.trim().isNotEmpty
+                ? _phoneController.text.trim()
+                : null)
             : null,
-        roleIds: _selectedRoles.difference(Set<String>.from(widget.user.roles)).isNotEmpty ||
-                Set<String>.from(widget.user.roles).difference(_selectedRoles).isNotEmpty
+        roleIds: _selectedRoles
+                    .difference(Set<String>.from(widget.user.roles))
+                    .isNotEmpty ||
+                Set<String>.from(widget.user.roles)
+                    .difference(_selectedRoles)
+                    .isNotEmpty
             ? _selectedRoles.map((role) => _getRoleId(role)).toList()
             : null,
         isActive: _isActive != widget.user.isActive ? _isActive : null,
       );
 
-      await ref.read(usersProvider.notifier).updateUser(widget.user.id, request);
-      
+      await ref
+          .read(usersProvider.notifier)
+          .updateUser(widget.user.id, request);
+
       if (mounted) {
         Navigator.of(context).pop();
         ScaffoldMessenger.of(context).showSnackBar(
@@ -167,7 +180,8 @@ class _EditUserDialogState extends ConsumerState<EditUserDialog> {
                     if (value == null || value.trim().isEmpty) {
                       return 'Email is required';
                     }
-                    if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value)) {
+                    if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$')
+                        .hasMatch(value)) {
                       return 'Please enter a valid email address';
                     }
                     return null;

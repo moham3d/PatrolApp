@@ -436,7 +436,7 @@ class _PatrolFormDialogState extends ConsumerState<PatrolFormDialog> {
                     .map((user) {
                   return DropdownMenuItem<User>(
                     value: user,
-                    child: Text('${user.firstName} ${user.lastName}'),
+                    child: Text(user.fullName),
                   );
                 }).toList(),
                 onChanged: (user) {
@@ -630,9 +630,9 @@ class _PatrolFormDialogState extends ConsumerState<PatrolFormDialog> {
           taskType: _taskType,
         );
         success = await ref.read(patrolsProvider.notifier).updatePatrol(
-          widget.patrol!.id,
-          updateRequest,
-        );
+              widget.patrol!.id,
+              updateRequest,
+            );
       }
 
       if (success && context.mounted) {

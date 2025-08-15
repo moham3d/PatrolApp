@@ -27,8 +27,8 @@ class SiteDetailsDialog extends ConsumerWidget {
                 Text(
                   'Site Details',
                   style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+                        fontWeight: FontWeight.bold,
+                      ),
                 ),
                 const Spacer(),
                 IconButton(
@@ -48,8 +48,9 @@ class SiteDetailsDialog extends ConsumerWidget {
                 _buildInfoRow('Address', site.address),
                 _buildInfoRow(
                   'Status',
-                  site.isActive ? 'Active' : 'Inactive',
-                  valueColor: site.isActive ? Colors.green : Colors.red,
+                  (site.isActive ?? false) ? 'Active' : 'Inactive',
+                  valueColor:
+                      (site.isActive ?? false) ? Colors.green : Colors.red,
                 ),
                 _buildInfoRow('Checkpoints', '${site.checkpointsCount}'),
               ],
@@ -64,7 +65,7 @@ class SiteDetailsDialog extends ConsumerWidget {
               children: [
                 _buildInfoRow(
                   'Coordinates',
-                  '${site.coordinates.latitude.toStringAsFixed(6)}, ${site.coordinates.longitude.toStringAsFixed(6)}',
+                  '${site.latitude.toStringAsFixed(6)}, ${site.longitude.toStringAsFixed(6)}',
                 ),
                 const SizedBox(height: 8),
                 Container(
@@ -90,9 +91,12 @@ class SiteDetailsDialog extends ConsumerWidget {
                         const SizedBox(height: 4),
                         Text(
                           'Flutter Map integration coming soon',
-                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: Theme.of(context).colorScheme.onSurfaceVariant,
-                          ),
+                          style:
+                              Theme.of(context).textTheme.bodySmall?.copyWith(
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .onSurfaceVariant,
+                                  ),
                         ),
                       ],
                     ),
@@ -153,8 +157,8 @@ class SiteDetailsDialog extends ConsumerWidget {
         Text(
           title,
           style: Theme.of(context).textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.bold,
-          ),
+                fontWeight: FontWeight.bold,
+              ),
         ),
         const SizedBox(height: 12),
         ...children,
