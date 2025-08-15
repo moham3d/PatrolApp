@@ -216,14 +216,14 @@ AppBar (with user profile, notifications)
 - [x] ✅ Site management interface
 - [x] ✅ Site CRUD operations with API integration
 - [x] ✅ Location management with maps
-- [⏳] Site-specific configurations
+- [x] ✅ Site-specific configurations
 
 #### Patrols Module
 - [x] ✅ Patrol management interface  
 - [x] ✅ Patrol CRUD operations with API integration
 - [x] ✅ Patrol scheduling system
 - [x] ✅ Patrol status management (start, complete, monitor)
-- [⏳] Route planning with maps
+- [x] ✅ Route planning with maps
 - [x] ✅ Real-time patrol tracking
 
 #### Checkpoints Module

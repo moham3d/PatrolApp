@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../shared/models/site.dart';
 import '../../../shared/widgets/map/interactive_map_picker.dart';
 import '../providers/sites_provider.dart';
+import 'site_configuration_widget.dart';
 
 class EditSiteDialog extends ConsumerStatefulWidget {
   final Site site;
@@ -25,14 +26,17 @@ class _EditSiteDialogState extends ConsumerState<EditSiteDialog> {
   late final TextEditingController _emailController;
   late final TextEditingController _latitudeController;
   late final TextEditingController _longitudeController;
+  late final TextEditingController _descriptionController;
 
   late bool _isActive;
   bool _isLoading = false;
+  SiteConfiguration? _siteConfiguration;
 
   @override
   void initState() {
     super.initState();
     _nameController = TextEditingController(text: widget.site.name);
+    _descriptionController = TextEditingController(text: widget.site.description ?? '');
     _addressController = TextEditingController(text: widget.site.address);
     _phoneController =
         TextEditingController(text: widget.site.contactInfo?.phone ?? '');
@@ -43,11 +47,13 @@ class _EditSiteDialogState extends ConsumerState<EditSiteDialog> {
     _longitudeController =
         TextEditingController(text: widget.site.longitude.toString());
     _isActive = widget.site.isActive ?? false;
+    _siteConfiguration = widget.site.configuration;
   }
 
   @override
   void dispose() {
     _nameController.dispose();
+    _descriptionController.dispose();
     _addressController.dispose();
     _phoneController.dispose();
     _emailController.dispose();
@@ -83,11 +89,15 @@ class _EditSiteDialogState extends ConsumerState<EditSiteDialog> {
 
       final request = UpdateSiteRequest(
         name: _nameController.text.trim(),
+        description: _descriptionController.text.trim().isEmpty 
+            ? null 
+            : _descriptionController.text.trim(),
         address: _addressController.text.trim(),
         latitude: coordinates.latitude,
         longitude: coordinates.longitude,
         contactInfo: contactInfo,
         isActive: _isActive,
+        configuration: _siteConfiguration,
       );
 
       final success = await ref
@@ -193,12 +203,12 @@ class _EditSiteDialogState extends ConsumerState<EditSiteDialog> {
   Widget build(BuildContext context) {
     return Dialog(
       child: Container(
-        width: 500,
+        width: 800,
+        height: 700,
         padding: const EdgeInsets.all(24),
         child: Form(
           key: _formKey,
           child: Column(
-            mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(
@@ -218,155 +228,26 @@ class _EditSiteDialogState extends ConsumerState<EditSiteDialog> {
               ),
               const SizedBox(height: 24),
 
-              // Site name
-              TextFormField(
-                controller: _nameController,
-                decoration: const InputDecoration(
-                  labelText: 'Site Name *',
-                  border: OutlineInputBorder(),
+              Expanded(
+                child: SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      // Basic Information Section
+                      _buildBasicInfoSection(),
+                      const SizedBox(height: 24),
+
+                      // Configuration Section
+                      SiteConfigurationWidget(
+                        initialConfiguration: _siteConfiguration,
+                        onConfigurationChanged: (config) {
+                          _siteConfiguration = config;
+                        },
+                      ),
+                    ],
+                  ),
                 ),
-                validator: (value) {
-                  if (value == null || value.trim().isEmpty) {
-                    return 'Site name is required';
-                  }
-                  return null;
-                },
               ),
-              const SizedBox(height: 16),
 
-              // Address
-              TextFormField(
-                controller: _addressController,
-                decoration: const InputDecoration(
-                  labelText: 'Address *',
-                  border: OutlineInputBorder(),
-                ),
-                maxLines: 2,
-                validator: (value) {
-                  if (value == null || value.trim().isEmpty) {
-                    return 'Address is required';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 16),
-
-              // Contact information
-              Row(
-                children: [
-                  Expanded(
-                    child: TextFormField(
-                      controller: _phoneController,
-                      decoration: const InputDecoration(
-                        labelText: 'Phone',
-                        border: OutlineInputBorder(),
-                      ),
-                      keyboardType: TextInputType.phone,
-                    ),
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: TextFormField(
-                      controller: _emailController,
-                      decoration: const InputDecoration(
-                        labelText: 'Email',
-                        border: OutlineInputBorder(),
-                      ),
-                      keyboardType: TextInputType.emailAddress,
-                      validator: (value) {
-                        if (value != null && value.isNotEmpty) {
-                          if (!value.contains('@')) {
-                            return 'Invalid email format';
-                          }
-                        }
-                        return null;
-                      },
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 16),
-
-              // Coordinates
-              Row(
-                children: [
-                  Expanded(
-                    child: TextFormField(
-                      controller: _latitudeController,
-                      decoration: const InputDecoration(
-                        labelText: 'Latitude *',
-                        border: OutlineInputBorder(),
-                      ),
-                      keyboardType:
-                          const TextInputType.numberWithOptions(decimal: true),
-                      validator: (value) {
-                        if (value == null || value.trim().isEmpty) {
-                          return 'Latitude is required';
-                        }
-                        final lat = double.tryParse(value);
-                        if (lat == null || lat < -90 || lat > 90) {
-                          return 'Invalid latitude (-90 to 90)';
-                        }
-                        return null;
-                      },
-                    ),
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: TextFormField(
-                      controller: _longitudeController,
-                      decoration: const InputDecoration(
-                        labelText: 'Longitude *',
-                        border: OutlineInputBorder(),
-                      ),
-                      keyboardType:
-                          const TextInputType.numberWithOptions(decimal: true),
-                      validator: (value) {
-                        if (value == null || value.trim().isEmpty) {
-                          return 'Longitude is required';
-                        }
-                        final lng = double.tryParse(value);
-                        if (lng == null || lng < -180 || lng > 180) {
-                          return 'Invalid longitude (-180 to 180)';
-                        }
-                        return null;
-                      },
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 8),
-
-              // Map picker button
-              Row(
-                children: [
-                  TextButton.icon(
-                    onPressed: _openMapPicker,
-                    icon: const Icon(Icons.map),
-                    label: const Text('Pick from Map'),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 16),
-
-              // Active status
-              Row(
-                children: [
-                  Checkbox(
-                    value: _isActive,
-                    onChanged: (value) {
-                      setState(() {
-                        _isActive = value ?? false;
-                      });
-                    },
-                  ),
-                  const SizedBox(width: 8),
-                  Text(
-                    'Site is active',
-                    style: Theme.of(context).textTheme.bodyLarge,
-                  ),
-                ],
-              ),
               const SizedBox(height: 24),
 
               // Actions
@@ -393,6 +274,187 @@ class _EditSiteDialogState extends ConsumerState<EditSiteDialog> {
               ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildBasicInfoSection() {
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Basic Information',
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 16),
+
+            // Site name
+            TextFormField(
+              controller: _nameController,
+              decoration: const InputDecoration(
+                labelText: 'Site Name *',
+                border: OutlineInputBorder(),
+              ),
+              validator: (value) {
+                if (value == null || value.trim().isEmpty) {
+                  return 'Site name is required';
+                }
+                return null;
+              },
+            ),
+            const SizedBox(height: 16),
+
+            // Description
+            TextFormField(
+              controller: _descriptionController,
+              decoration: const InputDecoration(
+                labelText: 'Description',
+                border: OutlineInputBorder(),
+              ),
+              maxLines: 2,
+            ),
+            const SizedBox(height: 16),
+
+            // Address
+            TextFormField(
+              controller: _addressController,
+              decoration: const InputDecoration(
+                labelText: 'Address *',
+                border: OutlineInputBorder(),
+              ),
+              maxLines: 2,
+              validator: (value) {
+                if (value == null || value.trim().isEmpty) {
+                  return 'Address is required';
+                }
+                return null;
+              },
+            ),
+            const SizedBox(height: 16),
+
+            // Contact information
+            Row(
+              children: [
+                Expanded(
+                  child: TextFormField(
+                    controller: _phoneController,
+                    decoration: const InputDecoration(
+                      labelText: 'Phone',
+                      border: OutlineInputBorder(),
+                    ),
+                    keyboardType: TextInputType.phone,
+                  ),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: TextFormField(
+                    controller: _emailController,
+                    decoration: const InputDecoration(
+                      labelText: 'Email',
+                      border: OutlineInputBorder(),
+                    ),
+                    keyboardType: TextInputType.emailAddress,
+                    validator: (value) {
+                      if (value != null && value.isNotEmpty) {
+                        if (!value.contains('@')) {
+                          return 'Invalid email format';
+                        }
+                      }
+                      return null;
+                    },
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+
+            // Coordinates
+            Row(
+              children: [
+                Expanded(
+                  child: TextFormField(
+                    controller: _latitudeController,
+                    decoration: const InputDecoration(
+                      labelText: 'Latitude *',
+                      border: OutlineInputBorder(),
+                    ),
+                    keyboardType:
+                        const TextInputType.numberWithOptions(decimal: true),
+                    validator: (value) {
+                      if (value == null || value.trim().isEmpty) {
+                        return 'Latitude is required';
+                      }
+                      final lat = double.tryParse(value);
+                      if (lat == null || lat < -90 || lat > 90) {
+                        return 'Invalid latitude (-90 to 90)';
+                      }
+                      return null;
+                    },
+                  ),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: TextFormField(
+                    controller: _longitudeController,
+                    decoration: const InputDecoration(
+                      labelText: 'Longitude *',
+                      border: OutlineInputBorder(),
+                    ),
+                    keyboardType:
+                        const TextInputType.numberWithOptions(decimal: true),
+                    validator: (value) {
+                      if (value == null || value.trim().isEmpty) {
+                        return 'Longitude is required';
+                      }
+                      final lng = double.tryParse(value);
+                      if (lng == null || lng < -180 || lng > 180) {
+                        return 'Invalid longitude (-180 to 180)';
+                      }
+                      return null;
+                    },
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+
+            // Map picker button
+            Row(
+              children: [
+                TextButton.icon(
+                  onPressed: _openMapPicker,
+                  icon: const Icon(Icons.map),
+                  label: const Text('Pick from Map'),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+
+            // Active status
+            Row(
+              children: [
+                Checkbox(
+                  value: _isActive,
+                  onChanged: (value) {
+                    setState(() {
+                      _isActive = value ?? false;
+                    });
+                  },
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  'Site is active',
+                  style: Theme.of(context).textTheme.bodyLarge,
+                ),
+              ],
+            ),
+          ],
         ),
       ),
     );

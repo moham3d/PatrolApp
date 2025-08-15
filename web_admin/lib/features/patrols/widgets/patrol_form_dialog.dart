@@ -14,8 +14,15 @@ import '../providers/patrols_provider.dart';
 /// Dialog for creating and editing patrols
 class PatrolFormDialog extends ConsumerStatefulWidget {
   final Patrol? patrol; // null for create, non-null for edit
+  final Site? initialSite; // For pre-filling from route planner
+  final List<Checkpoint>? initialCheckpoints; // For pre-filling from route planner
 
-  const PatrolFormDialog({super.key, this.patrol});
+  const PatrolFormDialog({
+    super.key, 
+    this.patrol,
+    this.initialSite,
+    this.initialCheckpoints,
+  });
 
   @override
   ConsumerState<PatrolFormDialog> createState() => _PatrolFormDialogState();
@@ -58,6 +65,21 @@ class _PatrolFormDialogState extends ConsumerState<PatrolFormDialog> {
 
       // Note: Site, assignee, and checkpoints would need to be loaded separately
       // in a real implementation based on the patrol data
+    } else {
+      // Initialize with route planner data if provided
+      if (widget.initialSite != null) {
+        _selectedSite = widget.initialSite;
+        _titleController.text = 'Patrol Route for ${widget.initialSite!.name}';
+      }
+      
+      if (widget.initialCheckpoints != null) {
+        _selectedCheckpoints = List.from(widget.initialCheckpoints!);
+      }
+      
+      // Set default schedule times (e.g., next hour)
+      final now = DateTime.now();
+      _scheduledStart = DateTime(now.year, now.month, now.day, now.hour + 1);
+      _scheduledEnd = _scheduledStart?.add(const Duration(hours: 2));
     }
   }
 
