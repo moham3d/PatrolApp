@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../shared/services/websocket_service.dart';
 import '../../../features/auth/providers/auth_provider.dart';
+import '../../../shared/services/auth_service.dart';
 import '../widgets/live_patrol_map.dart';
 import '../widgets/live_alerts_feed.dart';
 import '../widgets/guard_locations_panel.dart';
@@ -27,12 +28,15 @@ class _LiveMonitoringPageState extends ConsumerState<LiveMonitoringPage> {
 
   /// Initialize WebSocket connection for real-time updates
   void _initializeWebSocket() {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
       final authState = ref.read(authProvider);
       if (authState.isLoggedIn && authState.user != null) {
         final webSocketService = ref.read(webSocketServiceProvider);
-        const token = ''; // TODO: Implement proper token handling
-        webSocketService.connect(authState.user!.id, token);
+        final authService = ref.read(authServiceProvider);
+        final token = await authService.getCurrentToken();
+        if (token != null) {
+          webSocketService.connect(authState.user!.id, token);
+        }
       }
     });
   }
