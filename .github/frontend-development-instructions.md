@@ -239,8 +239,8 @@ AppBar (with user profile, notifications)
 - [x] ✅ Performance metrics visualization
 
 #### Analytics & Reporting
-- [ ] Analytics dashboard with charts
-- [ ] Report generation (PDF/CSV export)
+- [x] ✅ Analytics dashboard with charts (Performance metrics implemented)
+- [x] ✅ Report generation (CSV export implemented for patrols and routes)
 - [ ] Custom report builder
 - [ ] Scheduled reports
 
