@@ -58,6 +58,10 @@ class AuthService {
     final token = await _httpClient.getStoredToken();
     return token != null;
   }
+
+  Future<String?> getCurrentToken() async {
+    return await _httpClient.getStoredToken();
+  }
 }
 
 final authServiceProvider = Provider<AuthService>((ref) {

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../features/auth/providers/auth_provider.dart';
 import '../../models/auth.dart';
@@ -332,7 +333,7 @@ class RoleBasedQuickActions extends ConsumerWidget {
                   icon: Icons.person_add,
                   label: 'Add User',
                   onPressed: () {
-                    // TODO: Navigate to add user
+                    context.go('/users');
                   },
                 ),
                 _buildQuickActionChip(
@@ -340,7 +341,7 @@ class RoleBasedQuickActions extends ConsumerWidget {
                   icon: Icons.add_location,
                   label: 'Add Site',
                   onPressed: () {
-                    // TODO: Navigate to add site
+                    context.go('/sites');
                   },
                 ),
               ],
@@ -352,7 +353,7 @@ class RoleBasedQuickActions extends ConsumerWidget {
                   icon: Icons.person_add,
                   label: 'Add User',
                   onPressed: () {
-                    // TODO: Navigate to add user
+                    context.go('/users');
                   },
                 ),
                 _buildQuickActionChip(
@@ -360,7 +361,7 @@ class RoleBasedQuickActions extends ConsumerWidget {
                   icon: Icons.add_location,
                   label: 'Add Site',
                   onPressed: () {
-                    // TODO: Navigate to add site
+                    context.go('/sites');
                   },
                 ),
               ],
@@ -372,7 +373,7 @@ class RoleBasedQuickActions extends ConsumerWidget {
                   icon: Icons.person_add,
                   label: 'Add Team Member',
                   onPressed: () {
-                    // TODO: Navigate to add user to site
+                    context.go('/users');
                   },
                 ),
                 _buildQuickActionChip(
@@ -380,7 +381,7 @@ class RoleBasedQuickActions extends ConsumerWidget {
                   icon: Icons.route,
                   label: 'Schedule Patrol',
                   onPressed: () {
-                    // TODO: Navigate to schedule patrol
+                    context.go('/patrols');
                   },
                 ),
               ],
@@ -392,7 +393,7 @@ class RoleBasedQuickActions extends ConsumerWidget {
                   icon: Icons.route,
                   label: 'Schedule Patrol',
                   onPressed: () {
-                    // TODO: Navigate to schedule patrol
+                    context.go('/patrols');
                   },
                 ),
                 _buildQuickActionChip(
@@ -400,7 +401,7 @@ class RoleBasedQuickActions extends ConsumerWidget {
                   icon: Icons.place,
                   label: 'Manage Checkpoints',
                   onPressed: () {
-                    // TODO: Navigate to checkpoints
+                    context.go('/checkpoints');
                   },
                 ),
               ],
@@ -412,7 +413,10 @@ class RoleBasedQuickActions extends ConsumerWidget {
                   icon: Icons.my_location,
                   label: 'Check In',
                   onPressed: () {
-                    // TODO: Implement check-in
+                    // Simple placeholder - would need proper check-in implementation
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Check-in feature coming soon')),
+                    );
                   },
                 ),
                 _buildQuickActionChip(
@@ -420,7 +424,7 @@ class RoleBasedQuickActions extends ConsumerWidget {
                   icon: Icons.route,
                   label: 'My Patrols',
                   onPressed: () {
-                    // TODO: Navigate to my patrols
+                    context.go('/patrols');
                   },
                 ),
               ],
