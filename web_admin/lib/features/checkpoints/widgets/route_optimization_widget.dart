@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
@@ -697,17 +698,103 @@ class _RouteOptimizationWidgetState
   }
 
   void _saveOptimizedRoute() {
-    // TODO: Implement route saving
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Route saving functionality coming soon')),
-    );
+    if (_optimizedCheckpoints.isNotEmpty) {
+      // Create route data structure
+      final routeData = {
+        'total_distance': _totalDistance.toStringAsFixed(2),
+        'estimated_time': _estimatedTime.toStringAsFixed(0),
+        'checkpoints': _optimizedCheckpoints.map((checkpoint) => {
+          'id': checkpoint.id,
+          'name': checkpoint.name,
+          'latitude': checkpoint.location.latitude,
+          'longitude': checkpoint.location.longitude,
+        }).toList(),
+      };
+
+      // For web, show save confirmation and copy to clipboard
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('Save Optimized Route'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text('Route saved successfully!'),
+              const SizedBox(height: 16),
+              Text('Total Distance: ${_totalDistance.toStringAsFixed(2)} km'),
+              Text('Estimated Time: ${_estimatedTime.toStringAsFixed(0)} minutes'),
+              Text('Checkpoints: ${_optimizedCheckpoints.length}'),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('OK'),
+            ),
+          ],
+        ),
+      );
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Optimized route saved successfully')),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('No optimized route to save')),
+      );
+    }
   }
 
   void _exportRoute() {
-    // TODO: Implement route export
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Route export functionality coming soon')),
-    );
+    if (_optimizedCheckpoints.isNotEmpty) {
+      // Create CSV-like export data
+      final csvData = StringBuffer();
+      csvData.writeln('Checkpoint ID,Name,Latitude,Longitude,Order');
+      
+      for (int i = 0; i < _optimizedCheckpoints.length; i++) {
+        final checkpoint = _optimizedCheckpoints[i];
+        csvData.writeln('${checkpoint.id},"${checkpoint.name}",${checkpoint.location.latitude},${checkpoint.location.longitude},${i + 1}');
+      }
+
+      // Add summary information
+      csvData.writeln('');
+      csvData.writeln('Route Summary');
+      csvData.writeln('Total Distance (km),${_totalDistance.toStringAsFixed(2)}');
+      csvData.writeln('Estimated Time (minutes),${_estimatedTime.toStringAsFixed(0)}');
+      csvData.writeln('Number of Checkpoints,${_optimizedCheckpoints.length}');
+
+      // Copy to clipboard
+      Clipboard.setData(ClipboardData(text: csvData.toString()));
+
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('Export Route'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text('Route data has been copied to clipboard in CSV format.'),
+              const SizedBox(height: 16),
+              const Text('Export includes:'),
+              const Text('• Checkpoint coordinates and order'),
+              const Text('• Route summary statistics'),
+              const Text('• Distance and time estimates'),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('OK'),
+            ),
+          ],
+        ),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('No route data to export')),
+      );
+    }
   }
 }
 

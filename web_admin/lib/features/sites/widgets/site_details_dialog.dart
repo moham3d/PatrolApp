@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'dart:html' as html;
 
 import '../../../shared/models/site.dart';
 
@@ -133,7 +134,12 @@ class SiteDetailsDialog extends ConsumerWidget {
                 const SizedBox(width: 8),
                 FilledButton.icon(
                   onPressed: () {
-                    // TODO: Open external map app
+                    if (site.coordinates != null) {
+                      final lat = site.coordinates!.latitude;
+                      final lng = site.coordinates!.longitude;
+                      final url = 'https://www.google.com/maps?q=$lat,$lng';
+                      html.window.open(url, '_blank');
+                    }
                   },
                   icon: const Icon(Icons.open_in_new),
                   label: const Text('Open in Maps'),

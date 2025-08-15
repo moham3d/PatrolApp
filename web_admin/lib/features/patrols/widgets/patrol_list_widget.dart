@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
@@ -478,9 +479,57 @@ class _PatrolListWidgetState extends ConsumerState<PatrolListWidget> {
   }
 
   void _exportPatrols() {
-    // TODO: Implement patrol export functionality
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Export functionality coming soon')),
-    );
+    final patrols = ref.read(patrolsProvider).value;
+    if (patrols != null && patrols.isNotEmpty) {
+      // Create CSV export data
+      final csvData = StringBuffer();
+      csvData.writeln('ID,Title,Status,Priority,Site,Assigned To,Scheduled Start,Scheduled End,Created At');
+      
+      for (final patrol in patrols) {
+        final assignedTo = patrol.assignedTo?.fullName ?? 'Unassigned';
+        final scheduledStart = patrol.scheduledStart != null 
+            ? DateFormat('yyyy-MM-dd HH:mm').format(patrol.scheduledStart!)
+            : '';
+        final scheduledEnd = patrol.scheduledEnd != null 
+            ? DateFormat('yyyy-MM-dd HH:mm').format(patrol.scheduledEnd!)
+            : '';
+        final createdAt = DateFormat('yyyy-MM-dd HH:mm').format(patrol.createdAt);
+        
+        csvData.writeln('${patrol.id},"${patrol.title}","${patrol.status}","${patrol.priority}","${patrol.site.name}","$assignedTo","$scheduledStart","$scheduledEnd","$createdAt"');
+      }
+
+      // Copy to clipboard
+      Clipboard.setData(ClipboardData(text: csvData.toString()));
+
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('Export Patrols'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('${patrols.length} patrols exported to clipboard in CSV format.'),
+              const SizedBox(height: 16),
+              const Text('Export includes:'),
+              const Text('• Patrol details and status'),
+              const Text('• Assignment information'),
+              const Text('• Schedule data'),
+              const Text('• Creation timestamps'),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('OK'),
+            ),
+          ],
+        ),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('No patrols available to export')),
+      );
+    }
   }
 }

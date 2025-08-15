@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'dart:html' as html;
 
 import '../../../shared/models/checkpoint.dart';
 import '../../../shared/models/site.dart';
@@ -172,7 +174,10 @@ class CheckpointDetailsDialog extends ConsumerWidget {
                 const SizedBox(width: 8),
                 FilledButton.icon(
                   onPressed: () {
-                    // TODO: Open in external map
+                    final lat = checkpoint.location.latitude;
+                    final lng = checkpoint.location.longitude;
+                    final url = 'https://www.google.com/maps?q=$lat,$lng';
+                    html.window.open(url, '_blank');
                   },
                   icon: const Icon(Icons.open_in_new),
                   label: const Text('Open in Maps'),
@@ -265,7 +270,10 @@ class CheckpointDetailsDialog extends ConsumerWidget {
           ),
           IconButton(
             onPressed: () {
-              // TODO: Copy to clipboard
+              Clipboard.setData(ClipboardData(text: value));
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text('Copied "$label" to clipboard')),
+              );
             },
             icon: const Icon(Icons.copy, size: 16),
             tooltip: 'Copy to clipboard',

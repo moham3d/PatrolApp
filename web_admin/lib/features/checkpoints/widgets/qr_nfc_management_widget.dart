@@ -619,37 +619,168 @@ class _QrNfcManagementWidgetState extends ConsumerState<QrNfcManagementWidget> {
   }
 
   void _downloadQrCode() {
-    // TODO: Implement QR code download
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('QR Code download functionality coming soon')),
-    );
+    if (_qrCodeData != null) {
+      // For web, copy QR code data to clipboard
+      Clipboard.setData(ClipboardData(text: _qrCodeData!));
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('QR code data copied to clipboard')),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('No QR code available to download')),
+      );
+    }
   }
 
   void _printQrCode() {
-    // TODO: Implement QR code printing
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('QR Code printing functionality coming soon')),
-    );
+    if (_qrCodeData != null) {
+      // For web, open print dialog with QR code information
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('Print QR Code'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text('QR Code Data:'),
+              const SizedBox(height: 8),
+              SelectableText(_qrCodeData!),
+              const SizedBox(height: 16),
+              const Text('Use your browser\'s print function to print this information.'),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('Close'),
+            ),
+          ],
+        ),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('No QR code available to print')),
+      );
+    }
   }
 
   void _shareQrCode() {
-    // TODO: Implement QR code sharing
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('QR Code sharing functionality coming soon')),
-    );
+    if (_qrCodeData != null) {
+      // For web, copy to clipboard and show share options
+      Clipboard.setData(ClipboardData(text: _qrCodeData!));
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('Share QR Code'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text('QR code data has been copied to clipboard.'),
+              const SizedBox(height: 16),
+              const Text('QR Code Data:'),
+              const SizedBox(height: 8),
+              SelectableText(_qrCodeData!),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('Close'),
+            ),
+          ],
+        ),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('No QR code available to share')),
+      );
+    }
   }
 
   void _writeNfcTag() {
-    // TODO: Implement NFC tag writing
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('NFC tag writing functionality coming soon')),
-    );
+    if (_nfcTagData != null) {
+      // For web, show NFC tag data and instructions
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('NFC Tag Information'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text('NFC Tag Data:'),
+              const SizedBox(height: 8),
+              SelectableText(_nfcTagData!),
+              const SizedBox(height: 16),
+              const Text(
+                'For actual NFC tag writing, you would need:\n'
+                '• An NFC-enabled device\n'
+                '• NFC writing app\n'
+                '• Physical NFC tags',
+                style: TextStyle(fontSize: 12),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Clipboard.setData(ClipboardData(text: _nfcTagData!));
+                Navigator.of(context).pop();
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('NFC tag data copied to clipboard')),
+                );
+              },
+              child: const Text('Copy Data'),
+            ),
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('Close'),
+            ),
+          ],
+        ),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('No NFC tag data available')),
+      );
+    }
   }
 
   void _testNfcTag() {
-    // TODO: Implement NFC tag testing
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('NFC tag testing functionality coming soon')),
-    );
+    if (_nfcTagData != null) {
+      // Simulate NFC tag testing
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('NFC Tag Test'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(Icons.nfc, size: 64, color: Colors.blue),
+              const SizedBox(height: 16),
+              const Text('Testing NFC tag...'),
+              const SizedBox(height: 8),
+              Text('Tag ID: $_nfcTagData'),
+              const SizedBox(height: 16),
+              const Text(
+                'Status: Simulated Test Passed ✓\n'
+                '(Actual testing requires NFC hardware)',
+                textAlign: TextAlign.center,
+                style: TextStyle(color: Colors.green),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('OK'),
+            ),
+          ],
+        ),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('No NFC tag available to test')),
+      );
+    }
   }
 }
