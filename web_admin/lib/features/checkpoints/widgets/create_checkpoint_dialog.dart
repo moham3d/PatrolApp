@@ -55,22 +55,18 @@ class _CreateCheckpointDialogState extends ConsumerState<CreateCheckpointDialog>
     });
 
     try {
-      final location = Location(
-        latitude: double.parse(_latitudeController.text),
-        longitude: double.parse(_longitudeController.text),
-      );
-
       final request = CreateCheckpointRequest(
         name: _nameController.text.trim(),
         description: _descriptionController.text.trim().isNotEmpty 
             ? _descriptionController.text.trim() 
             : null,
         siteId: _selectedSiteId!,
-        location: location,
+        latitude: double.parse(_latitudeController.text),
+        longitude: double.parse(_longitudeController.text),
         qrCode: _qrCodeController.text.trim().isNotEmpty 
             ? _qrCodeController.text.trim() 
             : null,
-        nfcTag: _nfcTagController.text.trim().isNotEmpty 
+        nfcTagId: _nfcTagController.text.trim().isNotEmpty 
             ? _nfcTagController.text.trim() 
             : null,
         visitDuration: int.parse(_visitDurationController.text),

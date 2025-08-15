@@ -109,7 +109,7 @@ class CheckpointListView extends ConsumerWidget {
                 ),
                 DataCell(
                   Text(
-                    '${checkpoint.location.latitude.toStringAsFixed(4)}, ${checkpoint.location.longitude.toStringAsFixed(4)}',
+                    '${checkpoint.latitude.toStringAsFixed(4)}, ${checkpoint.longitude.toStringAsFixed(4)}',
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
                           fontFamily: 'monospace',
                         ),
