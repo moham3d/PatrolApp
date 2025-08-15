@@ -12,9 +12,18 @@ class User {
   final String? phone;
   @JsonKey(name: 'is_active')
   final bool isActive;
+  final String status;
+  @JsonKey(name: 'employment_date')
+  final String? employmentDate;
+  @JsonKey(name: 'job_title')
+  final String? jobTitle;
+  final String? department;
   final List<String> roles;
+  final List<String> permissions;
   @JsonKey(name: 'created_at')
   final DateTime createdAt;
+  @JsonKey(name: 'updated_at')
+  final DateTime updatedAt;
 
   const User({
     required this.id,
@@ -23,8 +32,14 @@ class User {
     required this.fullName,
     this.phone,
     required this.isActive,
+    required this.status,
+    this.employmentDate,
+    this.jobTitle,
+    this.department,
     required this.roles,
+    required this.permissions,
     required this.createdAt,
+    required this.updatedAt,
   });
 
   factory User.fromJson(Map<String, dynamic> json) => _$UserFromJson(json);
@@ -37,8 +52,14 @@ class User {
     String? fullName,
     String? phone,
     bool? isActive,
+    String? status,
+    String? employmentDate,
+    String? jobTitle,
+    String? department,
     List<String>? roles,
+    List<String>? permissions,
     DateTime? createdAt,
+    DateTime? updatedAt,
   }) {
     return User(
       id: id ?? this.id,
@@ -47,8 +68,14 @@ class User {
       fullName: fullName ?? this.fullName,
       phone: phone ?? this.phone,
       isActive: isActive ?? this.isActive,
+      status: status ?? this.status,
+      employmentDate: employmentDate ?? this.employmentDate,
+      jobTitle: jobTitle ?? this.jobTitle,
+      department: department ?? this.department,
       roles: roles ?? this.roles,
+      permissions: permissions ?? this.permissions,
       createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
     );
   }
 
