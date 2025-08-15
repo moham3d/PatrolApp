@@ -6,6 +6,8 @@ import '../../../shared/models/site.dart';
 import '../../../shared/widgets/rbac/rbac.dart';
 import '../widgets/checkpoint_details_dialog.dart';
 import '../widgets/edit_checkpoint_dialog.dart';
+import '../widgets/qr_nfc_management_widget.dart';
+import '../widgets/checkpoint_visit_tracker.dart';
 
 class CheckpointListView extends ConsumerWidget {
   final List<Checkpoint> checkpoints;
@@ -173,7 +175,7 @@ class CheckpointListView extends ConsumerWidget {
                       // Visit history button
                       IconButton(
                         onPressed: () {
-                          // TODO: Implement visit history
+                          _showVisitHistory(context, checkpoint);
                         },
                         icon: const Icon(Icons.history),
                         tooltip: 'Visit History',
@@ -205,7 +207,7 @@ class CheckpointListView extends ConsumerWidget {
                         requiredRoles: Permissions.checkpointEdit,
                         child: IconButton(
                           onPressed: () {
-                            // TODO: Implement QR/NFC management
+                            _showQrNfcManagement(context, checkpoint);
                           },
                           icon: const Icon(Icons.qr_code_scanner),
                           tooltip: 'QR/NFC Management',
@@ -331,6 +333,20 @@ class CheckpointListView extends ConsumerWidget {
           ),
         ),
       ),
+    );
+  }
+
+  void _showVisitHistory(BuildContext context, Checkpoint checkpoint) {
+    showDialog(
+      context: context,
+      builder: (context) => CheckpointVisitTracker(checkpoint: checkpoint),
+    );
+  }
+
+  void _showQrNfcManagement(BuildContext context, Checkpoint checkpoint) {
+    showDialog(
+      context: context,
+      builder: (context) => QrNfcManagementWidget(checkpoint: checkpoint),
     );
   }
   */
