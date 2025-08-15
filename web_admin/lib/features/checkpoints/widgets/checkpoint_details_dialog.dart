@@ -71,7 +71,7 @@ class CheckpointDetailsDialog extends ConsumerWidget {
               children: [
                 _buildInfoRow(
                   'Coordinates',
-                  '${checkpoint.location.latitude.toStringAsFixed(6)}, ${checkpoint.location.longitude.toStringAsFixed(6)}',
+                  '${checkpoint.latitude.toStringAsFixed(6)}, ${checkpoint.longitude.toStringAsFixed(6)}',
                 ),
                 const SizedBox(height: 8),
                 Container(
@@ -174,8 +174,8 @@ class CheckpointDetailsDialog extends ConsumerWidget {
                 const SizedBox(width: 8),
                 FilledButton.icon(
                   onPressed: () {
-                    final lat = checkpoint.location.latitude;
-                    final lng = checkpoint.location.longitude;
+                    final lat = checkpoint.latitude;
+                    final lng = checkpoint.longitude;
                     final url = 'https://www.google.com/maps?q=$lat,$lng';
                     html.window.open(url, '_blank');
                   },

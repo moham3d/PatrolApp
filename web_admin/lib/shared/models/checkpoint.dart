@@ -3,21 +3,6 @@ import 'package:json_annotation/json_annotation.dart';
 part 'checkpoint.g.dart';
 
 @JsonSerializable()
-class Location {
-  final double latitude;
-  final double longitude;
-
-  const Location({
-    required this.latitude,
-    required this.longitude,
-  });
-
-  factory Location.fromJson(Map<String, dynamic> json) => 
-      _$LocationFromJson(json);
-  Map<String, dynamic> toJson() => _$LocationToJson(this);
-}
-
-@JsonSerializable()
 class Checkpoint {
   final int id;
   final String name;
@@ -120,22 +105,21 @@ class CreateCheckpointRequest {
   final String? description;
   @JsonKey(name: 'site_id')
   final int siteId;
-  final Location location;
+  final double latitude;
+  final double longitude;
   @JsonKey(name: 'qr_code')
   final String? qrCode;
-  @JsonKey(name: 'nfc_tag')
-  final String? nfcTag;
-  @JsonKey(name: 'visit_duration')
-  final int visitDuration;
+  @JsonKey(name: 'nfc_tag_id')
+  final String? nfcTagId;
 
   const CreateCheckpointRequest({
     required this.name,
     this.description,
     required this.siteId,
-    required this.location,
+    required this.latitude,
+    required this.longitude,
     this.qrCode,
-    this.nfcTag,
-    required this.visitDuration,
+    this.nfcTagId,
   });
 
   factory CreateCheckpointRequest.fromJson(Map<String, dynamic> json) => 
@@ -149,25 +133,24 @@ class UpdateCheckpointRequest {
   final String? description;
   @JsonKey(name: 'site_id')
   final int? siteId;
-  final Location? location;
+  final double? latitude;
+  final double? longitude;
   @JsonKey(name: 'qr_code')
   final String? qrCode;
-  @JsonKey(name: 'nfc_tag')
-  final String? nfcTag;
+  @JsonKey(name: 'nfc_tag_id')
+  final String? nfcTagId;
   @JsonKey(name: 'is_active')
   final bool? isActive;
-  @JsonKey(name: 'visit_duration')
-  final int? visitDuration;
 
   const UpdateCheckpointRequest({
     this.name,
     this.description,
     this.siteId,
-    this.location,
+    this.latitude,
+    this.longitude,
     this.qrCode,
-    this.nfcTag,
+    this.nfcTagId,
     this.isActive,
-    this.visitDuration,
   });
 
   factory UpdateCheckpointRequest.fromJson(Map<String, dynamic> json) => 

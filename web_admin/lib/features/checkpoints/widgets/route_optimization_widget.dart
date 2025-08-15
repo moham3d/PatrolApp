@@ -472,8 +472,8 @@ class _RouteOptimizationWidgetState
 
       return Marker(
         point: LatLng(
-          checkpoint.location.latitude,
-          checkpoint.location.longitude,
+          checkpoint.latitude,
+          checkpoint.longitude,
         ),
         width: 50,
         height: 50,
@@ -521,10 +521,10 @@ class _RouteOptimizationWidgetState
   int _getCheckpointRouteIndex(Checkpoint checkpoint) {
     for (int i = 0; i < _optimizedRoute.length; i++) {
       final segment = _optimizedRoute[i];
-      if ((segment.from.latitude == checkpoint.location.latitude &&
-              segment.from.longitude == checkpoint.location.longitude) ||
-          (segment.to.latitude == checkpoint.location.latitude &&
-              segment.to.longitude == checkpoint.location.longitude)) {
+      if ((segment.from.latitude == checkpoint.latitude &&
+              segment.from.longitude == checkpoint.longitude) ||
+          (segment.to.latitude == checkpoint.latitude &&
+              segment.to.longitude == checkpoint.longitude)) {
         return i;
       }
     }
@@ -706,8 +706,8 @@ class _RouteOptimizationWidgetState
         'checkpoints': _optimizedCheckpoints.map((checkpoint) => {
           'id': checkpoint.id,
           'name': checkpoint.name,
-          'latitude': checkpoint.location.latitude,
-          'longitude': checkpoint.location.longitude,
+          'latitude': checkpoint.latitude,
+          'longitude': checkpoint.longitude,
         }).toList(),
       };
 
@@ -753,7 +753,7 @@ class _RouteOptimizationWidgetState
       
       for (int i = 0; i < _optimizedCheckpoints.length; i++) {
         final checkpoint = _optimizedCheckpoints[i];
-        csvData.writeln('${checkpoint.id},"${checkpoint.name}",${checkpoint.location.latitude},${checkpoint.location.longitude},${i + 1}');
+        csvData.writeln('${checkpoint.id},"${checkpoint.name}",${checkpoint.latitude},${checkpoint.longitude},${i + 1}');
       }
 
       // Add summary information

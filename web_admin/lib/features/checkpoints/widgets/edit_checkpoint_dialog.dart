@@ -36,8 +36,8 @@ class _EditCheckpointDialogState extends ConsumerState<EditCheckpointDialog> {
     super.initState();
     _nameController = TextEditingController(text: widget.checkpoint.name);
     _descriptionController = TextEditingController(text: widget.checkpoint.description ?? '');
-    _latitudeController = TextEditingController(text: widget.checkpoint.location.latitude.toString());
-    _longitudeController = TextEditingController(text: widget.checkpoint.location.longitude.toString());
+    _latitudeController = TextEditingController(text: widget.checkpoint.latitude.toString());
+    _longitudeController = TextEditingController(text: widget.checkpoint.longitude.toString());
     _qrCodeController = TextEditingController(text: widget.checkpoint.qrCode ?? '');
     _nfcTagController = TextEditingController(text: widget.checkpoint.nfcTag ?? '');
     _visitDurationController = TextEditingController(text: widget.checkpoint.visitDuration.toString());
@@ -66,23 +66,20 @@ class _EditCheckpointDialogState extends ConsumerState<EditCheckpointDialog> {
     });
 
     try {
-      final location = Location(
-        latitude: double.parse(_latitudeController.text),
-        longitude: double.parse(_longitudeController.text),
-      );
-
       final request = UpdateCheckpointRequest(
         name: _nameController.text.trim(),
         description: _descriptionController.text.trim().isNotEmpty 
             ? _descriptionController.text.trim() 
             : null,
         siteId: _selectedSiteId,
-        location: location,
+        latitude: double.parse(_latitudeController.text),
+        longitude: double.parse(_longitudeController.text),
         qrCode: _qrCodeController.text.trim().isNotEmpty 
             ? _qrCodeController.text.trim() 
             : null,
-        nfcTag: _nfcTagController.text.trim().isNotEmpty 
+        nfcTagId: _nfcTagController.text.trim().isNotEmpty 
             ? _nfcTagController.text.trim() 
+            : null,
             : null,
         isActive: _isActive,
         visitDuration: int.parse(_visitDurationController.text),
