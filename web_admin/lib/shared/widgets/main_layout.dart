@@ -32,6 +32,12 @@ class MainLayout extends ConsumerWidget {
       case '/checkpoints':
         selectedIndex = 3;
         break;
+      case '/reports':
+        selectedIndex = 4;
+        break;
+      case '/monitoring':
+        selectedIndex = 5;
+        break;
     }
 
     return Scaffold(
@@ -54,6 +60,12 @@ class MainLayout extends ConsumerWidget {
                 case 3:
                   context.go('/checkpoints');
                   break;
+                case 4:
+                  context.go('/reports');
+                  break;
+                case 5:
+                  context.go('/monitoring');
+                  break;
               }
             },
             extended: MediaQuery.of(context).size.width >= 1200,
@@ -74,6 +86,14 @@ class MainLayout extends ConsumerWidget {
                 icon: Icon(Icons.place),
                 label: Text('Checkpoints'),
               ),
+              NavigationRailDestination(
+                icon: Icon(Icons.analytics),
+                label: Text('Reports'),
+              ),
+              NavigationRailDestination(
+                icon: Icon(Icons.monitor),
+                label: Text('Monitoring'),
+              ),
             ],
             trailing: Expanded(
               child: Align(
@@ -88,7 +108,9 @@ class MainLayout extends ConsumerWidget {
                         CircleAvatar(
                           backgroundColor: Theme.of(context).primaryColor,
                           child: Text(
-                            authState.user!.firstName[0].toUpperCase(),
+                            authState.user!.fullName.isNotEmpty 
+                                ? authState.user!.fullName.split(' ').first[0].toUpperCase()
+                                : authState.user!.username[0].toUpperCase(),
                             style: const TextStyle(
                               color: Colors.white,
                               fontWeight: FontWeight.bold,
@@ -97,7 +119,9 @@ class MainLayout extends ConsumerWidget {
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          authState.user!.firstName,
+                          authState.user!.fullName.isNotEmpty 
+                              ? authState.user!.fullName.split(' ').first
+                              : authState.user!.username,
                           style: Theme.of(context).textTheme.bodySmall,
                         ),
                         Text(
