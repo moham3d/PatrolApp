@@ -44,6 +44,9 @@ class MainLayout extends ConsumerWidget {
       case '/communication':
         selectedIndex = 6;
         break;
+      case '/messaging':
+        selectedIndex = 7;
+        break;
     }
 
     return Scaffold(
@@ -74,6 +77,9 @@ class MainLayout extends ConsumerWidget {
                   break;
                 case 6:
                   context.go('/communication');
+                  break;
+                case 7:
+                  context.go('/messaging');
                   break;
               }
             },
@@ -111,6 +117,10 @@ class MainLayout extends ConsumerWidget {
               NavigationRailDestination(
                 icon: Icon(Icons.notifications),
                 label: Text('Notifications'),
+              ),
+              NavigationRailDestination(
+                icon: Icon(Icons.chat),
+                label: Text('Messaging'),
               ),
             ],
             trailing: Expanded(
