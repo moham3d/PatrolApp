@@ -11,6 +11,7 @@ import '../../features/patrols/pages/patrols_page.dart';
 import '../../features/checkpoints/pages/checkpoints_page.dart';
 import '../../features/reports/pages/reports_page.dart';
 import '../../features/monitoring/pages/live_monitoring_page.dart';
+import '../../features/communication/pages/notification_management_page.dart';
 
 class AuthChangeNotifier extends ChangeNotifier {
   final Ref ref;
@@ -73,6 +74,10 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           GoRoute(
             path: '/monitoring',
             builder: (context, state) => const LiveMonitoringPage(),
+          ),
+          GoRoute(
+            path: '/communication',
+            builder: (context, state) => const NotificationManagementPage(),
           ),
         ],
       ),
