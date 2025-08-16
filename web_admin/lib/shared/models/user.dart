@@ -126,7 +126,7 @@ class CreateUserRequest {
   Map<String, dynamic> toJson() => _$CreateUserRequestToJson(this);
 }
 
-@JsonSerializable()
+@JsonSerializable(includeIfNull: false)
 class UpdateUserRequest {
   final String? username;
   final String? email;

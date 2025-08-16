@@ -44,17 +44,3 @@ Map<String, dynamic> _$AuthUserToJson(AuthUser instance) => <String, dynamic>{
       'is_active': instance.isActive,
       'roles': instance.roles,
     };
-
-// Custom exception for auth operations
-class AuthException implements Exception {
-  final String code;
-  final String message;
-
-  const AuthException({
-    required this.code,
-    required this.message,
-  });
-
-  @override
-  String toString() => 'AuthException: $message (code: $code)';
-}

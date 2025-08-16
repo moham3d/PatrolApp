@@ -52,7 +52,8 @@ PaginatedResponse<T> _$PaginatedResponseFromJson<T>(
 ) =>
     PaginatedResponse<T>(
       data: (json['data'] as List<dynamic>).map(fromJsonT).toList(),
-      pagination: PaginationInfo.fromJson(json['pagination'] as Map<String, dynamic>),
+      pagination:
+          PaginationInfo.fromJson(json['pagination'] as Map<String, dynamic>),
     );
 
 Map<String, dynamic> _$PaginatedResponseToJson<T>(
@@ -61,7 +62,7 @@ Map<String, dynamic> _$PaginatedResponseToJson<T>(
 ) =>
     <String, dynamic>{
       'data': instance.data.map(toJsonT).toList(),
-      'pagination': instance.pagination.toJson(),
+      'pagination': instance.pagination,
     };
 
 ValidationError _$ValidationErrorFromJson(Map<String, dynamic> json) =>
@@ -87,7 +88,7 @@ ApiError _$ApiErrorFromJson(Map<String, dynamic> json) => ApiError(
 Map<String, dynamic> _$ApiErrorToJson(ApiError instance) => <String, dynamic>{
       'code': instance.code,
       'message': instance.message,
-      'details': instance.details?.map((e) => e.toJson()).toList(),
+      'details': instance.details,
     };
 
 ErrorResponse _$ErrorResponseFromJson(Map<String, dynamic> json) =>
@@ -98,6 +99,6 @@ ErrorResponse _$ErrorResponseFromJson(Map<String, dynamic> json) =>
 
 Map<String, dynamic> _$ErrorResponseToJson(ErrorResponse instance) =>
     <String, dynamic>{
-      'error': instance.error.toJson(),
+      'error': instance.error,
       'timestamp': instance.timestamp.toIso8601String(),
     };

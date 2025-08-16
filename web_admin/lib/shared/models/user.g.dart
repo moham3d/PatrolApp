@@ -78,10 +78,10 @@ UpdateUserRequest _$UpdateUserRequestFromJson(Map<String, dynamic> json) =>
 
 Map<String, dynamic> _$UpdateUserRequestToJson(UpdateUserRequest instance) =>
     <String, dynamic>{
-      'username': instance.username,
-      'email': instance.email,
-      'full_name': instance.fullName,
-      'phone': instance.phone,
-      'role_ids': instance.roleIds,
-      'is_active': instance.isActive,
+      if (instance.username case final value?) 'username': value,
+      if (instance.email case final value?) 'email': value,
+      if (instance.fullName case final value?) 'full_name': value,
+      if (instance.phone case final value?) 'phone': value,
+      if (instance.roleIds case final value?) 'role_ids': value,
+      if (instance.isActive case final value?) 'is_active': value,
     };
