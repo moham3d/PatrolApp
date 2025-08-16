@@ -134,8 +134,8 @@ class SiteDetailsDialog extends ConsumerWidget {
                 const SizedBox(width: 8),
                 FilledButton.icon(
                   onPressed: () {
-                    final lat = site.coordinates!.latitude;
-                    final lng = site.coordinates!.longitude;
+                    final lat = site.coordinates.latitude;
+                    final lng = site.coordinates.longitude;
                     final url = 'https://www.google.com/maps?q=$lat,$lng';
                     html.window.open(url, '_blank');
                                     },
