@@ -66,55 +66,31 @@ class MessagingService {
     }
   }
 
-  /// Get chat channels - TEMPORARY FIX
+  /// Get chat channels
+  /// Note: Channel functionality is not available in the current API
   Future<List<ChatChannel>> getChannels() async {
     try {
-      // Channels feature not implemented in backend yet
-      // Return empty list to prevent 404 errors
+      // The current API does not support explicit channel management
+      // Channels are handled implicitly through message recipients
+      // Return empty list to maintain compatibility
       return <ChatChannel>[];
-
-      /* TODO: Implement when backend supports channels
-      final response = await _httpClient.get<List<dynamic>>(
-        '/messages/',
-        queryParameters: {'type': 'channels'},
-      );
-      
-      final channelList = response.data!;
-      return channelList
-          .map((json) => ChatChannel.fromJson(json as Map<String, dynamic>))
-          .toList();
-      */
     } catch (e) {
       // Return empty list on any error to prevent app crashes
       return <ChatChannel>[];
     }
   }
 
-  /// Create a new channel - TEMPORARY IMPLEMENTATION
+  /// Create a new channel
+  /// Note: Channel creation is not available in the current API
   Future<ChatChannel> createChannel(dynamic request) async {
     try {
-      // Channels feature not implemented in backend yet
-      // Return a temporary channel to prevent errors
-      return ChatChannel(
-        id: DateTime.now().millisecondsSinceEpoch.toString(),
-        name: 'Temporary Channel',
-        description: 'Channel creation not yet implemented',
-        type: 'public',
-        createdBy: 1,
-        createdByName: 'System',
-        members: [1],
-        memberNames: ['System'],
-        createdAt: DateTime.now(),
+      // Channel creation is not supported in the current API
+      // Channels are handled implicitly through message recipients
+      throw api_ex.ApiException(
+        code: 'NOT_IMPLEMENTED',
+        message: 'Channel creation not supported by current API. Channels are created implicitly through messaging.',
+        statusCode: 501,
       );
-
-      /* TODO: Implement when backend supports channel creation
-      final response = await _httpClient.post<Map<String, dynamic>>(
-        '/messages/channels/',
-        data: request,
-      );
-      
-      return ChatChannel.fromJson(response.data!);
-      */
     } catch (e) {
       throw api_ex.ApiException(
         code: 'CREATE_CHANNEL_ERROR',
@@ -125,11 +101,16 @@ class MessagingService {
   }
 
   /// Join a channel
+  /// Note: Channel management is handled through the messages API
   Future<void> joinChannel(String channelId) async {
     try {
-      await _httpClient.post<void>('/messaging/channels/$channelId/join/');
-    } on api_ex.ApiException {
-      rethrow;
+      // Channel joining is not a separate endpoint in the current API
+      // Channels are implicit based on message recipients
+      throw api_ex.ApiException(
+        code: 'NOT_IMPLEMENTED',
+        message: 'Channel joining not supported by current API. Channels are created implicitly through messaging.',
+        statusCode: 501,
+      );
     } catch (e) {
       throw api_ex.ApiException(
         code: 'JOIN_ERROR',
@@ -140,11 +121,16 @@ class MessagingService {
   }
 
   /// Leave a channel
+  /// Note: Channel management is handled through the messages API
   Future<void> leaveChannel(String channelId) async {
     try {
-      await _httpClient.post<void>('/messaging/channels/$channelId/leave/');
-    } on api_ex.ApiException {
-      rethrow;
+      // Channel leaving is not a separate endpoint in the current API
+      // Channels are implicit based on message recipients
+      throw api_ex.ApiException(
+        code: 'NOT_IMPLEMENTED',
+        message: 'Channel leaving not supported by current API. Channels are created implicitly through messaging.',
+        statusCode: 501,
+      );
     } catch (e) {
       throw api_ex.ApiException(
         code: 'LEAVE_ERROR',
@@ -157,8 +143,10 @@ class MessagingService {
   /// Get online users
   Future<List<ChatUser>> getOnlineUsers() async {
     try {
+      // Use the users endpoint and filter for online users
       final response = await _httpClient.get<List<dynamic>>(
-        '/messaging/users/online/',
+        '/users/',
+        queryParameters: {'is_online': true},
       );
 
       final userList = response.data!;
@@ -180,7 +168,7 @@ class MessagingService {
   Future<List<ChatUser>> getAllUsers() async {
     try {
       final response = await _httpClient.get<List<dynamic>>(
-        '/messaging/users/',
+        '/users/',
       );
 
       final userList = response.data!;
@@ -201,10 +189,22 @@ class MessagingService {
   /// Mark messages as read
   Future<void> markMessagesAsRead({int? recipientId, String? channelId}) async {
     try {
-      await _httpClient.post<void>(
-        '/messaging/messages/mark-read/',
-        data: {'recipient_id': recipientId, 'channel_id': channelId},
+      // Since the API uses PUT /messages/{message_id}/read for individual messages,
+      // we need to get the messages first and then mark them individually
+      // For now, we'll use a batch approach if supported, or handle individual messages
+      
+      // Get messages to mark as read
+      final messages = await getMessages(
+        recipientId: recipientId,
+        channelId: channelId,
       );
+      
+      // Mark each unread message as read
+      for (final message in messages) {
+        if (!message.isRead) {
+          await _httpClient.put<void>('/messages/${message.id}/read');
+        }
+      }
     } on api_ex.ApiException {
       rethrow;
     } catch (e) {
@@ -223,13 +223,15 @@ class MessagingService {
     int? offset,
   }) async {
     try {
-      final queryParams = <String, dynamic>{};
+      final queryParams = <String, dynamic>{
+        'recipient_id': userId,
+      };
       if (limit != null) queryParams['limit'] = limit;
       if (offset != null) queryParams['offset'] = offset;
 
       final response = await _httpClient.get<List<dynamic>>(
-        '/messaging/conversations/$userId/',
-        queryParameters: queryParams.isNotEmpty ? queryParams : null,
+        '/messages/',
+        queryParameters: queryParams,
       );
 
       final messageList = response.data!;
@@ -255,14 +257,16 @@ class MessagingService {
     DateTime? since,
   }) async {
     try {
-      final queryParams = <String, dynamic>{};
+      final queryParams = <String, dynamic>{
+        'channel_id': channelId,
+      };
       if (limit != null) queryParams['limit'] = limit;
       if (offset != null) queryParams['offset'] = offset;
       if (since != null) queryParams['since'] = since.toIso8601String();
 
       final response = await _httpClient.get<List<dynamic>>(
-        '/messaging/channels/$channelId/messages/',
-        queryParameters: queryParams.isNotEmpty ? queryParams : null,
+        '/messages/',
+        queryParameters: queryParams,
       );
 
       final messageList = response.data!;
@@ -283,7 +287,7 @@ class MessagingService {
   /// Delete a message
   Future<void> deleteMessage(int messageId) async {
     try {
-      await _httpClient.delete('/messaging/messages/$messageId/');
+      await _httpClient.delete('/messages/$messageId');
     } on api_ex.ApiException {
       rethrow;
     } catch (e) {
@@ -296,14 +300,17 @@ class MessagingService {
   }
 
   /// Update user's online status
+  /// Note: This functionality is not available in the current API
+  /// User status should be managed through WebSocket connections or other means
   Future<void> updateUserStatus(bool isOnline) async {
     try {
-      await _httpClient.post<void>(
-        '/messaging/users/status/',
-        data: {'is_online': isOnline},
+      // This endpoint is not available in the documented API
+      // Consider using WebSocket connections for real-time status updates
+      throw api_ex.ApiException(
+        code: 'NOT_IMPLEMENTED',
+        message: 'User status updates not supported by current API',
+        statusCode: 501,
       );
-    } on api_ex.ApiException {
-      rethrow;
     } catch (e) {
       throw api_ex.ApiException(
         code: 'UPDATE_ERROR',
