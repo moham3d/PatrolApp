@@ -100,7 +100,12 @@ web_admin/
 ```bash
 cd web_admin
 flutter pub get
-flutter run -d chrome
+flutter run -d web-server --web-hostname 0.0.0.0 --web-port 3000
+
+# For PROD release build
+flutter build web --release
+cd build/web
+python -m http.server 8080
 ```
 
 ### Environment Configuration
