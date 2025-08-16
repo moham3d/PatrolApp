@@ -13,7 +13,7 @@ class AuthService {
   Future<AuthToken> login(String username, String password) async {
     try {
       final response = await _httpClient.post<Map<String, dynamic>>(
-        '/auth/login',
+        '/auth/token',
         data: FormData.fromMap({
           'username': username,
           'password': password,
@@ -38,7 +38,7 @@ class AuthService {
 
   Future<AuthUser> getCurrentUser() async {
     try {
-      final response = await _httpClient.get<Map<String, dynamic>>('/auth/me');
+      final response = await _httpClient.get<Map<String, dynamic>>('/users/me');
       return AuthUser.fromJson(response.data!);
     } on api_ex.ApiException {
       rethrow;
