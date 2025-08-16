@@ -1,7 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../shared/models/report.dart';
-import '../../shared/models/api_response.dart';
 import '../../core/services/http_client.dart';
 import '../../core/utils/api_exceptions.dart' as api_ex;
 

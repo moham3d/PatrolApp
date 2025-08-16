@@ -298,7 +298,7 @@ class ReportTemplatesWidget extends ConsumerWidget {
     return Chip(
       avatar: Icon(icon, size: 16),
       label: Text('$label: $value'),
-      backgroundColor: Theme.of(context).colorScheme.surfaceVariant,
+      backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
     );
   }
 

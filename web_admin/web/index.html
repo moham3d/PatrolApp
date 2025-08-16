@@ -22,6 +22,7 @@
 
   <!-- iOS meta tags & icons -->
   <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
   <meta name="apple-mobile-web-app-title" content="PatrolShield Admin">
   <link rel="apple-touch-icon" href="icons/Icon-192.png">
@@ -32,21 +33,51 @@
   <title>PatrolShield Admin</title>
   <link rel="manifest" href="manifest.json">
 
-  <script>
-    // The value below is injected by flutter build, do not touch.
-    const serviceWorkerVersion = "{{flutter_service_worker_version}}";
-  </script>
-  <!-- This script adds the flutter initialization JS code -->
-  <script src="flutter.js" defer></script>
+  <style>
+    loading {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: 0;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      -ms-transform: translate(-50%, -50%);
+      transform: translate(-50%, -50%);
+    }
+    
+    #loading_text {
+      color: #90a4ae;
+      font-size: 22px;
+      font-weight: 300;
+      font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    }
+
+    @keyframes loading_animation {
+      0% {
+        opacity: 1;
+      }
+      100% {
+        opacity: 0;
+      }
+    }
+    #loading {
+      animation: loading_animation 1s ease-in-out infinite alternate;
+    }
+  </style>
 </head>
 <body>
+  <loading id="loading">
+    <span id="loading_text">Loading...</span>
+  </loading>
+
   <script>
     window.addEventListener('load', function(ev) {
       // Download main.dart.js
       _flutter.loader.load({
         serviceWorker: {
-          serviceWorkerVersion: serviceWorkerVersion,
-        }
+          serviceWorkerVersion: null,
+        },
       }).then(function(engineInitializer) {
         return engineInitializer.initializeEngine();
       }).then(function(appRunner) {
@@ -54,5 +85,6 @@
       });
     });
   </script>
+  <script src="flutter.js" defer></script>
 </body>
 </html>

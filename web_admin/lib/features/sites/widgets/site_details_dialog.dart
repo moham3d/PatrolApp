@@ -134,13 +134,11 @@ class SiteDetailsDialog extends ConsumerWidget {
                 const SizedBox(width: 8),
                 FilledButton.icon(
                   onPressed: () {
-                    if (site.coordinates != null) {
-                      final lat = site.coordinates!.latitude;
-                      final lng = site.coordinates!.longitude;
-                      final url = 'https://www.google.com/maps?q=$lat,$lng';
-                      html.window.open(url, '_blank');
-                    }
-                  },
+                    final lat = site.coordinates!.latitude;
+                    final lng = site.coordinates!.longitude;
+                    final url = 'https://www.google.com/maps?q=$lat,$lng';
+                    html.window.open(url, '_blank');
+                                    },
                   icon: const Icon(Icons.open_in_new),
                   label: const Text('Open in Maps'),
                 ),

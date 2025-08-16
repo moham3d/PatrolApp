@@ -16,7 +16,7 @@ class AnalyticsOverviewWidget extends ConsumerStatefulWidget {
 class _AnalyticsOverviewWidgetState extends ConsumerState<AnalyticsOverviewWidget> {
   DateTime? _startDate;
   DateTime? _endDate;
-  List<int> _selectedSiteIds = [];
+  final List<int> _selectedSiteIds = [];
 
   @override
   void initState() {
