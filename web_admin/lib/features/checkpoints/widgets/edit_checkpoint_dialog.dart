@@ -80,7 +80,6 @@ class _EditCheckpointDialogState extends ConsumerState<EditCheckpointDialog> {
         nfcTagId: _nfcTagController.text.trim().isNotEmpty 
             ? _nfcTagController.text.trim() 
             : null,
-            : null,
         isActive: _isActive,
         visitDuration: int.parse(_visitDurationController.text),
       );

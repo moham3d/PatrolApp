@@ -145,13 +145,6 @@ class Patrol {
       checkpointVisits: checkpointVisits ?? this.checkpointVisits,
     );
   }
-      actualStart: actualStart ?? this.actualStart,
-      actualEnd: actualEnd ?? this.actualEnd,
-      checkpointsCompleted: checkpointsCompleted ?? this.checkpointsCompleted,
-      checkpointsTotal: checkpointsTotal ?? this.checkpointsTotal,
-      createdAt: createdAt ?? this.createdAt,
-    );
-  }
 }
 
 @JsonSerializable()

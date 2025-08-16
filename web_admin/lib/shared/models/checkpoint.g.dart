@@ -6,26 +6,24 @@ part of 'checkpoint.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-Location _$LocationFromJson(Map<String, dynamic> json) => Location(
-      latitude: (json['latitude'] as num).toDouble(),
-      longitude: (json['longitude'] as num).toDouble(),
-    );
-
-Map<String, dynamic> _$LocationToJson(Location instance) => <String, dynamic>{
-      'latitude': instance.latitude,
-      'longitude': instance.longitude,
-    };
-
 Checkpoint _$CheckpointFromJson(Map<String, dynamic> json) => Checkpoint(
       id: (json['id'] as num).toInt(),
       name: json['name'] as String,
       description: json['description'] as String?,
       siteId: (json['site_id'] as num).toInt(),
-      location: Location.fromJson(json['location'] as Map<String, dynamic>),
+      locationId: (json['location_id'] as num?)?.toInt(),
+      areaId: (json['area_id'] as num?)?.toInt(),
+      latitude: (json['latitude'] as num).toDouble(),
+      longitude: (json['longitude'] as num).toDouble(),
       qrCode: json['qr_code'] as String?,
-      nfcTag: json['nfc_tag'] as String?,
+      nfcTagId: json['nfc_tag_id'] as String?,
+      orderSequence: (json['order_sequence'] as num).toInt(),
+      isMandatory: json['is_mandatory'] as bool,
+      timeLimitMinutes: (json['time_limit_minutes'] as num?)?.toInt(),
       isActive: json['is_active'] as bool,
-      visitDuration: (json['visit_duration'] as num).toInt(),
+      checkpointType: json['checkpoint_type'] as String,
+      createdAt: DateTime.parse(json['created_at'] as String),
+      updatedAt: DateTime.parse(json['updated_at'] as String),
     );
 
 Map<String, dynamic> _$CheckpointToJson(Checkpoint instance) =>
@@ -34,11 +32,19 @@ Map<String, dynamic> _$CheckpointToJson(Checkpoint instance) =>
       'name': instance.name,
       'description': instance.description,
       'site_id': instance.siteId,
-      'location': instance.location.toJson(),
+      'location_id': instance.locationId,
+      'area_id': instance.areaId,
+      'latitude': instance.latitude,
+      'longitude': instance.longitude,
       'qr_code': instance.qrCode,
-      'nfc_tag': instance.nfcTag,
+      'nfc_tag_id': instance.nfcTagId,
+      'order_sequence': instance.orderSequence,
+      'is_mandatory': instance.isMandatory,
+      'time_limit_minutes': instance.timeLimitMinutes,
       'is_active': instance.isActive,
-      'visit_duration': instance.visitDuration,
+      'checkpoint_type': instance.checkpointType,
+      'created_at': instance.createdAt.toIso8601String(),
+      'updated_at': instance.updatedAt.toIso8601String(),
     };
 
 CreateCheckpointRequest _$CreateCheckpointRequestFromJson(
@@ -47,10 +53,10 @@ CreateCheckpointRequest _$CreateCheckpointRequestFromJson(
       name: json['name'] as String,
       description: json['description'] as String?,
       siteId: (json['site_id'] as num).toInt(),
-      location: Location.fromJson(json['location'] as Map<String, dynamic>),
+      latitude: (json['latitude'] as num).toDouble(),
+      longitude: (json['longitude'] as num).toDouble(),
       qrCode: json['qr_code'] as String?,
-      nfcTag: json['nfc_tag'] as String?,
-      visitDuration: (json['visit_duration'] as num).toInt(),
+      nfcTagId: json['nfc_tag_id'] as String?,
     );
 
 Map<String, dynamic> _$CreateCheckpointRequestToJson(
@@ -59,10 +65,10 @@ Map<String, dynamic> _$CreateCheckpointRequestToJson(
       'name': instance.name,
       'description': instance.description,
       'site_id': instance.siteId,
-      'location': instance.location.toJson(),
+      'latitude': instance.latitude,
+      'longitude': instance.longitude,
       'qr_code': instance.qrCode,
-      'nfc_tag': instance.nfcTag,
-      'visit_duration': instance.visitDuration,
+      'nfc_tag_id': instance.nfcTagId,
     };
 
 UpdateCheckpointRequest _$UpdateCheckpointRequestFromJson(
@@ -71,13 +77,11 @@ UpdateCheckpointRequest _$UpdateCheckpointRequestFromJson(
       name: json['name'] as String?,
       description: json['description'] as String?,
       siteId: (json['site_id'] as num?)?.toInt(),
-      location: json['location'] == null
-          ? null
-          : Location.fromJson(json['location'] as Map<String, dynamic>),
+      latitude: (json['latitude'] as num?)?.toDouble(),
+      longitude: (json['longitude'] as num?)?.toDouble(),
       qrCode: json['qr_code'] as String?,
-      nfcTag: json['nfc_tag'] as String?,
+      nfcTagId: json['nfc_tag_id'] as String?,
       isActive: json['is_active'] as bool?,
-      visitDuration: (json['visit_duration'] as num?)?.toInt(),
     );
 
 Map<String, dynamic> _$UpdateCheckpointRequestToJson(
@@ -86,23 +90,9 @@ Map<String, dynamic> _$UpdateCheckpointRequestToJson(
       'name': instance.name,
       'description': instance.description,
       'site_id': instance.siteId,
-      'location': instance.location?.toJson(),
+      'latitude': instance.latitude,
+      'longitude': instance.longitude,
       'qr_code': instance.qrCode,
-      'nfc_tag': instance.nfcTag,
+      'nfc_tag_id': instance.nfcTagId,
       'is_active': instance.isActive,
-      'visit_duration': instance.visitDuration,
     };
-
-// Custom exception for checkpoint operations
-class CheckpointException implements Exception {
-  final String code;
-  final String message;
-
-  const CheckpointException({
-    required this.code,
-    required this.message,
-  });
-
-  @override
-  String toString() => 'CheckpointException: $message (code: $code)';
-}

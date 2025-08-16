@@ -115,6 +115,13 @@ class Site {
   final String address;
   final double latitude;
   final double longitude;
+  @JsonKey(name: 'contact_info')
+  final ContactInfo? contactInfo;
+  @JsonKey(name: 'is_active')
+  final bool? isActive;
+  @JsonKey(name: 'checkpoints_count')
+  final int? checkpointsCount;
+  final SiteConfiguration? configuration;
 
   const Site({
     required this.id,
@@ -123,6 +130,10 @@ class Site {
     required this.address,
     required this.latitude,
     required this.longitude,
+    this.contactInfo,
+    this.isActive,
+    this.checkpointsCount,
+    this.configuration,
   });
 
   factory Site.fromJson(Map<String, dynamic> json) => _$SiteFromJson(json);
@@ -135,16 +146,7 @@ class Site {
     String? address,
     double? latitude,
     double? longitude,
-  }) {
-    return Site(
-      id: id ?? this.id,
-      name: name ?? this.name,
-      description: description ?? this.description,
-      address: address ?? this.address,
-      latitude: latitude ?? this.latitude,
-      longitude: longitude ?? this.longitude,
-    );
-  }
+    ContactInfo? contactInfo,
     bool? isActive,
     int? checkpointsCount,
     SiteConfiguration? configuration,

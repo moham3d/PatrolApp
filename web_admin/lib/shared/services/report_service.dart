@@ -23,7 +23,8 @@ class ReportService {
       rethrow;
     } catch (e) {
       throw api_ex.ApiException(
-        'Failed to fetch report templates: $e',
+        code: 'FETCH_ERROR',
+        message: 'Failed to fetch report templates: $e',
         statusCode: 500,
       );
     }
@@ -41,7 +42,8 @@ class ReportService {
       rethrow;
     } catch (e) {
       throw api_ex.ApiException(
-        'Failed to create report template: $e',
+        code: 'CREATE_ERROR',
+        message: 'Failed to create report template: $e',
         statusCode: 500,
       );
     }
@@ -59,7 +61,8 @@ class ReportService {
       rethrow;
     } catch (e) {
       throw api_ex.ApiException(
-        'Failed to update report template: $e',
+        code: 'UPDATE_ERROR',
+        message: 'Failed to update report template: $e',
         statusCode: 500,
       );
     }
@@ -72,7 +75,8 @@ class ReportService {
       rethrow;
     } catch (e) {
       throw api_ex.ApiException(
-        'Failed to delete report template: $e',
+        code: 'DELETE_ERROR',
+        message: 'Failed to delete report template: $e',
         statusCode: 500,
       );
     }
@@ -91,7 +95,8 @@ class ReportService {
       rethrow;
     } catch (e) {
       throw api_ex.ApiException(
-        'Failed to generate report: $e',
+        code: 'GENERATE_ERROR',
+        message: 'Failed to generate report: $e',
         statusCode: 500,
       );
     }
@@ -108,7 +113,8 @@ class ReportService {
       rethrow;
     } catch (e) {
       throw api_ex.ApiException(
-        'Failed to get report status: $e',
+        code: 'STATUS_ERROR',
+        message: 'Failed to get report status: $e',
         statusCode: 500,
       );
     }
@@ -127,7 +133,8 @@ class ReportService {
       rethrow;
     } catch (e) {
       throw api_ex.ApiException(
-        'Failed to export to PDF: $e',
+        code: 'EXPORT_ERROR',
+        message: 'Failed to export to PDF: $e',
         statusCode: 500,
       );
     }
@@ -145,7 +152,8 @@ class ReportService {
       rethrow;
     } catch (e) {
       throw api_ex.ApiException(
-        'Failed to export to CSV: $e',
+        code: 'EXPORT_ERROR',
+        message: 'Failed to export to CSV: $e',
         statusCode: 500,
       );
     }
@@ -164,7 +172,8 @@ class ReportService {
       rethrow;
     } catch (e) {
       throw api_ex.ApiException(
-        'Failed to fetch scheduled reports: $e',
+        code: 'FETCH_ERROR',
+        message: 'Failed to fetch scheduled reports: $e',
         statusCode: 500,
       );
     }
@@ -182,7 +191,8 @@ class ReportService {
       rethrow;
     } catch (e) {
       throw api_ex.ApiException(
-        'Failed to create scheduled report: $e',
+        code: 'CREATE_ERROR',
+        message: 'Failed to create scheduled report: $e',
         statusCode: 500,
       );
     }
@@ -195,7 +205,8 @@ class ReportService {
       rethrow;
     } catch (e) {
       throw api_ex.ApiException(
-        'Failed to delete scheduled report: $e',
+        code: 'DELETE_ERROR',
+        message: 'Failed to delete scheduled report: $e',
         statusCode: 500,
       );
     }
@@ -213,7 +224,8 @@ class ReportService {
       rethrow;
     } catch (e) {
       throw api_ex.ApiException(
-        'Failed to toggle scheduled report: $e',
+        code: 'UPDATE_ERROR',
+        message: 'Failed to toggle scheduled report: $e',
         statusCode: 500,
       );
     }
@@ -228,7 +240,8 @@ class ReportService {
       rethrow;
     } catch (e) {
       throw api_ex.ApiException(
-        'Failed to fetch analytics overview: $e',
+        code: 'FETCH_ERROR',
+        message: 'Failed to fetch analytics overview: $e',
         statusCode: 500,
       );
     }
@@ -262,7 +275,8 @@ class ReportService {
       rethrow;
     } catch (e) {
       throw api_ex.ApiException(
-        'Failed to fetch patrol efficiency report: $e',
+        code: 'FETCH_ERROR',
+        message: 'Failed to fetch patrol efficiency report: $e',
         statusCode: 500,
       );
     }
@@ -296,7 +310,8 @@ class ReportService {
       rethrow;
     } catch (e) {
       throw api_ex.ApiException(
-        'Failed to fetch incident trends: $e',
+        code: 'FETCH_ERROR',
+        message: 'Failed to fetch incident trends: $e',
         statusCode: 500,
       );
     }
@@ -326,7 +341,8 @@ class ReportService {
       rethrow;
     } catch (e) {
       throw api_ex.ApiException(
-        'Failed to fetch guard performance: $e',
+        code: 'FETCH_ERROR',
+        message: 'Failed to fetch guard performance: $e',
         statusCode: 500,
       );
     }
@@ -356,7 +372,8 @@ class ReportService {
       rethrow;
     } catch (e) {
       throw api_ex.ApiException(
-        'Failed to fetch site security score: $e',
+        code: 'FETCH_ERROR',
+        message: 'Failed to fetch site security score: $e',
         statusCode: 500,
       );
     }

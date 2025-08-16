@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(flutter run:*)",
+      "Bash(dart run:*)",
+      "Bash(pkill:*)",
+      "Bash(taskkill:*)",
+      "Bash(powershell:*)"
+    ],
+    "deny": [],
+    "ask": [],
+    "defaultMode": "acceptEdits"
+  }
+}

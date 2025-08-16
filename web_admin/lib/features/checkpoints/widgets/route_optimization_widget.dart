@@ -689,12 +689,12 @@ class _RouteOptimizationWidgetState
     return total;
   }
 
-  double _calculateDistance(Location point1, Location point2) {
+  double _calculateDistance(LatLng point1, LatLng point2) {
     const Distance distance = Distance();
     return distance.as(
         LengthUnit.Kilometer,
-        LatLng(point1.latitude, point1.longitude),
-        LatLng(point2.latitude, point2.longitude));
+        point1,
+        point2);
   }
 
   void _saveOptimizedRoute() {

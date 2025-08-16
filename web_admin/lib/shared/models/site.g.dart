@@ -28,97 +28,15 @@ Map<String, dynamic> _$ContactInfoToJson(ContactInfo instance) =>
       'email': instance.email,
     };
 
-Site _$SiteFromJson(Map<String, dynamic> json) => Site(
-      id: (json['id'] as num).toInt(),
-      name: json['name'] as String,
-      description: json['description'] as String?,
-      address: json['address'] as String,
-      latitude: (json['latitude'] as num).toDouble(),
-      longitude: (json['longitude'] as num).toDouble(),
-      contactInfo: json['contact_info'] == null
-          ? null
-          : ContactInfo.fromJson(json['contact_info'] as Map<String, dynamic>),
-      isActive: json['is_active'] as bool?,
-      checkpointsCount: (json['checkpoints_count'] as num?)?.toInt(),
-      configuration: json['configuration'] == null
-          ? null
-          : SiteConfiguration.fromJson(json['configuration'] as Map<String, dynamic>),
-    );
-
-Map<String, dynamic> _$SiteToJson(Site instance) => <String, dynamic>{
-      'id': instance.id,
-      'name': instance.name,
-      'description': instance.description,
-      'address': instance.address,
-      'latitude': instance.latitude,
-      'longitude': instance.longitude,
-      'contact_info': instance.contactInfo,
-      'is_active': instance.isActive,
-      'checkpoints_count': instance.checkpointsCount,
-      'configuration': instance.configuration,
-    };
-
-CreateSiteRequest _$CreateSiteRequestFromJson(Map<String, dynamic> json) =>
-    CreateSiteRequest(
-      name: json['name'] as String,
-      description: json['description'] as String?,
-      address: json['address'] as String,
-      latitude: (json['latitude'] as num).toDouble(),
-      longitude: (json['longitude'] as num).toDouble(),
-      contactInfo: json['contact_info'] == null
-          ? null
-          : ContactInfo.fromJson(json['contact_info'] as Map<String, dynamic>),
-      configuration: json['configuration'] == null
-          ? null
-          : SiteConfiguration.fromJson(json['configuration'] as Map<String, dynamic>),
-    );
-
-Map<String, dynamic> _$CreateSiteRequestToJson(CreateSiteRequest instance) =>
-    <String, dynamic>{
-      'name': instance.name,
-      'description': instance.description,
-      'address': instance.address,
-      'latitude': instance.latitude,
-      'longitude': instance.longitude,
-      'contact_info': instance.contactInfo,
-      'configuration': instance.configuration,
-    };
-
-UpdateSiteRequest _$UpdateSiteRequestFromJson(Map<String, dynamic> json) =>
-    UpdateSiteRequest(
-      name: json['name'] as String?,
-      description: json['description'] as String?,
-      address: json['address'] as String?,
-      latitude: (json['latitude'] as num?)?.toDouble(),
-      longitude: (json['longitude'] as num?)?.toDouble(),
-      contactInfo: json['contact_info'] == null
-          ? null
-          : ContactInfo.fromJson(json['contact_info'] as Map<String, dynamic>),
-      isActive: json['is_active'] as bool?,
-      configuration: json['configuration'] == null
-          ? null
-          : SiteConfiguration.fromJson(json['configuration'] as Map<String, dynamic>),
-    );
-
-Map<String, dynamic> _$UpdateSiteRequestToJson(UpdateSiteRequest instance) =>
-    <String, dynamic>{
-      'name': instance.name,
-      'description': instance.description,
-      'address': instance.address,
-      'latitude': instance.latitude,
-      'longitude': instance.longitude,
-      'contact_info': instance.contactInfo,
-      'is_active': instance.isActive,
-      'configuration': instance.configuration,
-    };
-
 SiteConfiguration _$SiteConfigurationFromJson(Map<String, dynamic> json) =>
     SiteConfiguration(
       operatingHours: json['operating_hours'] == null
           ? null
-          : OperatingHours.fromJson(json['operating_hours'] as Map<String, dynamic>),
+          : OperatingHours.fromJson(
+              json['operating_hours'] as Map<String, dynamic>),
       securityLevel: json['security_level'] as String?,
-      patrolFrequencyMinutes: (json['patrol_frequency_minutes'] as num?)?.toInt(),
+      patrolFrequencyMinutes:
+          (json['patrol_frequency_minutes'] as num?)?.toInt(),
       emergencyContacts: (json['emergency_contacts'] as List<dynamic>?)
           ?.map((e) => EmergencyContact.fromJson(e as Map<String, dynamic>))
           .toList(),
@@ -126,7 +44,8 @@ SiteConfiguration _$SiteConfigurationFromJson(Map<String, dynamic> json) =>
       equipmentRequired: (json['equipment_required'] as List<dynamic>?)
           ?.map((e) => e as String)
           .toList(),
-      geofenceRadiusMeters: (json['geofence_radius_meters'] as num?)?.toDouble(),
+      geofenceRadiusMeters:
+          (json['geofence_radius_meters'] as num?)?.toDouble(),
       timezone: json['timezone'] as String?,
     );
 
@@ -172,4 +91,91 @@ Map<String, dynamic> _$EmergencyContactToJson(EmergencyContact instance) =>
       'name': instance.name,
       'phone': instance.phone,
       'role': instance.role,
+    };
+
+Site _$SiteFromJson(Map<String, dynamic> json) => Site(
+      id: (json['id'] as num).toInt(),
+      name: json['name'] as String,
+      description: json['description'] as String?,
+      address: json['address'] as String,
+      latitude: (json['latitude'] as num).toDouble(),
+      longitude: (json['longitude'] as num).toDouble(),
+      contactInfo: json['contact_info'] == null
+          ? null
+          : ContactInfo.fromJson(json['contact_info'] as Map<String, dynamic>),
+      isActive: json['is_active'] as bool?,
+      checkpointsCount: (json['checkpoints_count'] as num?)?.toInt(),
+      configuration: json['configuration'] == null
+          ? null
+          : SiteConfiguration.fromJson(
+              json['configuration'] as Map<String, dynamic>),
+    );
+
+Map<String, dynamic> _$SiteToJson(Site instance) => <String, dynamic>{
+      'id': instance.id,
+      'name': instance.name,
+      'description': instance.description,
+      'address': instance.address,
+      'latitude': instance.latitude,
+      'longitude': instance.longitude,
+      'contact_info': instance.contactInfo,
+      'is_active': instance.isActive,
+      'checkpoints_count': instance.checkpointsCount,
+      'configuration': instance.configuration,
+    };
+
+CreateSiteRequest _$CreateSiteRequestFromJson(Map<String, dynamic> json) =>
+    CreateSiteRequest(
+      name: json['name'] as String,
+      description: json['description'] as String?,
+      address: json['address'] as String,
+      latitude: (json['latitude'] as num).toDouble(),
+      longitude: (json['longitude'] as num).toDouble(),
+      contactInfo: json['contact_info'] == null
+          ? null
+          : ContactInfo.fromJson(json['contact_info'] as Map<String, dynamic>),
+      configuration: json['configuration'] == null
+          ? null
+          : SiteConfiguration.fromJson(
+              json['configuration'] as Map<String, dynamic>),
+    );
+
+Map<String, dynamic> _$CreateSiteRequestToJson(CreateSiteRequest instance) =>
+    <String, dynamic>{
+      'name': instance.name,
+      'description': instance.description,
+      'address': instance.address,
+      'latitude': instance.latitude,
+      'longitude': instance.longitude,
+      'contact_info': instance.contactInfo,
+      'configuration': instance.configuration,
+    };
+
+UpdateSiteRequest _$UpdateSiteRequestFromJson(Map<String, dynamic> json) =>
+    UpdateSiteRequest(
+      name: json['name'] as String?,
+      description: json['description'] as String?,
+      address: json['address'] as String?,
+      latitude: (json['latitude'] as num?)?.toDouble(),
+      longitude: (json['longitude'] as num?)?.toDouble(),
+      contactInfo: json['contact_info'] == null
+          ? null
+          : ContactInfo.fromJson(json['contact_info'] as Map<String, dynamic>),
+      isActive: json['is_active'] as bool?,
+      configuration: json['configuration'] == null
+          ? null
+          : SiteConfiguration.fromJson(
+              json['configuration'] as Map<String, dynamic>),
+    );
+
+Map<String, dynamic> _$UpdateSiteRequestToJson(UpdateSiteRequest instance) =>
+    <String, dynamic>{
+      'name': instance.name,
+      'description': instance.description,
+      'address': instance.address,
+      'latitude': instance.latitude,
+      'longitude': instance.longitude,
+      'contact_info': instance.contactInfo,
+      'is_active': instance.isActive,
+      'configuration': instance.configuration,
     };
