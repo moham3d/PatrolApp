@@ -105,7 +105,7 @@ flutter run -d web-server --web-hostname 0.0.0.0 --web-port 3000
 # For PROD release build
 flutter build web --release
 cd build/web
-python -m http.server 8080
+python -m http.server 3000
 ```
 
 ### Environment Configuration
