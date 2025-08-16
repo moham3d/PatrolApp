@@ -5,6 +5,8 @@ import '../providers/messaging_provider.dart';
 import '../widgets/chat_sidebar_widget.dart';
 import '../widgets/chat_conversation_widget.dart';
 import '../widgets/chat_user_list_widget.dart';
+import '../widgets/push_to_talk_widget.dart';
+import '../widgets/communication_channels_widget.dart';
 import '../../../shared/services/websocket_service.dart';
 import '../../auth/providers/auth_provider.dart';
 import '../../../shared/services/auth_service.dart';
@@ -19,6 +21,7 @@ class RealTimeMessagingPage extends ConsumerStatefulWidget {
 
 class _RealTimeMessagingPageState extends ConsumerState<RealTimeMessagingPage> {
   bool _showUserList = true;
+  bool _showChannels = false;
   String? _selectedConversation;
   ConversationType _conversationType = ConversationType.none;
 
@@ -67,6 +70,13 @@ class _RealTimeMessagingPageState extends ConsumerState<RealTimeMessagingPage> {
           ),
           const SizedBox(width: 8),
           
+          // Toggle channels button
+          IconButton(
+            onPressed: () => setState(() => _showChannels = !_showChannels),
+            icon: Icon(_showChannels ? Icons.forum : Icons.forum_outlined),
+            tooltip: _showChannels ? 'Hide Channels' : 'Show Channels',
+          ),
+          
           // Toggle user list button
           IconButton(
             onPressed: () => setState(() => _showUserList = !_showUserList),
@@ -112,20 +122,68 @@ class _RealTimeMessagingPageState extends ConsumerState<RealTimeMessagingPage> {
                 : _buildEmptyChatState(),
           ),
           
-          // Right sidebar with user list (optional)
-          if (_showUserList) ...[
+          // Right sidebar with channels, user list, and push-to-talk
+          if (_showChannels || _showUserList) ...[
             const VerticalDivider(width: 1),
             SizedBox(
-              width: 240,
-              child: ChatUserListWidget(
-                onUserSelected: (userId) {
-                  final conversationId = 'user:$userId';
-                  setState(() {
-                    _selectedConversation = conversationId;
-                    _conversationType = ConversationType.private;
-                  });
-                  _loadConversation(conversationId, ConversationType.private);
-                },
+              width: 300,
+              child: Column(
+                children: [
+                  // Channels section
+                  if (_showChannels) ...[
+                    Expanded(
+                      flex: 2,
+                      child: CommunicationChannelsWidget(
+                        onChannelSelected: (channelId, channelName) {
+                          final conversationId = 'channel:$channelId';
+                          setState(() {
+                            _selectedConversation = conversationId;
+                            _conversationType = ConversationType.channel;
+                          });
+                          _loadConversation(conversationId, ConversationType.channel);
+                        },
+                      ),
+                    ),
+                    if (_showUserList) const Divider(),
+                  ],
+                  
+                  // User list section
+                  if (_showUserList) ...[
+                    Expanded(
+                      flex: _showChannels ? 1 : 2,
+                      child: ChatUserListWidget(
+                        onUserSelected: (userId) {
+                          final conversationId = 'user:$userId';
+                          setState(() {
+                            _selectedConversation = conversationId;
+                            _conversationType = ConversationType.private;
+                          });
+                          _loadConversation(conversationId, ConversationType.private);
+                        },
+                      ),
+                    ),
+                  ],
+                  
+                  // Push-to-talk section (always show when sidebar is visible)
+                  const Divider(),
+                  Container(
+                    padding: const EdgeInsets.all(8.0),
+                    child: PushToTalkWidget(
+                      recipientId: _conversationType == ConversationType.private
+                          ? _getRecipientIdFromConversation(_selectedConversation)
+                          : null,
+                      channelId: _conversationType == ConversationType.channel
+                          ? _getChannelIdFromConversation(_selectedConversation)
+                          : null,
+                      onVoiceMessageSent: () {
+                        // Optionally refresh the conversation
+                        if (_selectedConversation != null) {
+                          _loadConversation(_selectedConversation!, _conversationType);
+                        }
+                      },
+                    ),
+                  ),
+                ],
               ),
             ),
           ],
@@ -218,6 +276,24 @@ class _RealTimeMessagingPageState extends ConsumerState<RealTimeMessagingPage> {
     ref.read(chatChannelsNotifierProvider.notifier).refresh();
     ref.read(onlineUsersNotifierProvider.notifier).refresh();
     ref.invalidate(allUsersProvider);
+  }
+
+  int? _getRecipientIdFromConversation(String? conversationId) {
+    if (conversationId == null || !conversationId.startsWith('user:')) {
+      return null;
+    }
+    try {
+      return int.parse(conversationId.split(':')[1]);
+    } catch (e) {
+      return null;
+    }
+  }
+
+  String? _getChannelIdFromConversation(String? conversationId) {
+    if (conversationId == null || !conversationId.startsWith('channel:')) {
+      return null;
+    }
+    return conversationId.split(':')[1];
   }
 }
 
