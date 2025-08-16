@@ -4,6 +4,8 @@ import 'package:go_router/go_router.dart';
 
 import '../../features/auth/providers/auth_provider.dart';
 
+final sidebarExpandedProvider = StateProvider<bool>((ref) => true);
+
 class MainLayout extends ConsumerWidget {
   final Widget child;
 
@@ -16,6 +18,7 @@ class MainLayout extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final authState = ref.watch(authProvider);
     final currentLocation = GoRouterState.of(context).matchedLocation;
+    final isExpanded = ref.watch(sidebarExpandedProvider);
 
     // Determine selected index based on current route
     int selectedIndex = 0;
@@ -68,7 +71,12 @@ class MainLayout extends ConsumerWidget {
                   break;
               }
             },
-            extended: MediaQuery.of(context).size.width >= 1200,
+            extended: isExpanded && MediaQuery.of(context).size.width >= 800,
+            leading: IconButton(
+              icon: Icon(isExpanded ? Icons.menu_open : Icons.menu),
+              onPressed: () => ref.read(sidebarExpandedProvider.notifier).state = !isExpanded,
+              tooltip: isExpanded ? 'Collapse sidebar' : 'Expand sidebar',
+            ),
             destinations: const [
               NavigationRailDestination(
                 icon: Icon(Icons.people),
