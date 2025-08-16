@@ -104,8 +104,15 @@ flutter run -d web-server --web-hostname 0.0.0.0 --web-port 3000
 
 # For PROD release build
 flutter build web --release
+flutter build web --no-wasm-dry-run -O4
+# Option 1: Using Python (Simple)
 cd build/web
 python -m http.server 3000
+
+# Option 2: Using Node.js (Recommended - includes security headers)
+cd build/web
+npm install
+node server.js
 ```
 
 ### Environment Configuration

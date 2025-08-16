@@ -9,10 +9,7 @@ final sidebarExpandedProvider = StateProvider<bool>((ref) => true);
 class MainLayout extends ConsumerWidget {
   final Widget child;
 
-  const MainLayout({
-    super.key,
-    required this.child,
-  });
+  const MainLayout({super.key, required this.child});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -23,29 +20,32 @@ class MainLayout extends ConsumerWidget {
     // Determine selected index based on current route
     int selectedIndex = 0;
     switch (currentLocation) {
-      case '/users':
+      case '/dashboard':
         selectedIndex = 0;
         break;
-      case '/sites':
+      case '/users':
         selectedIndex = 1;
         break;
-      case '/patrols':
+      case '/sites':
         selectedIndex = 2;
         break;
-      case '/checkpoints':
+      case '/patrols':
         selectedIndex = 3;
         break;
-      case '/reports':
+      case '/checkpoints':
         selectedIndex = 4;
         break;
-      case '/monitoring':
+      case '/reports':
         selectedIndex = 5;
         break;
-      case '/communication':
+      case '/monitoring':
         selectedIndex = 6;
         break;
-      case '/messaging':
+      case '/communication':
         selectedIndex = 7;
+        break;
+      case '/messaging':
+        selectedIndex = 8;
         break;
     }
 
@@ -58,27 +58,30 @@ class MainLayout extends ConsumerWidget {
             onDestinationSelected: (index) {
               switch (index) {
                 case 0:
-                  context.go('/users');
+                  context.go('/dashboard');
                   break;
                 case 1:
-                  context.go('/sites');
+                  context.go('/users');
                   break;
                 case 2:
-                  context.go('/patrols');
+                  context.go('/sites');
                   break;
                 case 3:
-                  context.go('/checkpoints');
+                  context.go('/patrols');
                   break;
                 case 4:
-                  context.go('/reports');
+                  context.go('/checkpoints');
                   break;
                 case 5:
-                  context.go('/monitoring');
+                  context.go('/reports');
                   break;
                 case 6:
-                  context.go('/communication');
+                  context.go('/monitoring');
                   break;
                 case 7:
+                  context.go('/communication');
+                  break;
+                case 8:
                   context.go('/messaging');
                   break;
               }
@@ -86,10 +89,16 @@ class MainLayout extends ConsumerWidget {
             extended: isExpanded && MediaQuery.of(context).size.width >= 800,
             leading: IconButton(
               icon: Icon(isExpanded ? Icons.menu_open : Icons.menu),
-              onPressed: () => ref.read(sidebarExpandedProvider.notifier).state = !isExpanded,
+              onPressed: () =>
+                  ref.read(sidebarExpandedProvider.notifier).state =
+                      !isExpanded,
               tooltip: isExpanded ? 'Collapse sidebar' : 'Expand sidebar',
             ),
             destinations: const [
+              NavigationRailDestination(
+                icon: Icon(Icons.dashboard),
+                label: Text('Dashboard'),
+              ),
               NavigationRailDestination(
                 icon: Icon(Icons.people),
                 label: Text('Users'),
@@ -136,8 +145,11 @@ class MainLayout extends ConsumerWidget {
                         CircleAvatar(
                           backgroundColor: Theme.of(context).primaryColor,
                           child: Text(
-                            authState.user!.fullName.isNotEmpty 
-                                ? authState.user!.fullName.split(' ').first[0].toUpperCase()
+                            authState.user!.fullName.isNotEmpty
+                                ? authState.user!.fullName
+                                      .split(' ')
+                                      .first[0]
+                                      .toUpperCase()
                                 : authState.user!.username[0].toUpperCase(),
                             style: const TextStyle(
                               color: Colors.white,
@@ -147,18 +159,18 @@ class MainLayout extends ConsumerWidget {
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          authState.user!.fullName.isNotEmpty 
+                          authState.user!.fullName.isNotEmpty
                               ? authState.user!.fullName.split(' ').first
                               : authState.user!.username,
                           style: Theme.of(context).textTheme.bodySmall,
                         ),
                         Text(
                           authState.user!.primaryRole,
-                          style:
-                              Theme.of(context).textTheme.bodySmall?.copyWith(
-                                    color: Theme.of(context).primaryColor,
-                                    fontWeight: FontWeight.w500,
-                                  ),
+                          style: Theme.of(context).textTheme.bodySmall
+                              ?.copyWith(
+                                color: Theme.of(context).primaryColor,
+                                fontWeight: FontWeight.w500,
+                              ),
                         ),
                         const SizedBox(height: 16),
                       ],
@@ -176,9 +188,7 @@ class MainLayout extends ConsumerWidget {
           ),
           const VerticalDivider(thickness: 1, width: 1),
           // Main Content
-          Expanded(
-            child: child,
-          ),
+          Expanded(child: child),
         ],
       ),
     );

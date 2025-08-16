@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../features/auth/providers/auth_provider.dart';
 import '../../features/auth/pages/login_page.dart';
+import '../../features/dashboard/pages/dashboard_page.dart';
 import '../../shared/widgets/main_layout.dart';
 import '../../features/users/pages/users_page.dart';
 import '../../features/sites/pages/sites_page.dart';
@@ -39,19 +40,20 @@ final appRouterProvider = Provider<GoRouter>((ref) {
 
       // If logged in and on login page, redirect to dashboard
       if (isLoggedIn && isLoggingIn) {
-        return '/users';
+        return '/dashboard';
       }
 
       return null;
     },
     routes: [
-      GoRoute(
-        path: '/login',
-        builder: (context, state) => const LoginPage(),
-      ),
+      GoRoute(path: '/login', builder: (context, state) => const LoginPage()),
       ShellRoute(
         builder: (context, state, child) => MainLayout(child: child),
         routes: [
+          GoRoute(
+            path: '/dashboard',
+            builder: (context, state) => const DashboardPage(),
+          ),
           GoRoute(
             path: '/users',
             builder: (context, state) => const UsersPage(),

@@ -23,12 +23,12 @@ if (-not (Get-Command python -ErrorAction SilentlyContinue)) {
 Set-Location -Path "build\web"
 
 # Start the production server
-Write-Host "Production server starting on http://localhost:8080..." -ForegroundColor Green
+Write-Host "Production server starting on http://localhost:3000..." -ForegroundColor Green
 Write-Host "Press Ctrl+C to stop the server" -ForegroundColor Yellow
 Write-Host ""
 
 try {
-    python -m http.server 8080
+    python -m http.server 3000
 } catch {
     Write-Host "Error starting server: $_" -ForegroundColor Red
     exit 1
