@@ -7,6 +7,7 @@ import '../widgets/chat_conversation_widget.dart';
 import '../widgets/chat_user_list_widget.dart';
 import '../../../shared/services/websocket_service.dart';
 import '../../auth/providers/auth_provider.dart';
+import '../../../shared/services/auth_service.dart';
 
 /// Main real-time messaging page with sidebar and chat area
 class RealTimeMessagingPage extends ConsumerStatefulWidget {
@@ -27,12 +28,13 @@ class _RealTimeMessagingPageState extends ConsumerState<RealTimeMessagingPage> {
     _initializeWebSocket();
   }
 
-  void _initializeWebSocket() {
+  void _initializeWebSocket() async {
     // Connect to WebSocket when page loads
     final authState = ref.read(authProvider);
     if (authState.isLoggedIn && authState.user != null) {
+      final authService = ref.read(authServiceProvider);
       final webSocketService = ref.read(webSocketServiceProvider);
-      final token = authState.token?.accessToken;
+      final token = await authService.getCurrentToken();
       if (token != null) {
         webSocketService.connect(authState.user!.id, token);
       }

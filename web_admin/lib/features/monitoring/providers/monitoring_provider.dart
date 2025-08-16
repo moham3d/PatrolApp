@@ -223,6 +223,11 @@ class MonitoringNotifier extends StateNotifier<AsyncValue<void>> {
       case WebSocketMessageType.systemHealth:
         _updateSystemHealth(message.data);
         break;
+      case WebSocketMessageType.message:
+      case WebSocketMessageType.typing:
+      case WebSocketMessageType.userStatus:
+        // Chat-related messages are handled by messaging provider
+        break;
     }
   }
 
