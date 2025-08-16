@@ -244,11 +244,11 @@ AppBar (with user profile, notifications)
 - [x] ✅ Analytics dashboard with charts (Performance metrics implemented)
 - [x] ✅ Report generation (CSV export implemented for patrols and routes)
 - [x] ✅ Custom report builder
-- [ ] Scheduled reports
+- [x] ✅ Scheduled reports
 
 #### Communication Features  
-- [ ] Real-time messaging system
-- [ ] Notification management
+- [⏳] Real-time messaging system
+- [x] ✅ Notification management
 - [ ] Push-to-talk interface
 - [ ] Communication channels
 
