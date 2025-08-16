@@ -29,6 +29,21 @@ class SitesState {
       selectedSite: selectedSite ?? this.selectedSite,
     );
   }
+
+  // AsyncValue-like when method for UI compatibility
+  T when<T>({
+    required T Function(List<Site> data) data,
+    required T Function(Object error, StackTrace stackTrace) error,
+    required T Function() loading,
+  }) {
+    if (isLoading) {
+      return loading();
+    } else if (this.error != null) {
+      return error(this.error!, StackTrace.current);
+    } else {
+      return data(sites);
+    }
+  }
 }
 
 class SitesNotifier extends StateNotifier<SitesState> {

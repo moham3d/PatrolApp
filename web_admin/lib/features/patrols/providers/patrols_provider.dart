@@ -83,7 +83,8 @@ class PatrolsNotifier extends StateNotifier<AsyncValue<List<Patrol>>> {
     return state.maybeWhen(
       data: (patrols) => patrols.where((patrol) {
         final patrolDate = patrol.scheduledStart;
-        return patrolDate.year == date.year &&
+        return patrolDate != null &&
+               patrolDate.year == date.year &&
                patrolDate.month == date.month &&
                patrolDate.day == date.day;
       }).toList(),
@@ -131,7 +132,8 @@ class PatrolsNotifier extends StateNotifier<AsyncValue<List<Patrol>>> {
           }
           
           // Check for overdue patrols
-          if (patrol.scheduledEnd.isBefore(now) && 
+          if (patrol.scheduledEnd != null && 
+              patrol.scheduledEnd!.isBefore(now) && 
               patrol.status.toLowerCase() != 'completed') {
             stats['overdue'] = stats['overdue']! + 1;
           }

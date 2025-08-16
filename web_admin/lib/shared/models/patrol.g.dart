@@ -56,6 +56,20 @@ Patrol _$PatrolFromJson(Map<String, dynamic> json) => Patrol(
           : DateTime.parse(json['next_due_date'] as String),
       checkpoints: json['checkpoints'] as List<dynamic>,
       checkpointVisits: json['checkpoint_visits'] as List<dynamic>,
+      scheduledStart: json['scheduled_start'] == null
+          ? null
+          : DateTime.parse(json['scheduled_start'] as String),
+      scheduledEnd: json['scheduled_end'] == null
+          ? null
+          : DateTime.parse(json['scheduled_end'] as String),
+      assignedUser: json['assigned_user'] == null
+          ? null
+          : AssignedUser.fromJson(
+              json['assigned_user'] as Map<String, dynamic>),
+      assignedSite: json['assigned_site'] == null
+          ? null
+          : AssignedSite.fromJson(
+              json['assigned_site'] as Map<String, dynamic>),
     );
 
 Map<String, dynamic> _$PatrolToJson(Patrol instance) => <String, dynamic>{
@@ -80,6 +94,10 @@ Map<String, dynamic> _$PatrolToJson(Patrol instance) => <String, dynamic>{
       'next_due_date': instance.nextDueDate?.toIso8601String(),
       'checkpoints': instance.checkpoints,
       'checkpoint_visits': instance.checkpointVisits,
+      'scheduled_start': instance.scheduledStart?.toIso8601String(),
+      'scheduled_end': instance.scheduledEnd?.toIso8601String(),
+      'assigned_user': instance.assignedUser,
+      'assigned_site': instance.assignedSite,
     };
 
 CreatePatrolRequest _$CreatePatrolRequestFromJson(Map<String, dynamic> json) =>

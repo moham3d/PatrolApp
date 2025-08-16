@@ -82,6 +82,7 @@ UpdateCheckpointRequest _$UpdateCheckpointRequestFromJson(
       qrCode: json['qr_code'] as String?,
       nfcTagId: json['nfc_tag_id'] as String?,
       isActive: json['is_active'] as bool?,
+      visitDuration: (json['time_limit_minutes'] as num?)?.toInt(),
     );
 
 Map<String, dynamic> _$UpdateCheckpointRequestToJson(
@@ -95,4 +96,5 @@ Map<String, dynamic> _$UpdateCheckpointRequestToJson(
       'qr_code': instance.qrCode,
       'nfc_tag_id': instance.nfcTagId,
       'is_active': instance.isActive,
+      'time_limit_minutes': instance.visitDuration,
     };

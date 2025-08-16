@@ -326,7 +326,8 @@ class _PatrolStatusWidgetState extends ConsumerState<PatrolStatusWidget>
   Widget _buildPatrolTile(BuildContext context, Patrol patrol) {
     final isActive = patrol.status == 'active';
     final isOverdue = patrol.status == 'assigned' && 
-                     DateTime.now().isAfter(patrol.scheduledStart);
+                     patrol.scheduledStart != null &&
+                     DateTime.now().isAfter(patrol.scheduledStart!);
 
     return AnimatedBuilder(
       animation: _pulseController,
@@ -427,7 +428,7 @@ class _PatrolStatusWidgetState extends ConsumerState<PatrolStatusWidget>
                       Icon(Icons.schedule, size: 16, color: Colors.grey[600]),
                       const SizedBox(width: 4),
                       Text(
-                        '${DateFormat('HH:mm').format(patrol.scheduledStart)} - ${DateFormat('HH:mm').format(patrol.scheduledEnd)}',
+                        '${patrol.scheduledStart != null ? DateFormat('HH:mm').format(patrol.scheduledStart!) : 'N/A'} - ${patrol.scheduledEnd != null ? DateFormat('HH:mm').format(patrol.scheduledEnd!) : 'N/A'}',
                         style: Theme.of(context).textTheme.bodySmall,
                       ),
                     ],
@@ -512,12 +513,12 @@ class _PatrolStatusWidgetState extends ConsumerState<PatrolStatusWidget>
               _buildDetailRow('Site', patrol.siteName ?? 'N/A'),
               _buildDetailRow('Assigned To', patrol.assignedToName ?? 'Unassigned'),
               _buildDetailRow('Scheduled', 
-                '${DateFormat('MMM dd, HH:mm').format(patrol.scheduledStart)} - ${DateFormat('HH:mm').format(patrol.scheduledEnd)}'),
+                '${patrol.scheduledStart != null ? DateFormat('MMM dd, HH:mm').format(patrol.scheduledStart!) : 'N/A'} - ${patrol.scheduledEnd != null ? DateFormat('HH:mm').format(patrol.scheduledEnd!) : 'N/A'}'),
               _buildDetailRow('Progress', '${patrol.checkpointsCompleted}/${patrol.checkpointsTotal} checkpoints'),
-              if (patrol.actualStart != null)
-                _buildDetailRow('Started', DateFormat('MMM dd, HH:mm').format(patrol.actualStart!)),
-              if (patrol.actualEnd != null)
-                _buildDetailRow('Completed', DateFormat('MMM dd, HH:mm').format(patrol.actualEnd!)),
+              if (patrol.startTime != null)
+                _buildDetailRow('Started', DateFormat('MMM dd, HH:mm').format(patrol.startTime!)),
+              if (patrol.endTime != null)
+                _buildDetailRow('Completed', DateFormat('MMM dd, HH:mm').format(patrol.endTime!)),
             ],
           ),
         ),

@@ -70,6 +70,14 @@ class Patrol {
   final List<dynamic> checkpoints;
   @JsonKey(name: 'checkpoint_visits')
   final List<dynamic> checkpointVisits;
+  @JsonKey(name: 'scheduled_start')
+  final DateTime? scheduledStart;
+  @JsonKey(name: 'scheduled_end')
+  final DateTime? scheduledEnd;
+  @JsonKey(name: 'assigned_user')
+  final AssignedUser? assignedUser;
+  @JsonKey(name: 'assigned_site')
+  final AssignedSite? assignedSite;
 
   const Patrol({
     required this.id,
@@ -93,6 +101,10 @@ class Patrol {
     this.nextDueDate,
     required this.checkpoints,
     required this.checkpointVisits,
+    this.scheduledStart,
+    this.scheduledEnd,
+    this.assignedUser,
+    this.assignedSite,
   });
 
   factory Patrol.fromJson(Map<String, dynamic> json) => _$PatrolFromJson(json);
@@ -120,6 +132,10 @@ class Patrol {
     DateTime? nextDueDate,
     List<dynamic>? checkpoints,
     List<dynamic>? checkpointVisits,
+    DateTime? scheduledStart,
+    DateTime? scheduledEnd,
+    AssignedUser? assignedUser,
+    AssignedSite? assignedSite,
   }) {
     return Patrol(
       id: id ?? this.id,
@@ -143,8 +159,19 @@ class Patrol {
       nextDueDate: nextDueDate ?? this.nextDueDate,
       checkpoints: checkpoints ?? this.checkpoints,
       checkpointVisits: checkpointVisits ?? this.checkpointVisits,
+      scheduledStart: scheduledStart ?? this.scheduledStart,
+      scheduledEnd: scheduledEnd ?? this.scheduledEnd,
+      assignedUser: assignedUser ?? this.assignedUser,
+      assignedSite: assignedSite ?? this.assignedSite,
     );
   }
+
+  // Convenience getters for UI compatibility
+  String? get siteName => assignedSite?.name;
+  String? get assignedToName => assignedUser?.name;
+  AssignedSite? get site => assignedSite;
+  int get checkpointsTotal => checkpoints.length;
+  int get checkpointsCompleted => checkpointVisits.length;
 }
 
 @JsonSerializable()

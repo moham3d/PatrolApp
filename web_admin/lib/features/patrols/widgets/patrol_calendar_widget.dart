@@ -264,7 +264,7 @@ class PatrolCalendarWidget extends ConsumerWidget {
                 ),
                 const SizedBox(width: 4),
                 Text(
-                  '${_formatTime(patrol.scheduledStart)} - ${_formatTime(patrol.scheduledEnd)}',
+                  '${patrol.scheduledStart != null ? _formatTime(patrol.scheduledStart!) : 'N/A'} - ${patrol.scheduledEnd != null ? _formatTime(patrol.scheduledEnd!) : 'N/A'}',
                   style: TextStyle(
                     fontSize: 12,
                     color: Colors.grey.shade600,
@@ -283,7 +283,7 @@ class PatrolCalendarWidget extends ConsumerWidget {
                   ),
                   const SizedBox(width: 4),
                   Text(
-                    patrol.assignedTo!.name,
+                    patrol.assignedToName ?? 'Unassigned',
                     style: TextStyle(
                       fontSize: 12,
                       color: Colors.grey.shade600,

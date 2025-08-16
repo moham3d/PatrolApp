@@ -69,7 +69,6 @@ class _CreateCheckpointDialogState extends ConsumerState<CreateCheckpointDialog>
         nfcTagId: _nfcTagController.text.trim().isNotEmpty 
             ? _nfcTagController.text.trim() 
             : null,
-        visitDuration: int.parse(_visitDurationController.text),
       );
 
       final success = await ref.read(checkpointsProvider.notifier).createCheckpoint(request);

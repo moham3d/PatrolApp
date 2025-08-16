@@ -30,6 +30,21 @@ class UsersState {
       pagination: pagination ?? this.pagination,
     );
   }
+
+  // AsyncValue-like when method for UI compatibility
+  T when<T>({
+    required T Function(List<User> data) data,
+    required T Function(Object error, StackTrace stackTrace) error,
+    required T Function() loading,
+  }) {
+    if (isLoading) {
+      return loading();
+    } else if (this.error != null) {
+      return error(this.error!, StackTrace.current);
+    } else {
+      return data(users);
+    }
+  }
 }
 
 class UsersNotifier extends StateNotifier<UsersState> {

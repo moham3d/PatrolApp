@@ -192,7 +192,7 @@ class ReportTemplatesWidget extends ConsumerWidget {
               children: [
                 _buildDetailChip(
                   context,
-                  Icons.database,
+                  Icons.storage,
                   'Data Source',
                   template.dataSource.toUpperCase(),
                 ),

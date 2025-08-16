@@ -5,7 +5,9 @@
       "Bash(dart run:*)",
       "Bash(pkill:*)",
       "Bash(taskkill:*)",
-      "Bash(powershell:*)"
+      "Bash(powershell:*)",
+      "Bash(flutter packages pub run build_runner build:*)",
+      "Bash(flutter analyze:*)"
     ],
     "deny": [],
     "ask": [],

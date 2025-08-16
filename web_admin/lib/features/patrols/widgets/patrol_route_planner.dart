@@ -398,8 +398,8 @@ class _PatrolRoutePlannerState extends ConsumerState<PatrolRoutePlanner> {
 
       return Marker(
         point: LatLng(
-          checkpoint.location.latitude,
-          checkpoint.location.longitude,
+          checkpoint.latitude,
+          checkpoint.longitude,
         ),
         width: 40,
         height: 40,
@@ -473,7 +473,7 @@ class _PatrolRoutePlannerState extends ConsumerState<PatrolRoutePlanner> {
     // Simple route generation - connect checkpoints in order
     final points = _selectedCheckpoints
         .map((checkpoint) =>
-            LatLng(checkpoint.location.latitude, checkpoint.location.longitude))
+            LatLng(checkpoint.latitude, checkpoint.longitude))
         .toList();
 
     setState(() {
@@ -496,8 +496,12 @@ class _PatrolRoutePlannerState extends ConsumerState<PatrolRoutePlanner> {
 
       // Find nearest checkpoint
       remaining.sort((a, b) {
-        final distA = _calculateDistance(current.location, a.location);
-        final distB = _calculateDistance(current.location, b.location);
+        final distA = _calculateDistanceLatLng(
+            LatLng(current.latitude, current.longitude),
+            LatLng(a.latitude, a.longitude));
+        final distB = _calculateDistanceLatLng(
+            LatLng(current.latitude, current.longitude),
+            LatLng(b.latitude, b.longitude));
         return distA.compareTo(distB);
       });
 
@@ -526,15 +530,9 @@ class _PatrolRoutePlannerState extends ConsumerState<PatrolRoutePlanner> {
 
     double totalDistance = 0.0;
     for (int i = 0; i < _routePoints.length - 1; i++) {
-      totalDistance += _calculateDistance(
-        Location(
-          latitude: _routePoints[i].latitude,
-          longitude: _routePoints[i].longitude,
-        ),
-        Location(
-          latitude: _routePoints[i + 1].latitude,
-          longitude: _routePoints[i + 1].longitude,
-        ),
+      totalDistance += _calculateDistanceLatLng(
+        _routePoints[i],
+        _routePoints[i + 1],
       );
     }
     return totalDistance;
@@ -549,7 +547,7 @@ class _PatrolRoutePlannerState extends ConsumerState<PatrolRoutePlanner> {
     return walkingTime + checkpointTime;
   }
 
-  double _calculateDistance(LatLng point1, LatLng point2) {
+  double _calculateDistanceLatLng(LatLng point1, LatLng point2) {
     const Distance distance = Distance();
     return distance.as(
         LengthUnit.Kilometer,

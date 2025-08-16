@@ -609,17 +609,26 @@ class _RouteOptimizationWidgetState
     while (remaining.isNotEmpty) {
       // Find nearest checkpoint
       remaining.sort((a, b) {
-        final distA = _calculateDistance(current.location, a.location);
-        final distB = _calculateDistance(current.location, b.location);
+        final distA = _calculateDistance(
+          LatLng(current.latitude, current.longitude),
+          LatLng(a.latitude, a.longitude)
+        );
+        final distB = _calculateDistance(
+          LatLng(current.latitude, current.longitude),
+          LatLng(b.latitude, b.longitude)
+        );
         return distA.compareTo(distB);
       });
 
       final next = remaining.removeAt(0);
-      final distance = _calculateDistance(current.location, next.location);
+      final distance = _calculateDistance(
+        LatLng(current.latitude, current.longitude),
+        LatLng(next.latitude, next.longitude)
+      );
 
       route.add(RouteSegment(
-        from: LatLng(current.location.latitude, current.location.longitude),
-        to: LatLng(next.location.latitude, next.location.longitude),
+        from: LatLng(current.latitude, current.longitude),
+        to: LatLng(next.latitude, next.longitude),
         distance: distance,
         efficiency: 1.0 - (distance / 1000), // Simple efficiency calculation
         fromCheckpoint: current,
@@ -682,8 +691,8 @@ class _RouteOptimizationWidgetState
     double total = 0;
     for (int i = 0; i < _selectedCheckpoints.length - 1; i++) {
       total += _calculateDistance(
-        _selectedCheckpoints[i].location,
-        _selectedCheckpoints[i + 1].location,
+        LatLng(_selectedCheckpoints[i].latitude, _selectedCheckpoints[i].longitude),
+        LatLng(_selectedCheckpoints[i + 1].latitude, _selectedCheckpoints[i + 1].longitude),
       );
     }
     return total;
@@ -698,12 +707,12 @@ class _RouteOptimizationWidgetState
   }
 
   void _saveOptimizedRoute() {
-    if (_optimizedCheckpoints.isNotEmpty) {
+    if (_optimizedRoute.isNotEmpty) {
       // Create route data structure
       final routeData = {
-        'total_distance': _totalDistance.toStringAsFixed(2),
-        'estimated_time': _estimatedTime.toStringAsFixed(0),
-        'checkpoints': _optimizedCheckpoints.map((checkpoint) => {
+        'total_distance': _routeAnalysis!.totalDistance.toStringAsFixed(2),
+        'estimated_time': _routeAnalysis!.estimatedTime.toStringAsFixed(0),
+        'checkpoints': _selectedCheckpoints.map((checkpoint) => {
           'id': checkpoint.id,
           'name': checkpoint.name,
           'latitude': checkpoint.latitude,
@@ -721,9 +730,9 @@ class _RouteOptimizationWidgetState
             children: [
               Text('Route saved successfully!'),
               const SizedBox(height: 16),
-              Text('Total Distance: ${_totalDistance.toStringAsFixed(2)} km'),
-              Text('Estimated Time: ${_estimatedTime.toStringAsFixed(0)} minutes'),
-              Text('Checkpoints: ${_optimizedCheckpoints.length}'),
+              Text('Total Distance: ${_routeAnalysis!.totalDistance.toStringAsFixed(2)} km'),
+              Text('Estimated Time: ${_routeAnalysis!.estimatedTime.toStringAsFixed(0)} minutes'),
+              Text('Checkpoints: ${_selectedCheckpoints.length}'),
             ],
           ),
           actions: [
@@ -746,22 +755,22 @@ class _RouteOptimizationWidgetState
   }
 
   void _exportRoute() {
-    if (_optimizedCheckpoints.isNotEmpty) {
+    if (_optimizedRoute.isNotEmpty) {
       // Create CSV-like export data
       final csvData = StringBuffer();
       csvData.writeln('Checkpoint ID,Name,Latitude,Longitude,Order');
       
-      for (int i = 0; i < _optimizedCheckpoints.length; i++) {
-        final checkpoint = _optimizedCheckpoints[i];
+      for (int i = 0; i < _selectedCheckpoints.length; i++) {
+        final checkpoint = _selectedCheckpoints[i];
         csvData.writeln('${checkpoint.id},"${checkpoint.name}",${checkpoint.latitude},${checkpoint.longitude},${i + 1}');
       }
 
       // Add summary information
       csvData.writeln('');
       csvData.writeln('Route Summary');
-      csvData.writeln('Total Distance (km),${_totalDistance.toStringAsFixed(2)}');
-      csvData.writeln('Estimated Time (minutes),${_estimatedTime.toStringAsFixed(0)}');
-      csvData.writeln('Number of Checkpoints,${_optimizedCheckpoints.length}');
+      csvData.writeln('Total Distance (km),${_routeAnalysis!.totalDistance.toStringAsFixed(2)}');
+      csvData.writeln('Estimated Time (minutes),${_routeAnalysis!.estimatedTime.toStringAsFixed(0)}');
+      csvData.writeln('Number of Checkpoints,${_selectedCheckpoints.length}');
 
       // Copy to clipboard
       Clipboard.setData(ClipboardData(text: csvData.toString()));

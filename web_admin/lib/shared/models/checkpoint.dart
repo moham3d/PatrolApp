@@ -97,6 +97,10 @@ class Checkpoint {
       updatedAt: updatedAt ?? this.updatedAt,
     );
   }
+
+  // Convenience getters for UI compatibility
+  String? get nfcTag => nfcTagId;
+  int? get visitDuration => timeLimitMinutes;
 }
 
 @JsonSerializable()
@@ -141,6 +145,8 @@ class UpdateCheckpointRequest {
   final String? nfcTagId;
   @JsonKey(name: 'is_active')
   final bool? isActive;
+  @JsonKey(name: 'time_limit_minutes')
+  final int? visitDuration;
 
   const UpdateCheckpointRequest({
     this.name,
@@ -151,6 +157,7 @@ class UpdateCheckpointRequest {
     this.qrCode,
     this.nfcTagId,
     this.isActive,
+    this.visitDuration,
   });
 
   factory UpdateCheckpointRequest.fromJson(Map<String, dynamic> json) => 

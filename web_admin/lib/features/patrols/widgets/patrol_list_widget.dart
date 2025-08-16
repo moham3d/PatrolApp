@@ -214,9 +214,9 @@ class _PatrolListWidgetState extends ConsumerState<PatrolListWidget> {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text(DateFormat('MMM dd, yyyy').format(patrol.scheduledStart)),
+              Text(patrol.scheduledStart != null ? DateFormat('MMM dd, yyyy').format(patrol.scheduledStart!) : 'N/A'),
               Text(
-                '${DateFormat('HH:mm').format(patrol.scheduledStart)} - ${DateFormat('HH:mm').format(patrol.scheduledEnd)}',
+                '${patrol.scheduledStart != null ? DateFormat('HH:mm').format(patrol.scheduledStart!) : 'N/A'} - ${patrol.scheduledEnd != null ? DateFormat('HH:mm').format(patrol.scheduledEnd!) : 'N/A'}',
                 style: Theme.of(context).textTheme.bodySmall,
               ),
             ],
@@ -375,24 +375,26 @@ class _PatrolListWidgetState extends ConsumerState<PatrolListWidget> {
               _buildDetailRow(
                   'Assigned To', patrol.assignedToName ?? 'Unassigned'),
               _buildDetailRow('Status', patrol.status.toUpperCase()),
-              _buildDetailRow(
-                  'Scheduled Start',
-                  DateFormat('MMM dd, yyyy HH:mm')
-                      .format(patrol.scheduledStart)),
-              _buildDetailRow('Scheduled End',
-                  DateFormat('MMM dd, yyyy HH:mm').format(patrol.scheduledEnd)),
+              if (patrol.scheduledStart != null)
+                _buildDetailRow(
+                    'Scheduled Start',
+                    DateFormat('MMM dd, yyyy HH:mm')
+                        .format(patrol.scheduledStart!)),
+              if (patrol.scheduledEnd != null)
+                _buildDetailRow('Scheduled End',
+                    DateFormat('MMM dd, yyyy HH:mm').format(patrol.scheduledEnd!)),
               _buildDetailRow('Checkpoints',
                   '${patrol.checkpointsCompleted}/${patrol.checkpointsTotal}'),
               if (patrol.description?.isNotEmpty == true)
                 _buildDetailRow('Description', patrol.description!),
-              if (patrol.actualStart != null)
+              if (patrol.startTime != null)
                 _buildDetailRow(
                     'Actual Start',
                     DateFormat('MMM dd, yyyy HH:mm')
-                        .format(patrol.actualStart!)),
-              if (patrol.actualEnd != null)
+                        .format(patrol.startTime!)),
+              if (patrol.endTime != null)
                 _buildDetailRow('Actual End',
-                    DateFormat('MMM dd, yyyy HH:mm').format(patrol.actualEnd!)),
+                    DateFormat('MMM dd, yyyy HH:mm').format(patrol.endTime!)),
             ],
           ),
         ),
@@ -486,7 +488,7 @@ class _PatrolListWidgetState extends ConsumerState<PatrolListWidget> {
       csvData.writeln('ID,Title,Status,Priority,Site,Assigned To,Scheduled Start,Scheduled End,Created At');
       
       for (final patrol in patrols) {
-        final assignedTo = patrol.assignedTo?.fullName ?? 'Unassigned';
+        final assignedTo = patrol.assignedToName ?? 'Unassigned';
         final scheduledStart = patrol.scheduledStart != null 
             ? DateFormat('yyyy-MM-dd HH:mm').format(patrol.scheduledStart!)
             : '';
@@ -495,7 +497,7 @@ class _PatrolListWidgetState extends ConsumerState<PatrolListWidget> {
             : '';
         final createdAt = DateFormat('yyyy-MM-dd HH:mm').format(patrol.createdAt);
         
-        csvData.writeln('${patrol.id},"${patrol.title}","${patrol.status}","${patrol.priority}","${patrol.site.name}","$assignedTo","$scheduledStart","$scheduledEnd","$createdAt"');
+        csvData.writeln('${patrol.id},"${patrol.title}","${patrol.status}","${patrol.priority}","${patrol.siteName ?? 'N/A'}","$assignedTo","$scheduledStart","$scheduledEnd","$createdAt"');
       }
 
       // Copy to clipboard

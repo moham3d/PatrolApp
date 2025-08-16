@@ -415,9 +415,9 @@ class _ReportBuilderWidgetState extends ConsumerState<ReportBuilderWidget> {
                       // User Filter (for applicable data sources)
                       if (_selectedDataSource == 'patrols') ...[
                         usersAsync.when(
-                          data: (usersResponse) => MultiSelectChip<User>(
+                          data: (users) => MultiSelectChip<User>(
                             title: 'Filter by Users',
-                            items: usersResponse.items,
+                            items: users,
                             selectedIds: _selectedUserIds,
                             onChanged: (selectedIds) {
                               setState(() {
