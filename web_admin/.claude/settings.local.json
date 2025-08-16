@@ -11,7 +11,10 @@
       "Bash(timeout:*)",
       "Bash(Ctrl+C)",
       "Bash(flutter clean:*)",
-      "Bash(flutter pub:*)"
+      "Bash(flutter pub:*)",
+      "Bash(flutter packages pub run:*)",
+      "Bash(flutter build:*)",
+      "Bash(git add:*)"
     ],
     "deny": [],
     "ask": [],
