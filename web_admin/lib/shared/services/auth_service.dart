@@ -13,14 +13,9 @@ class AuthService {
   Future<AuthToken> login(String username, String password) async {
     try {
       final response = await _httpClient.post<Map<String, dynamic>>(
-        '/auth/token',
-        data: FormData.fromMap({
-          'username': username,
-          'password': password,
-        }),
-        options: Options(
-          contentType: 'application/x-www-form-urlencoded',
-        ),
+        '/auth/login',
+        data: FormData.fromMap({'username': username, 'password': password}),
+        options: Options(contentType: 'application/x-www-form-urlencoded'),
       );
 
       final authToken = AuthToken.fromJson(response.data!);
@@ -29,10 +24,7 @@ class AuthService {
     } on api_ex.ApiException {
       rethrow;
     } catch (e) {
-      throw api_ex.AuthException(
-        code: 'LOGIN_ERROR',
-        message: e.toString(),
-      );
+      throw api_ex.AuthException(code: 'LOGIN_ERROR', message: e.toString());
     }
   }
 
