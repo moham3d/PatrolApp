@@ -13,6 +13,9 @@ enum WebSocketMessageType {
   patrolUpdate,
   guardLocation,
   systemHealth,
+  message,         // Chat messages
+  typing,          // Typing indicators
+  userStatus,      // User online/offline status
 }
 
 /// WebSocket message model
@@ -46,6 +49,15 @@ class WebSocketMessage {
         break;
       case 'system_health':
         messageType = WebSocketMessageType.systemHealth;
+        break;
+      case 'message':
+        messageType = WebSocketMessageType.message;
+        break;
+      case 'typing':
+        messageType = WebSocketMessageType.typing;
+        break;
+      case 'user_status':
+        messageType = WebSocketMessageType.userStatus;
         break;
       default:
         messageType = WebSocketMessageType.notification;
@@ -132,6 +144,76 @@ class WebSocketService {
     if (_currentState == WebSocketState.connected && _channel != null) {
       _channel!.sink.add(json.encode(message));
     }
+  }
+
+  /// Send a chat message
+  void sendChatMessage({
+    required String content,
+    int? recipientId,
+    String? channelId,
+    String type = 'private',
+    String messageType = 'text',
+    bool isEmergency = false,
+    Map<String, dynamic>? metadata,
+  }) {
+    sendMessage({
+      'type': 'send_message',
+      'data': {
+        'content': content,
+        'recipient_id': recipientId,
+        'channel_id': channelId,
+        'type': type,
+        'message_type': messageType,
+        'is_emergency': isEmergency,
+        'metadata': metadata,
+      },
+    });
+  }
+
+  /// Send typing indicator
+  void sendTypingIndicator({
+    int? recipientId,
+    String? channelId,
+    bool isTyping = true,
+  }) {
+    sendMessage({
+      'type': 'typing',
+      'data': {
+        'recipient_id': recipientId,
+        'channel_id': channelId,
+        'is_typing': isTyping,
+      },
+    });
+  }
+
+  /// Mark message as read
+  void markMessageAsRead(int messageId) {
+    sendMessage({
+      'type': 'mark_read',
+      'data': {
+        'message_id': messageId,
+      },
+    });
+  }
+
+  /// Join a chat channel
+  void joinChannel(String channelId) {
+    sendMessage({
+      'type': 'join_channel',
+      'data': {
+        'channel_id': channelId,
+      },
+    });
+  }
+
+  /// Leave a chat channel
+  void leaveChannel(String channelId) {
+    sendMessage({
+      'type': 'leave_channel',
+      'data': {
+        'channel_id': channelId,
+      },
+    });
   }
 
   /// Handle incoming WebSocket messages
